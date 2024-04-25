@@ -1,0 +1,3 @@
+/home/arun/PinnZoo/src/build/CMakeFiles/dynamics.dir
+/home/arun/PinnZoo/src/build/CMakeFiles/edit_cache.dir
+/home/arun/PinnZoo/src/build/CMakeFiles/rebuild_cache.dir
