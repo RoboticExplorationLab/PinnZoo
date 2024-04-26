@@ -13,7 +13,8 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} SHARED wrapper.c
-        M_func.c C_func.c inverse_dynamics.c forward_dynamics.c)
+        M_func.c C_func.c inverse_dynamics.c forward_dynamics.c
+        kinematics.c kinematics_jacobian.c)
 
 target_include_directories(${PROJECT_NAME} PUBLIC)
 

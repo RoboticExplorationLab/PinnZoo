@@ -48,43 +48,44 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[9] = {5, 1, 0, 5, 0, 1, 2, 3, 4};
+static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
 static const casadi_int casadi_s1[6] = {2, 1, 0, 2, 0, 1};
 
-/* C_func:(i0[5])->(o0[2]) */
+/* C_func:(i0[4])->(o0[2]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_real a0, a1, a2, a3, a4, a5, a6, a7, a8, a9;
   a0=arg[0]? arg[0][1] : 0;
-  a1=arg[0]? arg[0][4] : 0;
-  a2=10.;
-  a3=arg[0]? arg[0][2] : 0;
-  a4=arg[0]? arg[0][3] : 0;
-  a5=(a3*a4);
-  a6=(a2*a5);
-  a6=(a1*a6);
-  a7=(a1*a5);
+  a1=cos(a0);
+  a2=arg[0]? arg[0][3] : 0;
+  a3=10.;
+  a0=sin(a0);
+  a4=arg[0]? arg[0][2] : 0;
+  a5=(a0*a4);
+  a6=(a3*a5);
+  a6=(a2*a6);
+  a7=(a2*a5);
   a8=9.8100000000000005e+00;
-  a9=(a8*a3);
+  a9=(a8*a0);
   a7=(a7+a9);
-  a7=(a2*a7);
+  a7=(a3*a7);
   a6=(a6-a7);
-  a6=(a0*a6);
-  a4=(a0*a4);
-  a9=(a1*a4);
-  a8=(a8*a0);
+  a6=(a1*a6);
+  a4=(a1*a4);
+  a9=(a2*a4);
+  a8=(a8*a1);
   a9=(a9+a8);
-  a9=(a2*a9);
-  a4=(a2*a4);
+  a9=(a3*a9);
+  a4=(a3*a4);
   a8=5.0000000000000000e-01;
-  a0=(a8*a1);
-  a2=(a2*a0);
-  a4=(a4+a2);
-  a1=(a1*a4);
-  a9=(a9-a1);
-  a3=(a3*a9);
-  a6=(a6+a3);
+  a1=(a8*a2);
+  a3=(a3*a1);
+  a4=(a4+a3);
+  a2=(a2*a4);
+  a9=(a9-a2);
+  a0=(a0*a9);
+  a6=(a6+a0);
   if (res[0]!=0) res[0][0]=a6;
-  a5=(a5*a2);
+  a5=(a5*a3);
   a8=(a8*a7);
   a5=(a5-a8);
   if (res[0]!=0) res[0][1]=a5;

@@ -7,7 +7,8 @@ import sys, os
 import numpy as np
 
 class SymbolicGenerator:
-    def __init__(self, urdf_path, gen_dir, kinematics_bodies = [], floating = False, mesh_dir=""):
+    def __init__(self, urdf_path, gen_dir = "./generated_code", 
+                 kinematics_bodies = [], floating = False, mesh_dir=""):
         # Load the URDF model
         if floating:
             self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
@@ -17,7 +18,7 @@ class SymbolicGenerator:
         self.data = self.model.createData()
 
         # Get dimensions
-        self.nq = self.robot.model.nq #- 1 # Don't include Pinocchio's "universe" joint
+        self.nq = self.robot.model.nq
         self.nv = self.robot.model.nv
         self.nx = self.nq + self.nv
         self.bodies = [self.model.frames[i].name for i in range(2, self.model.nframes)]
@@ -30,6 +31,8 @@ class SymbolicGenerator:
         print("\t# of DoFs =", self.nv)
         print("\tBodies:",self.bodies)
         print("\tJoints:",[name for name in self.model.names])
+        if len(kinematics_bodies) > 0:
+            print("\tKinematics:",kinematics_bodies)
 
         # Check that the bodies in kinematics_bodies actually exist
         for body in kinematics_bodies:
@@ -48,9 +51,9 @@ class SymbolicGenerator:
         self.tau = cs.SX.sym('tau', self.nv)
 
         # Create directory to save files to if it doesn't exist
-        self.gen_dir = gen_dir
-        if not os.path.exists(gen_dir):
-            os.makedirs(gen_dir)
+        self.gen_dir = os.path.abspath(gen_dir)
+        if not os.path.exists(self.gen_dir):
+            os.makedirs(self.gen_dir)
 
     def generate(self):
         print("\nGenerating code")
@@ -61,19 +64,24 @@ class SymbolicGenerator:
         self.q_dot = self.x_dot[:self.nq]
         self.v_dot = self.x_dot[self.nq:]
 
-        # Add an element at the beginning of q to take care of the "universe joint" that Pinocchio
-        # forces by convention
-        # self.q = cs.vertcat(cs.SX(0), self.q)
-
         # Generation options
         self.gen_opts = dict(with_header = True)
 
+        # Change directory for output
+        orig_dir = os.getcwd()
+        os.chdir(self.gen_dir)
+
         self.generate_dynamics()
+
+        if len(self.kinematics_bodies) > 0:
+            self.generate_kinematics()
+
+        print("Finished generating to", self.gen_dir)
+        os.chdir(orig_dir)
 
     def generate_dynamics(self):
         # Mass matrix
         M = cs.densify(cpin.crba(self.cmodel, self.cdata, self.q))
-        print(self.cdata.M)
 
         # Coriolis matrix
         C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
@@ -84,10 +92,6 @@ class SymbolicGenerator:
         # Inverse dynamics
         tau_out = cs.densify(cpin.rnea(self.cmodel, self.cdata, self.q, self.v, self.v_dot))
 
-        print(M)
-
-        print([joint.shortname() for joint in self.cmodel.joints])
-
         # Create CasADI functions
         m_func = cs.Function("M_func", [self.x], [M])
         c_func = cs.Function("C_func", [self.x], [C])
@@ -95,17 +99,51 @@ class SymbolicGenerator:
         inverse_dynamics_func = cs.Function("inverse_dynamics", [self.x, self.v_dot], [tau_out])
 
         # Generate files
+        orig_dir = os.getcwd()
+        os.chdir(self.gen_dir)
         m_func.generate("M_func.c", self.gen_opts)
         c_func.generate("C_func.c", self.gen_opts)
         forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
         inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
+        os.chdir(orig_dir)
 
         print("Generated dynamics")
 
-        print(pin.crba(self.model, self.data, np.zeros(3)))
-
     def generate_kinematics(self):
-        pass
+        # Perform forward kinematics with the symbolic configuration
+        cpin.forwardKinematics(self.cmodel, self.cdata, self.q)
+        cpin.updateFramePlacements(self.cmodel, self.cdata)
+
+        # Forward kinematics (world frame by default)
+        locs = []
+        for body in self.kinematics_bodies:
+            locs.append(self.cdata.oMf[self.cmodel.getFrameId(body)].translation)
+        locs = cs.vertcat(*locs)
+
+        # Forward kinematics jacobian
+        J = cs.densify(cs.jacobian(locs, self.x)) # v block should be zero
 
 
+        # Kinematics velocity (world frame by default)
+        # locs_dot = J@self.x_dot # only uses the q_dot part
+
+        # # Kinematics velocity jacobian
+        # J_dot = cs.jacobian(locs_dot, self.x) # v block is zero (but should maybe be J(q)E(q))
+
+        # Create CasADI functions
+        kinematics = cs.Function("kinematics", [self.x], [locs])
+        kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [J])
+        # kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [locs])
+        # kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [locs])
+
+        # Generate files
+        orig_dir = os.getcwd()
+        os.chdir(self.gen_dir)
+        kinematics.generate("kinematics.c", self.gen_opts)
+        kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
+        # kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
+        # kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+        os.chdir(orig_dir)
+
+        print("Generated kinematics")
 

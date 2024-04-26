@@ -12,6 +12,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/arun/PinnZoo/src/M_func.c" "CMakeFiles/dynamics.dir/M_func.c.o" "gcc" "CMakeFiles/dynamics.dir/M_func.c.o.d"
   "/home/arun/PinnZoo/src/forward_dynamics.c" "CMakeFiles/dynamics.dir/forward_dynamics.c.o" "gcc" "CMakeFiles/dynamics.dir/forward_dynamics.c.o.d"
   "/home/arun/PinnZoo/src/inverse_dynamics.c" "CMakeFiles/dynamics.dir/inverse_dynamics.c.o" "gcc" "CMakeFiles/dynamics.dir/inverse_dynamics.c.o.d"
+  "/home/arun/PinnZoo/src/kinematics.c" "CMakeFiles/dynamics.dir/kinematics.c.o" "gcc" "CMakeFiles/dynamics.dir/kinematics.c.o.d"
+  "/home/arun/PinnZoo/src/kinematics_jacobian.c" "CMakeFiles/dynamics.dir/kinematics_jacobian.c.o" "gcc" "CMakeFiles/dynamics.dir/kinematics_jacobian.c.o.d"
   "/home/arun/PinnZoo/src/wrapper.c" "CMakeFiles/dynamics.dir/wrapper.c.o" "gcc" "CMakeFiles/dynamics.dir/wrapper.c.o.d"
   )
 

@@ -225,6 +225,54 @@ inverse_dynamics.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/inverse_dynamics.c.s
 .PHONY : inverse_dynamics.c.s
 
+kinematics.o: kinematics.c.o
+.PHONY : kinematics.o
+
+# target to build an object file
+kinematics.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics.c.o
+.PHONY : kinematics.c.o
+
+kinematics.i: kinematics.c.i
+.PHONY : kinematics.i
+
+# target to preprocess a source file
+kinematics.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics.c.i
+.PHONY : kinematics.c.i
+
+kinematics.s: kinematics.c.s
+.PHONY : kinematics.s
+
+# target to generate assembly for a file
+kinematics.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics.c.s
+.PHONY : kinematics.c.s
+
+kinematics_jacobian.o: kinematics_jacobian.c.o
+.PHONY : kinematics_jacobian.o
+
+# target to build an object file
+kinematics_jacobian.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics_jacobian.c.o
+.PHONY : kinematics_jacobian.c.o
+
+kinematics_jacobian.i: kinematics_jacobian.c.i
+.PHONY : kinematics_jacobian.i
+
+# target to preprocess a source file
+kinematics_jacobian.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics_jacobian.c.i
+.PHONY : kinematics_jacobian.c.i
+
+kinematics_jacobian.s: kinematics_jacobian.c.s
+.PHONY : kinematics_jacobian.s
+
+# target to generate assembly for a file
+kinematics_jacobian.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dynamics.dir/build.make CMakeFiles/dynamics.dir/kinematics_jacobian.c.s
+.PHONY : kinematics_jacobian.c.s
+
 wrapper.o: wrapper.c.o
 .PHONY : wrapper.o
 
@@ -270,6 +318,12 @@ help:
 	@echo "... inverse_dynamics.o"
 	@echo "... inverse_dynamics.i"
 	@echo "... inverse_dynamics.s"
+	@echo "... kinematics.o"
+	@echo "... kinematics.i"
+	@echo "... kinematics.s"
+	@echo "... kinematics_jacobian.o"
+	@echo "... kinematics_jacobian.i"
+	@echo "... kinematics_jacobian.s"
 	@echo "... wrapper.o"
 	@echo "... wrapper.i"
 	@echo "... wrapper.s"

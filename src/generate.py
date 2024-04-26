@@ -9,7 +9,7 @@ def generate_c_functions(urdf_path, floating = True):
         robot = RobotWrapper.BuildFromURDF(urdf_path)
 
     # Get dimensions
-    nq = robot.model.nq - 1 # Don't include Pinocchio's "universe" joint
+    nq = robot.model.nq #- 1 # Don't include Pinocchio's "universe" joint
     nv = robot.model.nv
 
     # Print statistics
@@ -92,7 +92,7 @@ def generate_c_functions(urdf_path, floating = True):
     # print("C functions have been written to 'mass_matrix.c', 'inverse_dynamics.c', and 'jacobian.c'")
 
 # Call the function with the path to your URDF file
-symb_gen = SymbolicGenerator('../cartpole.urdf', ".", ['cart', 'pole'], floating = False)
+symb_gen = SymbolicGenerator('../cartpole.urdf', ".", ['pole_tip'], floating = False)
 
 # symb_gen = SymbolicGenerator('../go1.urdf', ".",
 #                              mesh_dir = ".",

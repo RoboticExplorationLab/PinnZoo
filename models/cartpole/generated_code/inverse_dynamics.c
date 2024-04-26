@@ -48,53 +48,54 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[9] = {5, 1, 0, 5, 0, 1, 2, 3, 4};
+static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
 static const casadi_int casadi_s1[6] = {2, 1, 0, 2, 0, 1};
 
-/* inverse_dynamics:(i0[5],i1[2])->(o0[2]) */
+/* inverse_dynamics:(i0[4],i1[2])->(o0[2]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
   casadi_real a0, a1, a10, a11, a12, a13, a14, a2, a3, a4, a5, a6, a7, a8, a9;
   a0=arg[1]? arg[1][0] : 0;
   a1=arg[0]? arg[0][1] : 0;
-  a2=10.;
-  a3=(a1*a0);
-  a4=9.8100000000000005e+00;
-  a5=arg[0]? arg[0][2] : 0;
-  a6=(a4*a5);
-  a3=(a3-a6);
-  a6=arg[0]? arg[0][4] : 0;
-  a7=arg[0]? arg[0][3] : 0;
-  a8=(a5*a7);
+  a2=cos(a1);
+  a3=10.;
+  a4=(a2*a0);
+  a5=9.8100000000000005e+00;
+  a1=sin(a1);
+  a6=(a5*a1);
+  a4=(a4-a6);
+  a6=arg[0]? arg[0][3] : 0;
+  a7=arg[0]? arg[0][2] : 0;
+  a8=(a1*a7);
   a9=(a6*a8);
-  a3=(a3-a9);
+  a4=(a4-a9);
   a9=5.0000000000000000e-01;
   a10=arg[1]? arg[1][1] : 0;
   a11=(a9*a10);
-  a3=(a3+a11);
-  a3=(a2*a3);
-  a11=(a2*a8);
+  a4=(a4+a11);
+  a4=(a3*a4);
+  a11=(a3*a8);
   a12=(a6*a11);
-  a12=(a3+a12);
-  a12=(a1*a12);
-  a7=(a1*a7);
+  a12=(a4+a12);
+  a12=(a2*a12);
+  a7=(a2*a7);
   a13=(a6*a7);
-  a14=(a5*a0);
-  a4=(a4*a1);
-  a14=(a14+a4);
+  a14=(a1*a0);
+  a5=(a5*a2);
+  a14=(a14+a5);
   a13=(a13+a14);
-  a13=(a2*a13);
+  a13=(a3*a13);
   a14=(a9*a6);
   a14=(a7+a14);
-  a2=(a2*a14);
-  a6=(a6*a2);
+  a3=(a3*a14);
+  a6=(a6*a3);
   a13=(a13-a6);
-  a5=(a5*a13);
-  a12=(a12+a5);
+  a1=(a1*a13);
+  a12=(a12+a1);
   a0=(a0+a12);
   if (res[0]!=0) res[0][0]=a0;
-  a9=(a9*a3);
+  a9=(a9*a4);
   a10=(a10+a9);
-  a8=(a8*a2);
+  a8=(a8*a3);
   a7=(a7*a11);
   a8=(a8-a7);
   a10=(a10+a8);

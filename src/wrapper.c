@@ -2,6 +2,8 @@
 #include "C_func.h"
 #include "forward_dynamics.h"
 #include "inverse_dynamics.h"
+#include "kinematics.h"
+#include "kinematics_jacobian.h"
 
 void M_func_wrapper(double* x_in, double* M_out) {
     const double* args[1] = {x_in};
@@ -10,6 +12,47 @@ void M_func_wrapper(double* x_in, double* M_out) {
     double w[0];
     M_func(args, res, iw, w, 0);
 }
+
+void C_func_wrapper(double* x_in, double* C_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {C_out};
+    long long int iw[0];
+    double w[0];
+    C_func(args, res, iw, w, 0);
+}
+
+void forward_dynamics_wrapper(double* x_in, double* tau_in, double* vdot_out) {
+    const double* args[2] = {x_in, tau_in};
+    double* res[1] = {vdot_out};
+    long long int iw[0];
+    double w[0];
+    forward_dynamics(args, res, iw, w, 0);
+}
+
+void inverse_dynamics_wrapper(double* x_in, double* vdot_in, double* tau_out) {
+    const double* args[2] = {x_in, vdot_in};
+    double* res[1] = {tau_out};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics(args, res, iw, w, 0);
+}
+
+void kinematics_wrapper(double* x_in, double* locs_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {locs_out};
+    long long int iw[0];
+    double w[0];
+    kinematics(args, res, iw, w, 0);
+}
+
+void kinematics_jacobian_wrapper(double* x_in, double* J_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {J_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_jacobian(args, res, iw, w, 0);
+}
+
 
 // void forward_dynamics(double* q_in, double* qdot_in, double* tau_in, double* qddot_out) {
 //     const double* args[3] = {q_in, qdot_in, tau_in};

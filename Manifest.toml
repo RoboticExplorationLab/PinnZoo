@@ -2,7 +2,7 @@
 
 julia_version = "1.10.0"
 manifest_format = "2.0"
-project_hash = "7f25159d4c328e18b6c88d6695ca8da82ed3daa3"
+project_hash = "5e54c053443afac728660ff6c66a3eea68f0a74c"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -20,6 +20,12 @@ git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
 uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
 version = "0.5.1"
 
+[[deps.CommonSubexpressions]]
+deps = ["MacroTools", "Test"]
+git-tree-sha1 = "7b8a93dba8af7e3b42fecabf646260105ac373f7"
+uuid = "bbf7d656-a473-5ed7-a52c-81e309532950"
+version = "0.3.0"
+
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
@@ -28,6 +34,18 @@ version = "1.0.5+1"
 [[deps.Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
+
+[[deps.DiffResults]]
+deps = ["StaticArraysCore"]
+git-tree-sha1 = "782dd5f4561f5d267313f23853baaaa4c52ea621"
+uuid = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
+version = "1.1.0"
+
+[[deps.DiffRules]]
+deps = ["IrrationalConstants", "LogExpFunctions", "NaNMath", "Random", "SpecialFunctions"]
+git-tree-sha1 = "23163d55f885173722d1e4cf0f6110cdbaf7e272"
+uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
+version = "1.15.1"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -48,6 +66,16 @@ version = "0.6.8"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.ForwardDiff]]
+deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
+git-tree-sha1 = "cf0fe81336da9fb90944683b8c41984b08793dad"
+uuid = "f6369f11-7733-5829-9624-2563aa707210"
+version = "0.10.36"
+weakdeps = ["StaticArrays"]
+
+    [deps.ForwardDiff.extensions]
+    ForwardDiffStaticArraysExt = "StaticArrays"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
@@ -131,6 +159,12 @@ deps = ["Test"]
 git-tree-sha1 = "037fdda7c47bf8fc2f46b1096972afabd26fa636"
 uuid = "39f5be34-8529-5463-bac7-bf6867c840a3"
 version = "0.1.0"
+
+[[deps.MacroTools]]
+deps = ["Markdown", "Random"]
+git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
+uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+version = "0.5.13"
 
 [[deps.Markdown]]
 deps = ["Base64"]

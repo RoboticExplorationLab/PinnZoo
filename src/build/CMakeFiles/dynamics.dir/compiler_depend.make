@@ -101,13 +101,67 @@ CMakeFiles/dynamics.dir/inverse_dynamics.c.o: /home/arun/PinnZoo/src/inverse_dyn
   /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/mathinline.h
 
+CMakeFiles/dynamics.dir/kinematics.c.o: /home/arun/PinnZoo/src/kinematics.c \
+  /usr/include/stdc-predef.h \
+  /usr/include/math.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/features.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+  /usr/include/x86_64-linux-gnu/bits/mathinline.h
+
+CMakeFiles/dynamics.dir/kinematics_jacobian.c.o: /home/arun/PinnZoo/src/kinematics_jacobian.c \
+  /usr/include/stdc-predef.h \
+  /usr/include/math.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/features.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+  /usr/include/x86_64-linux-gnu/bits/mathinline.h
+
 CMakeFiles/dynamics.dir/wrapper.c.o: /home/arun/PinnZoo/src/wrapper.c \
   /usr/include/stdc-predef.h \
   /home/arun/PinnZoo/src/M_func.h \
   /home/arun/PinnZoo/src/C_func.h \
   /home/arun/PinnZoo/src/forward_dynamics.h \
-  /home/arun/PinnZoo/src/inverse_dynamics.h
+  /home/arun/PinnZoo/src/inverse_dynamics.h \
+  /home/arun/PinnZoo/src/kinematics.h \
+  /home/arun/PinnZoo/src/kinematics_jacobian.h
 
+
+/home/arun/PinnZoo/src/kinematics.h:
 
 /home/arun/PinnZoo/src/inverse_dynamics.h:
 
@@ -119,6 +173,8 @@ CMakeFiles/dynamics.dir/wrapper.c.o: /home/arun/PinnZoo/src/wrapper.c \
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls.h:
 
+/home/arun/PinnZoo/src/kinematics_jacobian.c:
+
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
@@ -128,6 +184,8 @@ CMakeFiles/dynamics.dir/wrapper.c.o: /home/arun/PinnZoo/src/wrapper.c \
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
+/home/arun/PinnZoo/src/kinematics_jacobian.h:
 
 /home/arun/PinnZoo/src/forward_dynamics.c:
 
@@ -158,6 +216,8 @@ CMakeFiles/dynamics.dir/wrapper.c.o: /home/arun/PinnZoo/src/wrapper.c \
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
+
+/home/arun/PinnZoo/src/kinematics.c:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
