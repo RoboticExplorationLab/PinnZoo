@@ -148,7 +148,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=gen_symb
+CMAKE_PROJECT_NAME:STATIC=cartpole
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -220,6 +220,15 @@ PKG_CONFIG_ARGN:STRING=
 
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
+//Value Computed by CMake
+cartpole_BINARY_DIR:STATIC=/home/arun/PinnZoo/build
+
+//Value Computed by CMake
+cartpole_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+cartpole_SOURCE_DIR:STATIC=/home/arun/PinnZoo
 
 //Value Computed by CMake
 gen_symb_BINARY_DIR:STATIC=/home/arun/PinnZoo/build
