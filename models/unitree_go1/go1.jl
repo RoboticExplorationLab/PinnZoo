@@ -1,4 +1,4 @@
-struct Go1 <: PinnZooModel
+struct Go1 <: Quadruped
     urdf_path::String
     state_order::Vector{String}
     nq

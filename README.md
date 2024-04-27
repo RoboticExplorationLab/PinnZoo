@@ -47,10 +47,16 @@ locs = kinematics(model, x) # For cartpole, location of the pole tip in the worl
 J = kinematics_jacobian(model, x) # Jacobian of the pole tip w.r.t the state vector
 ```
 
+# Supported Models
+Below is a list of models that we have generate code for
+- cartpole
+- go1 (currently failing tests due to state order mismatch with RigidBodyDynamics.jl)
+- go2 (currently failing tests due to state order mismatch with RigidBodyDynamics.jl)
+
 # Dependencies
 To compile and use the generate code, you'll need to install CMake and a C++ compiler such as GCC or Clang.
 
-To generate code for a new model, please reach out to arunleob@cmu.edu. You'll need to install Pinocchio and CasADI. At the time of writing this, Pinocchio v3 has not been released (April 2024), so you'll need to install it
+To generate code for a new model, please reach out to Arun Bishop. You'll need to install Pinocchio and CasADI. At the time of writing this, Pinocchio v3 has not been released (April 2024), so you'll need to install it
 from a specific conda channel. You can install casadi using from condaforge.
 
 ```

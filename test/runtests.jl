@@ -16,3 +16,8 @@ end
 @testset "Unitree Go1" begin
     test_default_functions(Go1())
 end
+
+# Go2
+@testset "Unitree Go2" begin
+    test_default_functions(Go2())
+end

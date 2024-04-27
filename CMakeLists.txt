@@ -21,3 +21,14 @@ include_directories(${DIR})
 file(GLOB SOURCES "${DIR}*.c") # Change this for each model
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Unitree Go2 ----- ###
+project(unitree_go2) # Change this for each model
+
+set(DIR models/${PROJECT_NAME}/generated_code/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") # Change this for each model
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})

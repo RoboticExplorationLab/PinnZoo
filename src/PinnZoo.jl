@@ -2,6 +2,7 @@ module PinnZoo
     using Libdl
 
     abstract type PinnZooModel end
+    abstract type Quadruped <: PinnZooModel end
 
     const SHARED_LIBRARY_DIR = joinpath(@__DIR__, "../build")
     const MODEL_DIR = joinpath(@__DIR__, "../models")
@@ -9,6 +10,7 @@ module PinnZoo
     # Include model files here
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
     include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
+    include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
 
     # Defaults for models
     is_floating(model::PinnZooModel) = false
@@ -56,10 +58,10 @@ module PinnZoo
         return J
     end
 
-    export PinnZooModel
+    export PinnZooModel, Quadruped
     export is_floating, zero_state, rand_state
     export M_func, C_func, forward_dynamics, inverse_dynamics
     export kinematics, kinematics_jacobian
 
-    export Cartpole, Go1
+    export Cartpole, Go1, Go2
 end
