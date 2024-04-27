@@ -1,35 +1,61 @@
-## Python Install
-At the time of writing this Pinocchio v3 has not been released (April 2024), so you'll need to install it
+# PinnZoo (WIP)
+
+PinnZoo contains fast dependency-free C code for dynamics and kinematics functions for various robots (defined by URDFs) generated using Pinocchio and CasADI, along with a wrapper to generate a shared library and call the code from Julia. 
+
+*Note: You do not need to install Pinocchio or CasADI to use the models, the models are dependency free. You only need them to generate a new model.*
+
+Models can be found in the models directory. Each model folder should include the following:
+- the URDF
+- generate.py (file used to generate the C code)
+- a generated_code directory where the C code is
+- a <model_name>.jl file which wraps the C code so it can be called from Julia
+
+Refer to the Generated Code Conventions section below to see what dynamics and kinematics are included for each model. There are many ways you can use these functions, either linking them into your own C or C++ project, or calling them from Python or Julia. We currently provide a Julia wrapper for each model, which you can see how to use in the Get Started section below.
+
+# Get Started (Julia)
+First, clone the repository, and run the following commands in the terminal. You will need CMake and C compiler to be installed.
+```
+cd PinnZoo
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+
+*Note: If you'd only like to compile code for a certain model instead of all possible models, use `cmake --build . --target <model_name>`.*
+
+Once you've finished compiling, you can install PinnZoo in your Julia environment with the following commands
+```
+using Pkg
+Pkg.develop(path="<path to PinnZoo folder>")
+```
+
+Here are some examples of basic usage:
+```
+using PinnZoo
+model = Cartpole()
+x = randn_state(model) # Can also use zero_state(model)
+u = randn(model.nv) # All DoFs are actuated by default
+
+M = M_func(model, x) # Mass matrix
+C = C_func(model, x) # Bias/nonlinear term
+v_dot = forward_dynamics(model, x, u) # Solves for accelerations using manipulator equation (ABA)
+u_new = inverse_dynamics(model, x, v_dot) # Solves for torques using manipulator equation (RNEA)
+
+locs = kinematics(model, x) # For cartpole, location of the pole tip in the world frame
+J = kinematics_jacobian(model, x) # Jacobian of the pole tip w.r.t the state vector
+```
+
+# Dependencies
+To compile and use the generate code, you'll need to install CMake and a C++ compiler such as GCC or Clang.
+
+To generate code for a new model, please reach out to arunleob@cmu.edu. You'll need to install Pinocchio and CasADI. At the time of writing this, Pinocchio v3 has not been released (April 2024), so you'll need to install it
 from a specific conda channel. You can install casadi using from condaforge.
 
 ```
 conda install -c olivier.roussel pinocchio=2.99
 conda install casadi
 ```
-
-# PinnZoo (WIP)
-
-PinnZoo contains fast dependency-free C code for the dynamics and kinematics for various robots (defined by URDFs) generated using Pinocchio and CasADI, along with a wrapper to generate a shared library and call the code from Julia. 
-
-*Note: You do not need to install Pinocchio, Eigen, or CasADI to use the models, they are dependency free. You only need them to generate a new model.*
-
-Models can be found in the models directory. Each model folder should include the following:
-- the URDF
-- generate.cpp (to load the URDF and generate dynamics)
-- a gen_code directory with the generated code
-- a CMakeLists.txt to compile the generated code into a shared library
-- a Julia file that defines a wrapper that can be used to call the code from Julia
-
-*Note: The generated files are sometimes large for large state dimension, so compiling for the first time can take minutes*
-
-To use a robot model, either include this repository as a submodule or copy the revelant model folder to your repository. If using the Julia wrapper, make sure to compile the target in the CMakeLists.txt. You may need to edit paths in the Julia wrapper so that it can find wherever you compile the shared library to.
-
-If you'd like to add a model, please reach out to arunleob@cmu.edu for now. Instructions for how to do this are a work in progress. Finally, this was thrown together very quickly and is not using the most optimized way to generate these files (for example, I currently force everything to be dense). Suggestions and assistance on how to improve this are more than welcome!
-
-# Get Started
-TODO Usage example
-
-*Note: Please read the following section which details the dynamics that are generated and the conventions used.*
 
 # Generated Code Conventions
 By default each model should include the following set of functions defined on the following inputs. For some models (such as the quadruped), there are additional functions, which should be listed in a README.md file in that models folder.
@@ -72,62 +98,3 @@ When generating code you can specify a set of bodies in the URDF to generate the
 - kinematics_jacobian(x) $\rightarrow$ jacobian of the kinematics function with respect to x (the velocity portion will be zero by default).
 - kinematics_velocity(x) $\rightarrow$ returns the velocity in the world frame for points on the robot specified during code generation
 - kinematics_velocity_jacobian(x) $\rightarrow$ jacobian of the kinematics_velocity function with respect to x. The first nq columns will be the same as the kinematics_jacobian. The last nv columns will be the same as the time derivative of the kinematics_jacobian.
-
-### Utilities
-- E(x) $\rightarrow$ 
-
-
-
-# Dependencies
-*This is only needed for generating models, not for using them*
-
-To generate a model you need to have CMake, Eigen, Pinocchio, and CasADI installed. The following instructions for Pinocchio and CasADI were tested on Ubuntu 20.04 LTS, but may need to be modified to account for difference Python versions for example.
-
-### Install Pinocchio
-Install dependencies
-```
-sudo apt install -qqy lsb-release gnupg2 curl
-```
-Add robotpkg as source repository to apt
-```
-echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -cs) robotpkg" | sudo tee /etc/apt/sources.list.d/robotpkg.list
-```
-Register the authentication certificate of robotpkg
-```
-curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key | sudo apt-key add -
-```
-Run apt-get update to fetch the package descriptions
-```
-sudo apt-get update
-```
-Install Pinocchio
-```
-sudo apt install -qqy robotpkg-py38-pinocchio 
-```
-If you're using Jammy, you can try robotpgk-py310-pinocchio.
-
-Finally, setup environment variables (copy the following lines into ~/.bashrc to have the env variables persist between sessions).
-```
-export PATH=/opt/openrobots/bin:$PATH
-export PKG_CONFIG_PATH=/opt/openrobots/lib/pkgconfig:$PKG_CONFIG_PATH
-export LD_LIBRARY_PATH=/opt/openrobots/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=/opt/openrobots/lib/python3.8/site-packages:$PYTHONPATH # Adapt your desired python version here
-export CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
-```
-These instructions were copied from [Pinocchio's Documentation](https://stack-of-tasks.github.io/pinocchio/download.html) 
-on February 8th, 2023 for a specific Python version (3.8). Installation instructions may have changed since then.
-
-### Install CasADI
-These instructions were copied from [CasADI's Documentation](https://github.com/casadi/casadi/wiki/InstallationLinux) on June 18th, 2023.
-```
-sudo apt-get install gcc g++ gfortran git cmake liblapack-dev pkg-config --install-recommends -y
-sudo apt-get install coinor-libipopt-dev -y # Install IPOPT (optional)
-git clone https://github.com/casadi/casadi.git -b main casadi
-cd casadi && git checkout 3.6.3
-mkdir build && cd build
-cmake ..
-make
-sudo make install
-```
-
-

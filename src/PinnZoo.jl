@@ -9,6 +9,10 @@ module PinnZoo
     # Include model files here
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
 
+    # Generate state (override if state vector contains a quaternion)
+    zero_state(model::PinnZooModel) = zeros(model.nx)
+    randn_state(model::PinnZooModel) = randn(model.nx)
+
     # Dynamics functions
     function M_func(model::PinnZooModel, x::Vector{Float64})
         M = zeros(model.nv, model.nv)
