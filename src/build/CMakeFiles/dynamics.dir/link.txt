@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libdynamics.so -o libdynamics.so CMakeFiles/dynamics.dir/wrapper.c.o CMakeFiles/dynamics.dir/M_func.c.o CMakeFiles/dynamics.dir/C_func.c.o CMakeFiles/dynamics.dir/inverse_dynamics.c.o CMakeFiles/dynamics.dir/forward_dynamics.c.o CMakeFiles/dynamics.dir/kinematics.c.o CMakeFiles/dynamics.dir/kinematics_jacobian.c.o 
