@@ -1,0 +1,4 @@
+Manifest.toml
+build/*
+.vscode/*
+__pycache__/*

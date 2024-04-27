@@ -1,4 +1,5 @@
 struct Cartpole <: PinnZooModel
+    urdf_path::String
     nq
     nv
     nx
@@ -10,11 +11,15 @@ struct Cartpole <: PinnZooModel
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
     function Cartpole()
+        local lib
         try
             lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libcartpole.so"))
         catch e
             @error "Cartpole dynamics library wasn't found. Did you compile it using CMake?"
         end
+
+        # Path to URDF (useful for visualization/testing)
+        urdf_path = joinpath(MODEL_DIR, "cartpole/cartpole.urdf")
 
         # Dynamics
         M_func_ptr = dlsym(lib, :M_func_wrapper)
@@ -27,11 +32,10 @@ struct Cartpole <: PinnZooModel
         kinematics_ptr = dlsym(lib, :kinematics_wrapper)
         kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
         return new(
+            urdf_path,
             2, 2, 2 + 2,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
         )
     end
 end
-
-

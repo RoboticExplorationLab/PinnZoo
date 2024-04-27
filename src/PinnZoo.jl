@@ -1,12 +1,13 @@
 module PinnZoo
     using Libdl
-    
+
     abstract type PinnZooModel end
 
     const SHARED_LIBRARY_DIR = joinpath(@__DIR__, "../build")
+    const MODEL_DIR = joinpath(@__DIR__, "../models")
 
     # Include model files here
-    include(joinpath(@__DIR__, "models/cartpole/cartpole.jl"))
+    include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
 
     # Dynamics functions
     function M_func(model::PinnZooModel, x::Vector{Float64})
@@ -46,4 +47,10 @@ module PinnZoo
         ccall(model.kinematics_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J)
         return J
     end
+
+    export PinnZooModel
+    export M_func, C_func, forward_dynamics, inverse_dynamics
+    export kinematics, kinematics_jacobian
+
+    export Cartpole
 end
