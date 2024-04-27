@@ -1,0 +1,3 @@
+The Cartpole model represents a cart on a slider along the x-axis, with a pole that can rotate around the y-axis. The configuration and velocity vectors are both 2-D, and the state is 4-D. Pole angle = 0 corresponds to the pole being vertically upright. When the configuration is [0; pi/2], the pole tip is [1; 0; 0] (positive along the x-axis). This can be confirmed with the kinematics function.
+
+The kinematics function gives the position of the tip of the pole (arbitraily chosen to be 1 meter away from the pivot) in the world frame (x, y, z).

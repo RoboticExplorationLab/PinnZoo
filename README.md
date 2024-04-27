@@ -9,6 +9,7 @@ Models can be found in the models directory. Each model folder should include th
 - generate.py (file used to generate the C code)
 - a generated_code directory where the C code is
 - a <model_name>.jl file which wraps the C code so it can be called from Julia
+- a README that provides basic model details, such as state vector order, bodies that kinematics were generated for, and anything else that may need clarification.
 
 Refer to the Generated Code Conventions section below to see what dynamics and kinematics are included for each model. There are many ways you can use these functions, either linking them into your own C or C++ project, or calling them from Python or Julia. We currently provide a Julia wrapper for each model, which you can see how to use in the Get Started section below.
 
