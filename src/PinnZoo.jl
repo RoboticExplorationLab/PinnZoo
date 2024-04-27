@@ -8,6 +8,10 @@ module PinnZoo
 
     # Include model files here
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
+    include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
+
+    # Defaults for models
+    is_floating(model::PinnZooModel) = false
 
     # Generate state (override if state vector contains a quaternion)
     zero_state(model::PinnZooModel) = zeros(model.nx)
@@ -53,8 +57,9 @@ module PinnZoo
     end
 
     export PinnZooModel
+    export is_floating, zero_state, rand_state
     export M_func, C_func, forward_dynamics, inverse_dynamics
     export kinematics, kinematics_jacobian
 
-    export Cartpole
+    export Cartpole, Go1
 end

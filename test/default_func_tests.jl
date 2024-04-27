@@ -1,7 +1,7 @@
 
 function test_default_functions(model::PinnZooModel)
     # Build RigidBodyDynamics.jl model and necessary helpers for testing
-    robot = parse_urdf(model.urdf_path, remove_fixed_tree_joints=false)
+    robot = parse_urdf(model.urdf_path, remove_fixed_tree_joints=false, floating=is_floating(model))
     state = MechanismState(robot)
     dyn_res = DynamicsResult(robot)
     function kinematics(x)

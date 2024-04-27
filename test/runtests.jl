@@ -11,3 +11,8 @@ include(joinpath(@__DIR__, "default_func_tests.jl"))
 @testset "Cartpole" begin
     test_default_functions(Cartpole())
 end
+
+# Go1
+@testset "Unitree Go1" begin
+    test_default_functions(Go1())
+end
