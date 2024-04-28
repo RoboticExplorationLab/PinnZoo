@@ -66,7 +66,7 @@ function init_state(model::Go1)
     return x
 end
 
-function inverse_kinematics(model::Go2, x, foot_locs)
+function inverse_kinematics(model::Go1, x, foot_locs)
     # Leg variables
     hip_to_thigh = 0.08
     thigh_length = 0.213

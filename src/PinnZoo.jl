@@ -65,6 +65,10 @@ module PinnZoo
     export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,
         R_mult, attitude_jacobian, quat_to_rot
 
+    # Quadruped specific functions
+    include(joinpath(@__DIR__, "quadruped.jl"))
+    export error_jacobian, error_jacobian_T, apply_Δx, state_error
+
     export PinnZooModel, Quadruped
     export is_floating, zero_state, init_state, rand_state
     export M_func, C_func, forward_dynamics, inverse_dynamics
