@@ -4,6 +4,7 @@ struct Go1 <: Quadruped
     nq
     nv
     nx
+    nu
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
@@ -46,7 +47,7 @@ struct Go1 <: Quadruped
         kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
         return new(
             urdf_path, state_order,
-            19, 18, 18 + 19,
+            19, 18, 18 + 19, 12,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
         )

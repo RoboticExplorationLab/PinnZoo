@@ -1,5 +1,6 @@
 module PinnZoo
     using Libdl
+    using LinearAlgebra
 
     abstract type PinnZooModel end
     abstract type Quadruped <: PinnZooModel end
