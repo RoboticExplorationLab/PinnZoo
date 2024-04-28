@@ -65,3 +65,84 @@ function init_state(model::Go1)
     x[10:3:19] .= -155*pi/180
     return x
 end
+
+function inverse_kinematics(model::Go2, x, foot_locs)
+    # Leg variables
+    hip_to_thigh = 0.08
+    thigh_length = 0.213
+    calf_length = 0.213
+
+    # Hip positions in the body frame
+    hip_local_pos = [
+        [0.1881, 0.04675, 0],
+        [0.1881, -0.04675, 0],
+        [-0.1881, 0.04675, 0],
+        [-0.1881, -0.04675, 0]]
+
+    # Base transformations
+    base_rot = quat_to_rot(x[4:7])
+    base_pos = base_rot'*x[1:3]
+
+    # Results storage
+    foot_q = zeros(12, 2);
+
+    for foot_ind = 1:4
+        # Calculate desired foot position in the hip frame
+        hip_trans = -hip_local_pos[foot_ind] - base_pos;
+        foot_pos = base_rot'*foot_locs[(foot_ind - 1)*3 .+ (1:3)] + hip_trans
+
+        # Reflect right feet to use same IK for all four feet
+        if foot_ind % 2 == 1
+            foot_pos[2] = -foot_pos[2]
+        end
+
+        # Extract x, y, z pos of foot to make code cleaner
+        x, y, z = foot_pos
+
+        # Storage for each solution
+        leg_solns = zeros(3, 2)
+
+        #--------- Calculate hip angle ----------
+        # Calculate "radius" of circle from the thigh pivot to the foot
+        L_squared = y^2 + z^2 - hip_to_thigh^2
+        L = 0
+        if (L_squared > 1e-12)
+            L = sqrt(L_squared) # Prevent numerical issues if L is close to 0
+        end
+
+        # Solve linear system in cos(theta), sin(theta) relating leg vector
+        # before and after hip rotation. There are two solutions corresponding to
+        # (hip_to_thigh, L) and (hip_to_thigh, -L)
+        cos_theta = (hip_to_thigh*y - L*z) / (L^2 + hip_to_thigh^2)
+        sin_theta = (L*y + hip_to_thigh*z) / (L^2 + hip_to_thigh^2)
+        leg_solns[1, 1] = atan(sin_theta, cos_theta); # First solution
+
+        cos_theta = (hip_to_thigh*y + L*z) / (L^2 + hip_to_thigh^2)
+        sin_theta = (-L*y + hip_to_thigh*z) / (L^2 + hip_to_thigh^2)
+        leg_solns[1, 2] = atan(sin_theta, cos_theta); # Second solution
+
+        # ------ Calculate thigh and calf angle for each possible hip angle ------------
+        for soln = 1:2
+            # Undo hip rotation on z-axis to deal with planar xz calf-thigh relationship
+            z_rot = sin(-leg_solns[1, soln])*y + cos(-leg_solns[1, soln])*z
+
+            # Calf angle first
+            leg_solns[3, soln] = acos(
+                (thigh_length^2 + calf_length^2 - x^2 - z_rot^2) / (2*thigh_length^2)) - π
+            
+            # Thigh angle
+            leg_solns[2, soln] = -leg_solns[3, soln] / 2 - atan(z_rot, x) - π/2
+        end
+
+        # Flip hip angles for right feet
+        if foot_ind % 2 == 1
+            leg_solns[1, 1] *= -1
+            leg_solns[1, 2] *= -1
+        end
+
+        # Write soln
+        foot_q[(foot_ind - 1)*3 .+ (1:3), :] = leg_solns        
+    end
+
+    return foot_q
+end

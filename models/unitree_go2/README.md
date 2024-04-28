@@ -30,3 +30,6 @@
         FR_thigh, FL_thigh, RR_thigh, RL_thigh, FR_calf, FL_calf, RR_calf, RL_calf]
 
 Kinematics are for each foot in the order of: ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
+
+Additional functions
+- inverse_kinematics, returns both inverse kinematics solutions given a state (used for body position and rotation) and foot locations in the world frame
