@@ -66,6 +66,18 @@ module PinnZoo
         return J
     end
 
+    function kinematics_velocity(model::PinnZooModel, x::Vector{Float64})
+        locs_dot = zeros(3*length(model.kinematics_bodies))
+        ccall(model.kinematics_velocity_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, locs_dot)
+        return locs_dot
+    end
+    
+    function kinematics_velocity_jacobian(model::PinnZooModel, x::Vector{Float64})
+        J_dot = zeros(3*length(model.kinematics_bodies), model.nx)
+        ccall(model.kinematics_velocity_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J_dot)
+        return J_dot
+    end
+
     # Quaternion helpers
     include(joinpath(@__DIR__, "quaternions.jl"))
     export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,
@@ -76,9 +88,9 @@ module PinnZoo
     export error_jacobian, error_jacobian_T, apply_Δx, state_error, B_func
 
     export PinnZooModel, Quadruped
-    export is_floating, zero_state, init_state, rand_state
+    export is_floating, zero_state, init_state, randn_state
     export M_func, C_func, forward_dynamics, inverse_dynamics, velocity_kinematics
-    export kinematics, kinematics_jacobian
+    export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
 
     export Cartpole, Go1, Go2
 end
