@@ -131,22 +131,22 @@ class SymbolicGenerator:
         J = cs.densify(cs.jacobian(locs, self.x)) # v block should be zero
 
         # Kinematics velocity (world frame by default)
-        # locs_dot = J@self.x_dot # only uses the q_dot part
+        locs_dot = J[:, :self.nq]@self.E@self.v
 
         # # Kinematics velocity jacobian
-        # J_dot = cs.jacobian(locs_dot, self.x) # v block is zero (but should maybe be J(q)E(q))
+        J_dot = cs.densify(cs.jacobian(locs_dot, self.x))
 
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [locs])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [J])
-        # kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [locs])
-        # kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [locs])
+        kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [locs_dot])
+        kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [J_dot])
 
         # Generate files
         kinematics.generate("kinematics.c", self.gen_opts)
         kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
-        # kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
-        # kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+        kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
+        kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
 
         print("Generated kinematics")
 

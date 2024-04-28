@@ -16,6 +16,8 @@ struct Go2 <: Quadruped
     kinematics_bodies::Vector{String}
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
+    kinematics_velocity_ptr::Ptr{Nothing}
+    kinematics_velocity_jacobian_ptr::Ptr{Nothing}
     function Go2(; μ = 0.3)
         local lib
         try
@@ -50,6 +52,8 @@ struct Go2 <: Quadruped
         kinematics_bodies = ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
         kinematics_ptr = dlsym(lib, :kinematics_wrapper)
         kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
+        kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
+        kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
 
         # Limits
         torque_limits = 23.7*ones(12)
@@ -64,14 +68,15 @@ struct Go2 <: Quadruped
             19, 18, 18 + 19, 12,
             μ, torque_limits, joint_limits,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr, velocity_kinematics_ptr,
-            kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
+            kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
+            kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr
         )
     end
 end
 
 is_floating(model::Go2) = true
 zero_state(model::Go2) = [zeros(3); 1; zeros(model.nx - 4)]
-rand_state(model::Go2) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
+randn_state(model::Go2) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
 function init_state(model::Go2)
     x = zeros(model.nq)
     x[1:3] = [0; 0; 0.082]

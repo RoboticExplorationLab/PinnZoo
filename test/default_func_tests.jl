@@ -1,5 +1,32 @@
 
 function test_default_functions(model::PinnZooModel)
+    # Make random state to test with
+    Random.seed!(1)
+    x = randn_state(model)
+    v̇ = randn(model.nv)
+    τ = randn(model.nv)
+
+    # Make sure all functions can be called without error
+    @test_nowarn let 
+        # Default dynamics functions
+        M_func(model, x)
+        C_func(model, x)
+        forward_dynamics(model, x, τ)
+        PinnZoo.inverse_dynamics(model, x, v̇)
+        velocity_kinematics(model, x)
+
+        # Default kinematics functions
+        PinnZoo.kinematics(model, x)
+        kinematics_jacobian(model, x)
+        kinematics_velocity(model, x)
+        kinematics_velocity_jacobian(model, x)
+    end
+
+    if model.nq != model.nv
+        @warn "RigidBodyDynamics.jl test do not support floating base joints yet"
+        return
+    end
+
     # Build RigidBodyDynamics.jl model and necessary helpers for testing
     robot = parse_urdf(model.urdf_path, remove_fixed_tree_joints=false, floating=is_floating(model))
     state = MechanismState(robot)
@@ -10,12 +37,6 @@ function test_default_functions(model::PinnZooModel)
             translation(relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot))) 
             for body in model.kinematics_bodies]...)
     end
-
-    # Make random state to test with
-    Random.seed!(1)
-    x = randn(model.nx)
-    v̇ = randn(model.nv)
-    τ = randn(model.nv)
     set_configuration!(state, x[1:model.nq])
     set_velocity!(state, x[model.nq + 1:end])
 
@@ -35,7 +56,7 @@ function test_default_functions(model::PinnZooModel)
     v̇2 = dyn_res.v̇
     @test norm(v̇1 - v̇2, Inf) < 1e-12
 
-    # Test velocity kinematics
+    # Test velocity kinematics (TODO fix for q̇ != v)
     @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
 
     # Test inverse dynamics
@@ -53,5 +74,16 @@ function test_default_functions(model::PinnZooModel)
     J1 = kinematics_jacobian(model, x)
     J2 = FiniteDiff.finite_difference_jacobian(kinematics, x)
     @test norm(J1 - J2, Inf) < 1e-6
+
+    # Test kinematics velocity (TODO fix for q̇ != v)
+    locs_dot1 = kinematics_velocity(model, x)
+    locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*x[model.nq + 1:end]
+    @test norm(locs_dot1 - locs_dot2) < 1e-12
+
+    # Test kinematics velocity jacobian (TODO fix for q̇ != v)
+    J_dot1 = kinematics_velocity_jacobian(model, x)
+    J_dot2 = FiniteDiff.finite_difference_jacobian(
+        _x -> kinematics_jacobian(model, _x)[:, 1:model.nq]*_x[model.nq + 1:end], x)
+    @test norm(J_dot1 - J_dot2) < 1e-6
 end
 
