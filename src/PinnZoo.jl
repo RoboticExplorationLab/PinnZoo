@@ -61,7 +61,7 @@ module PinnZoo
 
     # Quaternion helpers
     include(joinpath(@__DIR__, "quaternions.jl"))
-    export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult
+    export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,
         R_mult, attitude_jacobian, quat_to_rot
 
     export PinnZooModel, Quadruped
