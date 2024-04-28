@@ -18,6 +18,7 @@ module PinnZoo
     # Generate state (override if state vector contains a quaternion)
     zero_state(model::PinnZooModel) = zeros(model.nx)
     randn_state(model::PinnZooModel) = randn(model.nx)
+    init_state(model::PinnZooModel) = zeros(model.nx) # Define for each model if desired
 
     # Dynamics functions
     function M_func(model::PinnZooModel, x::Vector{Float64})
@@ -59,7 +60,7 @@ module PinnZoo
     end
 
     export PinnZooModel, Quadruped
-    export is_floating, zero_state, rand_state
+    export is_floating, zero_state, init_state, rand_state
     export M_func, C_func, forward_dynamics, inverse_dynamics
     export kinematics, kinematics_jacobian
 

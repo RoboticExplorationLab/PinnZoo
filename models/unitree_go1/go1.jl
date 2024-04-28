@@ -55,3 +55,13 @@ end
 
 is_floating(model::Go1) = true
 zero_state(model::Go1) = [zeros(3); 1; zeros(model.nx - 4)]
+rand_state(model::Go1) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
+function init_state(model::Go1)
+    x = zero_state(model);
+    x[3] = 0.058;
+    x[7 .+ (1:12)] = [0.5551961373667483; 1.2441345658626253; -2.6976214397562917;
+                     -0.5548951890724014; 1.242811223968478; -2.697685528085722;
+                      0.552643111644451; 1.2179842439787074; -2.6978721175812064;
+                     -0.552643394205591; 1.2184211793266646; -2.697854315845489]
+    return x
+end
