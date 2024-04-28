@@ -2,6 +2,7 @@
 #include "C_func.h"
 #include "forward_dynamics.h"
 #include "inverse_dynamics.h"
+#include "velocity_kinematics.h"
 #include "kinematics.h"
 #include "kinematics_jacobian.h"
 
@@ -35,6 +36,14 @@ void inverse_dynamics_wrapper(double* x_in, double* vdot_in, double* tau_out) {
     long long int iw[0];
     double w[0];
     inverse_dynamics(args, res, iw, w, 0);
+}
+
+void velocity_kinematics_wrapper(double* x_in, double* E_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {E_out};
+    long long int iw[0];
+    double w[0];
+    velocity_kinematics(args, res, iw, w, 0);
 }
 
 void kinematics_wrapper(double* x_in, double* locs_out) {

@@ -106,13 +106,10 @@ class SymbolicGenerator:
         inverse_dynamics_func = cs.Function("inverse_dynamics", [self.x, self.v_dot], [tau_out])
 
         # Generate files
-        orig_dir = os.getcwd()
-        os.chdir(self.gen_dir)
         m_func.generate("M_func.c", self.gen_opts)
         c_func.generate("C_func.c", self.gen_opts)
         forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
         inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
-        os.chdir(orig_dir)
 
         print("Generated dynamics")
 
@@ -120,6 +117,9 @@ class SymbolicGenerator:
         # Perform forward kinematics with the symbolic configuration
         cpin.forwardKinematics(self.cmodel, self.cdata, self.q)
         cpin.updateFramePlacements(self.cmodel, self.cdata)
+
+        # Generate velocity kinematics, E(q) such that q_dot = E(q)v
+        self.generate_velocity_kinematics()
 
         # Forward kinematics (world frame by default)
         locs = []
@@ -129,7 +129,6 @@ class SymbolicGenerator:
 
         # Forward kinematics jacobian
         J = cs.densify(cs.jacobian(locs, self.x)) # v block should be zero
-
 
         # Kinematics velocity (world frame by default)
         # locs_dot = J@self.x_dot # only uses the q_dot part
@@ -144,13 +143,10 @@ class SymbolicGenerator:
         # kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [locs])
 
         # Generate files
-        orig_dir = os.getcwd()
-        os.chdir(self.gen_dir)
         kinematics.generate("kinematics.c", self.gen_opts)
         kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
         # kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
         # kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
-        os.chdir(orig_dir)
 
         print("Generated kinematics")
 
@@ -192,9 +188,48 @@ class SymbolicGenerator:
             if joint.idx_v <= v_idx < joint.idx_v + joint.nv:
                 return jnt_idx
             
-    # def v_idx_to_jnt(self, v_idx):
-    #     for j_idx 
-    #     for joint in self.model.joints:
-    #         if joint.idx_v <= v_idx < joint.idx_v + joint.nv:
-    #             return joint
+    # Generates E(q) such that q_dot = E(q)v
+    def generate_velocity_kinematics(self):
+        self.E = cs.SX.zeros(self.nq, self.nv)
+
+        for jnt_idx in range(self.model.njoints):
+            joint = self.model.joints[jnt_idx]
+            if joint.nq == 1: # Trivial relationship, q_dot = v
+                self.E[joint.idx_q, joint.idx_v] = 1
+            elif joint.nq == 7: # Floating base
+                E_jnt = cs.SX.zeros(7, 6)
+
+                # Extract quaterion, build cross product matrix for the vector part
+                quat = self.q[joint.idx_q + 3:joint.idx_q + 7]
+                skew_v = cs.vertcat(
+                    cs.horzcat(0, -quat[3], quat[2]),
+                    cs.horzcat(quat[3], 0, -quat[1]),
+                    cs.horzcat(-quat[2], quat[1], 0))
+            
+                # Create rotation matrix
+                rot_mat = cs.SX.eye(3) + 2*quat[0]*skew_v + 2*skew_v@skew_v
+
+                # Rotation to rotate linear velocity from body to world
+                E_jnt[:3, :3] = rot_mat
+
+                # Create attitude jacobian
+                attitude_jacobian = cs.vertcat(-quat[1:4].T, quat[0]*cs.SX.eye(3) - skew_v)
+
+                # Attitude jacobian to convert angular velocity to quaternion time derivative
+                E_jnt[3:, 3:] = 0.5*attitude_jacobian
+
+                self.E[joint.idx_q:joint.idx_q + joint.nq, joint.idx_v:joint.idx_v + joint.nv] = E_jnt
+            else:
+                print(f"ERROR: Encountered an unsupported joint named \"{self.model.names[jnt_idx]}\"")
+                print("This error occurs when the joint has a number of configuration variables (joint.nq)"
+                      " that is not 1 or 7 (floating base), and we aren't sure it is supported. A common"
+                      " culprit is using a \"continuous\" joint instead of \"revolute\". Pinocchio represents"
+                      "  \"continuous\" with two configuration variables, sin(theta) and cos(theta). This "
+                      "causes issues with libraries like RigidBodyDynamics.jl, and also results in a "
+                      "loss of information (no revolution count). If this isn't the case that you are "
+                      "in, please reach out to Arun Bishop.")
+                sys.exit()
+
+        velocity_kinematics = cs.Function("velocity_kinematics", [self.x], [self.E])
+        velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
 
