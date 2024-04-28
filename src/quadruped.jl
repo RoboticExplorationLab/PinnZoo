@@ -30,3 +30,28 @@ function state_error(quad::Quadruped, x, x0)
         x[8:end] - x0[8:end]
     ]
 end
+
+# Attempt to wrap joints into joint limits
+function fix_joint_limits(model::Quadruped, x; supress_error = false)
+    x = copy(x)
+    success = true
+    failed_joints = []
+    for j = 8:19
+        while x[j] < model.joint_limits[j, 1]
+            x[j] += 2*pi
+        end
+        while x[j] > model.joint_limits[j, 2]
+            x[j] -= 2*pi
+        end
+        success = success && (model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
+        if !(model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
+            push!(failed_joints, model.configNames[j])
+        end
+    end
+    if !success && !supress_error
+        @error "Couldn't satisfy all joint limits"
+        println(failed_joints)
+    end
+    x[1:model.nq] = clamp.(x[1:model.nq], model.joint_limits[:, 1], model.joint_limits[:, 2])
+    return x
+end

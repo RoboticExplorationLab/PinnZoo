@@ -5,6 +5,9 @@ struct Go2 <: Quadruped
     nv
     nx
     nu
+    μ::Float64 # Friction coefficient
+    torque_limits::Vector{Float64}
+    joint_limits::Matrix{Float64}
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
@@ -12,7 +15,7 @@ struct Go2 <: Quadruped
     kinematics_bodies::Vector{String}
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
-    function Go2()
+    function Go2(; μ = 0.3)
         local lib
         try
             lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go2.so"))
@@ -45,9 +48,19 @@ struct Go2 <: Quadruped
         kinematics_bodies = ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
         kinematics_ptr = dlsym(lib, :kinematics_wrapper)
         kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
+
+        # Limits
+        torque_limits = 23.7*ones(12)
+        joint_limits = [repeat([-Inf Inf], 7);
+                        -0.8 0.8; -1.55 3.55; -2.8 -0.95;
+                        -0.8 0.8; -1.55 3.55; -2.8 -0.95;
+                        -0.8 0.8; -0.55 4.55; -2.8 -0.95;
+                        -0.8 0.8; -0.55 4.55; -2.8 -0.95;]
+
         return new(
             urdf_path, state_order,
             19, 18, 18 + 19, 12,
+            μ, torque_limits, joint_limits,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
         )
