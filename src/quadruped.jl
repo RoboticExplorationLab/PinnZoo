@@ -2,7 +2,7 @@
 function error_jacobian(quad::Quadruped, x)
     E = zeros(length(x), length(x) - 1)
     E[1:3, 1:3] = I(3)
-    E[4:7, 4:6] = 0.5*G(x[4:7])
+    E[4:7, 4:6] = 0.5*attitude_jacobian(x[4:7])
     E[8:end, 7:end] = I(length(x) - 7)
     return E
 end
@@ -10,7 +10,7 @@ end
 function error_jacobian_T(quad::Quadruped, x)
     E = zeros(length(x), length(x) - 1)
     E[1:3, 1:3] = I(3)
-    E[4:7, 4:6] = 2*G(x[4:7])
+    E[4:7, 4:6] = 2*attitude_jacobian(x[4:7])
     E[8:end, 7:end] = I(length(x) - 7)
     return E'
 end
