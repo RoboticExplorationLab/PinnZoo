@@ -35,6 +35,9 @@ function test_default_functions(model::PinnZooModel)
     v̇2 = dyn_res.v̇
     @test norm(v̇1 - v̇2, Inf) < 1e-12
 
+    # Test velocity kinematics
+    @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
+
     # Test inverse dynamics
     τ1 = PinnZoo.inverse_dynamics(model, x, v̇);
     dyn_res.v̇[:] = v̇ # inverse_dynamics needs a Segmented_Vector, this is a workaround

@@ -46,6 +46,12 @@ module PinnZoo
                 Ref{Cdouble}), x, v̇, τ)
         return τ
     end
+
+    function velocity_kinematics(model::PinnZooModel, x::Vector{Float64})
+        E = zeros(model.nq, model.nv)
+        ccall(model.velocity_kinematics_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, E)
+        return E
+    end
     
     # Kinematics functions
     function kinematics(model::PinnZooModel, x::Vector{Float64})
@@ -71,7 +77,7 @@ module PinnZoo
 
     export PinnZooModel, Quadruped
     export is_floating, zero_state, init_state, rand_state
-    export M_func, C_func, forward_dynamics, inverse_dynamics
+    export M_func, C_func, forward_dynamics, inverse_dynamics, velocity_kinematics
     export kinematics, kinematics_jacobian
 
     export Cartpole, Go1, Go2

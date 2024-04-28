@@ -12,6 +12,7 @@ struct Go1 <: Quadruped
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
     inverse_dynamics_ptr::Ptr{Nothing}
+    velocity_kinematics_ptr::Ptr{Nothing}
     kinematics_bodies::Vector{String}
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
@@ -43,6 +44,7 @@ struct Go1 <: Quadruped
         C_func_ptr = dlsym(lib, :C_func_wrapper)
         forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
         inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
+        velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
 
         # Kinematics
         kinematics_bodies = ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
@@ -52,12 +54,12 @@ struct Go1 <: Quadruped
         # Limits
         torque_limits = 23.7*ones(12)
         joint_limits = [repeat([-Inf Inf], 7); repeat([-0.802851 0.802851; -1.0472 4.18879; -2.69653 -0.916298], 4)]
-        
+
         return new(
             urdf_path, state_order,
             19, 18, 18 + 19, 12,
             μ, torque_limits, joint_limits,
-            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
+            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr, velocity_kinematics_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
         )
     end
