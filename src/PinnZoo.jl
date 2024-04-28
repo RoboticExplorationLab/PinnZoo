@@ -67,7 +67,7 @@ module PinnZoo
 
     # Quadruped specific functions
     include(joinpath(@__DIR__, "quadruped.jl"))
-    export error_jacobian, error_jacobian_T, apply_Δx, state_error
+    export error_jacobian, error_jacobian_T, apply_Δx, state_error, B_func
 
     export PinnZooModel, Quadruped
     export is_floating, zero_state, init_state, rand_state

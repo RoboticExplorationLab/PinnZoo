@@ -31,6 +31,11 @@ function state_error(quad::Quadruped, x, x0)
     ]
 end
 
+# Input jacobian
+function B_func(quad::Quadruped)
+    return [zeros(6, 12); I(12)]
+end
+
 # Attempt to wrap joints into joint limits
 function fix_joint_limits(model::Quadruped, x; supress_error = false)
     x = copy(x)
