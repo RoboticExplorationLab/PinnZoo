@@ -59,10 +59,10 @@ zero_state(model::Go2) = [zeros(3); 1; zeros(model.nx - 4)]
 rand_state(model::Go2) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
 function init_state(model::Go2)
     x = zeros(model.nq)
-    x[1:3] = [0; 0; 0.08]
-    x[4:7] = axis_angle_to_quat(-6*pi/180*[0; 1; 0])
-    x[8:3:19] = [0; 0; 20.; -20]*pi/180
+    x[1:3] = [0; 0; 0.082]
+    x[4:7] = axis_angle_to_quat(-7.5*pi/180*[0; 1; 0])
+    x[8:3:19] = [0; 0; 27.; -27]*pi/180
     x[9:3:19] .= 75*pi/180
-    x[10:3:19] .= -155*pi/180
+    x[10:3:19] .= -156*pi/180
     return [x; zeros(model.nv)]
 end
