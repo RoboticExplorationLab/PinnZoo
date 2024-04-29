@@ -8,6 +8,7 @@ struct Cartpole <: PinnZooModel
     forward_dynamics_ptr::Ptr{Nothing}
     inverse_dynamics_ptr::Ptr{Nothing}
     velocity_kinematics_ptr::Ptr{Nothing}
+    velocity_kinematics_T_ptr::Ptr{Nothing}
     kinematics_bodies::Vector{String}
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
@@ -30,6 +31,7 @@ struct Cartpole <: PinnZooModel
         forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
         inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
         velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
+        velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
 
         # Kinematics
         kinematics_bodies = ["pole_tip"]
@@ -40,7 +42,8 @@ struct Cartpole <: PinnZooModel
         return new(
             urdf_path,
             2, 2, 2 + 2,
-            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr, velocity_kinematics_ptr,
+            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
+            velocity_kinematics_ptr, velocity_kinematics_T_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
             kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr
         )
