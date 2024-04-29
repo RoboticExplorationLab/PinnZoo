@@ -24,7 +24,7 @@ function test_default_functions(model::PinnZooModel)
     end
 
     if model.nq != model.nv
-        @warn "RigidBodyDynamics.jl test do not support floating base joints yet"
+        @warn "RigidBodyDynamics.jl tests do not support floating base joints yet"
         return
     end
 

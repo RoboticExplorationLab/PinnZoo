@@ -54,7 +54,7 @@ module PinnZoo
     end
     
     function velocity_kinematics_T(model::PinnZooModel, x::Vector{Float64})
-        E_T = zeros(model.nq, model.nv)
+        E_T = zeros(model.nv, model.nq)
         ccall(model.velocity_kinematics_T_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, E_T)
         return E_T
     end
