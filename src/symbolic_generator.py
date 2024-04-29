@@ -66,10 +66,11 @@ class SymbolicGenerator:
         print("\nGenerating code")
 
         # Define config and velocity vectors to pass to Pinocchio functions
-        self.q = self.x[:self.nq]
-        self.v = self.x[self.nq:]
-        self.q_dot = self.x_dot[:self.nq]
-        self.v_dot = self.x_dot[self.nq:]
+        # pinn_x and x may have different orders (i.e. our convention vs Pinocchios for quaternions)
+        self.q = self.pinn_x[:self.nq]
+        self.v = self.pinn_x[self.nq:]
+        self.q_dot = self.pinn_x_dot[:self.nq]
+        self.v_dot = self.pinn_x_dot[self.nq:]
 
         # Generation options
         self.gen_opts = dict(with_header = True)
@@ -92,7 +93,7 @@ class SymbolicGenerator:
 
         # Coriolis matrix
         C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
-        
+
         # Forward dynamics
         v_dot_out = cs.densify(cpin.aba(self.cmodel, self.cdata, self.q, self.v, self.tau))
         
@@ -156,13 +157,17 @@ class SymbolicGenerator:
                            [self.model.names[self.v_idx_to_jnt_idx(i)] for i in range(self.model.nv)]
         
         # Fix quaternions, detect unsupported joints
+        self.pinn_x = cs.SX(self.x)
+        self.pinn_x_dot = cs.SX(self.x_dot)
         for jnt_idx in range(self.model.njoints):
             joint = self.model.joints[jnt_idx]
             if joint.nq == 1: 
                 continue
             elif joint.nq == 7: # Modify symbolic order to match with our convention by swapping q_w and q_x
-                self.x[joint.idx_q + 4:joint.idx_q + 7], self.x[joint.idx_q + 3] = \
-                        self.x[joint.idx_q + 3:joint.idx_q + 6], self.x[joint.idx_q + 6]
+                self.pinn_x[joint.idx_q + 3:joint.idx_q + 6], self.pinn_x[joint.idx_q + 6] = \
+                        self.pinn_x[joint.idx_q + 4:joint.idx_q + 7], self.pinn_x[joint.idx_q + 3]
+                self.pinn_x_dot[joint.idx_q + 3:joint.idx_q + 6], self.pinn_x_dot[joint.idx_q + 6] = \
+                        self.pinn_x_dot[joint.idx_q + 4:joint.idx_q + 7], self.pinn_x_dot[joint.idx_q + 3]
                 self.state_order[joint.idx_q:joint.idx_q + joint.nq] = ["x", "y", "z", "q_w", "q_x", "q_y", "q_z"]
                 self.state_order[self.model.nq + joint.idx_v:self.model.nq + joint.idx_v + joint.nv] = ["lin_v_x", "lin_v_y", "lin_v_z", "ang_v_x", "ang_v_y", "ang_v_z"]
             else:
