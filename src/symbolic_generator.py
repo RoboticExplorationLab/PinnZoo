@@ -208,7 +208,7 @@ class SymbolicGenerator:
                 E_T_jnt = cs.SX.zeros(6, 7)
 
                 # Extract quaterion, build cross product matrix for the vector part
-                quat = self.q[joint.idx_q + 3:joint.idx_q + 7]
+                quat = self.x[joint.idx_q + 3:joint.idx_q + 7]
                 skew_v = cs.vertcat(
                     cs.horzcat(0, -quat[3], quat[2]),
                     cs.horzcat(quat[3], 0, -quat[1]),
