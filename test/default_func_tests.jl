@@ -14,6 +14,7 @@ function test_default_functions(model::PinnZooModel)
         forward_dynamics(model, x, τ)
         PinnZoo.inverse_dynamics(model, x, v̇)
         velocity_kinematics(model, x)
+        velocity_kinematics_T(model, x)
 
         # Default kinematics functions
         PinnZoo.kinematics(model, x)
@@ -58,6 +59,7 @@ function test_default_functions(model::PinnZooModel)
 
     # Test velocity kinematics (TODO fix for q̇ != v)
     @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
+    @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
 
     # Test inverse dynamics
     τ1 = PinnZoo.inverse_dynamics(model, x, v̇);

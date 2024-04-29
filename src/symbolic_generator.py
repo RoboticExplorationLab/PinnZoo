@@ -196,13 +196,16 @@ class SymbolicGenerator:
     # Generates E(q) such that q_dot = E(q)v
     def generate_velocity_kinematics(self):
         self.E = cs.SX.zeros(self.nq, self.nv)
+        self.E_T = cs.SX.zeros(self.nv, self.nq)
 
         for jnt_idx in range(self.model.njoints):
             joint = self.model.joints[jnt_idx]
             if joint.nq == 1: # Trivial relationship, q_dot = v
                 self.E[joint.idx_q, joint.idx_v] = 1
+                self.E_T[joint.idx_v, joint.idx_q] = 1
             elif joint.nq == 7: # Floating base
                 E_jnt = cs.SX.zeros(7, 6)
+                E_T_jnt = cs.SX.zeros(6, 7)
 
                 # Extract quaterion, build cross product matrix for the vector part
                 quat = self.q[joint.idx_q + 3:joint.idx_q + 7]
@@ -216,14 +219,17 @@ class SymbolicGenerator:
 
                 # Rotation to rotate linear velocity from body to world
                 E_jnt[:3, :3] = rot_mat
+                E_T_jnt[:3, :3] = rot_mat.T
 
                 # Create attitude jacobian
                 attitude_jacobian = cs.vertcat(-quat[1:4].T, quat[0]*cs.SX.eye(3) - skew_v)
 
                 # Attitude jacobian to convert angular velocity to quaternion time derivative
                 E_jnt[3:, 3:] = 0.5*attitude_jacobian
+                E_T_jnt[3:, 3:] = 2*attitude_jacobian.T
 
                 self.E[joint.idx_q:joint.idx_q + joint.nq, joint.idx_v:joint.idx_v + joint.nv] = E_jnt
+                self.E_T[joint.idx_v:joint.idx_v + joint.nv, joint.idx_q:joint.idx_q + joint.nq] = E_T_jnt
             else:
                 print(f"ERROR: Encountered an unsupported joint named \"{self.model.names[jnt_idx]}\"")
                 print("This error occurs when the joint has a number of configuration variables (joint.nq)"
@@ -236,5 +242,7 @@ class SymbolicGenerator:
                 sys.exit()
 
         velocity_kinematics = cs.Function("velocity_kinematics", [self.x], [self.E])
+        velocity_kinematics_T = cs.Function("velocity_kinematics_T", [self.x], [self.E_T])
         velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
+        velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
 
