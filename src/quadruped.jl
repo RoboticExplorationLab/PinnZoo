@@ -1,10 +1,17 @@
 # Functions that are generic to Quadruped models (specifically Unitree Go1 and Go2)
 function error_jacobian(quad::Quadruped, x)
-    return velocity_kinematics(quad, x)
+
+    return [
+        velocity_kinematics(quad, x) zeros(quad.nq, length(x) - quad.nq)
+        zeros(length(x) - quad.nq, quad.nv) I(length(x) - quad.nq)
+    ]
 end
 
 function error_jacobian_T(quad::Quadruped, x)
-    return velocity_kinematics_T(quad, x)
+    return [
+        velocity_kinematics_T(quad, x) zeros(quad.nv, length(x) - quad.nq)
+        zeros(length(x) - quad.nq, quad.nq) I(length(x) - quad.nq)
+    ]
 end
 
 function apply_Δx(quad::Quadruped, x_k, Δx)
