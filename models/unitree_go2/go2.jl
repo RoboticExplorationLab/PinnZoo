@@ -115,8 +115,9 @@ function inverse_kinematics(model::Go2, x, foot_locs)
         hip_trans = -hip_local_pos[foot_ind] - base_pos;
         foot_pos = base_rot'*foot_locs[(foot_ind - 1)*3 .+ (1:3)] + hip_trans
 
+
         # Reflect right feet to use same IK for all four feet
-        if foot_ind % 2 == 1
+        if foot_ind % 2 == 0
             foot_pos[2] = -foot_pos[2]
         end
 
@@ -159,7 +160,7 @@ function inverse_kinematics(model::Go2, x, foot_locs)
         end
 
         # Flip hip angles for right feet
-        if foot_ind % 2 == 1
+        if foot_ind % 2 == 0
             leg_solns[1, 1] *= -1
             leg_solns[1, 2] *= -1
         end
