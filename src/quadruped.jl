@@ -49,7 +49,7 @@ function fix_joint_limits(model::Quadruped, x; supress_error = false)
         end
         success = success && (model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
         if !(model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
-            push!(failed_joints, model.configNames[j])
+            push!(failed_joints, model.state_order[j])
         end
     end
     if !success && !supress_error
@@ -58,4 +58,31 @@ function fix_joint_limits(model::Quadruped, x; supress_error = false)
     end
     x[1:model.nq] = clamp.(x[1:model.nq], model.joint_limits[:, 1], model.joint_limits[:, 2])
     return x
+end
+
+# Solve for ik nearest to the given reference
+function nearest_ik(model::Quadruped, q, foot_locs)
+    q = copy(q)
+    foot_q = inverse_kinematics(model, q, foot_locs)
+
+    # Build both options
+    q1 = copy(q)
+    q1[7 .+ (1:12)] = foot_q[:, 1]
+    q2 = copy(q)
+    q2[7 .+ (1:12)] = foot_q[:, 2]
+
+    # Fix joint limits (don't let these error since some will probably be wrong)
+    q1 = fix_joint_limits(model, q1, supress_error = true)
+    q2 = fix_joint_limits(model, q2, supress_error = true)
+
+    # Build final ik leg by leg
+    for i = 1:4
+        foot_inds = 7 + 3*(i - 1) .+ (1:3)
+        if norm(q[foot_inds] - q1[foot_inds]) < norm(q[foot_inds] - q2[foot_inds])
+            q[foot_inds] = q1[foot_inds]
+        else
+            q[foot_inds] = q2[foot_inds]
+        end
+    end
+    return fix_joint_limits(model, q) # Let this one error
 end
