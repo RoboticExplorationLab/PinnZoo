@@ -57,15 +57,29 @@ function test_default_functions(model::PinnZooModel)
     v̇2 = dyn_res.v̇
     @test norm(v̇1 - v̇2, Inf) < 1e-12
 
-    # Test velocity kinematics (TODO fix for q̇ != v)
-    @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
-    @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
+    # Test forward dynamics derivatives
+    J1 = FiniteDiff.finite_difference_jacobian(_x -> forward_dynamics(model, _x, τ), x)
+    J2 = FiniteDiff.finite_difference_jacobian(_τ -> forward_dynamics(model, x, _τ), τ)
+    J3, J4 = forward_dynamics_deriv(model, x, τ)
+    @test norm(J1 - J3, Inf) < 1e-6
+    @test norm(J2 - J4, Inf) < 1e-6
 
     # Test inverse dynamics
     τ1 = PinnZoo.inverse_dynamics(model, x, v̇);
     dyn_res.v̇[:] = v̇ # inverse_dynamics needs a Segmented_Vector, this is a workaround
     τ2 = RigidBodyDynamics.inverse_dynamics(state, dyn_res.v̇)
     @test norm(τ1 - τ2, Inf) < 1e-12
+
+    # Test inverse dynamics derivatives
+    J1 = FiniteDiff.finite_difference_jacobian(_x -> PinnZoo.inverse_dynamics(model, _x, v̇), x)
+    J2 = FiniteDiff.finite_difference_jacobian(_v̇ -> PinnZoo.inverse_dynamics(model, x, _v̇), v̇)
+    J3, J4 = inverse_dynamics_deriv(model, x, v̇)
+    @test norm(J1 - J3, Inf) < 1e-6
+    @test norm(J2 - J4, Inf) < 1e-6
+
+    # Test velocity kinematics (TODO fix for q̇ != v)
+    @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
+    @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
 
     # Test kinematics
     locs1 = PinnZoo.kinematics(model, x)

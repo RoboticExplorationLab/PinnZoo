@@ -96,21 +96,31 @@ class SymbolicGenerator:
 
         # Forward dynamics
         v_dot_out = cs.densify(cpin.aba(self.cmodel, self.cdata, self.q, self.v, self.tau))
+        dv_dot_out_dx = cs.densify(cs.jacobian(v_dot_out, self.x))
+        dv_dot_out_dtau = cs.densify(cs.jacobian(v_dot_out, self.tau))
         
         # Inverse dynamics
         tau_out = cs.densify(cpin.rnea(self.cmodel, self.cdata, self.q, self.v, self.v_dot))
+        dtau_dx = cs.densify(cs.jacobian(tau_out, self.x))
+        dtau_dv_dot = cs.densify(cs.jacobian(tau_out, self.v_dot))
 
         # Create CasADI functions
         m_func = cs.Function("M_func", [self.x], [M])
         c_func = cs.Function("C_func", [self.x], [C])
         forward_dynamics_func = cs.Function("forward_dynamics", [self.x, self.tau], [v_dot_out])
+        forward_dynamics_deriv_func = cs.Function("forward_dynamics_deriv", [self.x, self.tau], 
+                                                  [dv_dot_out_dx, dv_dot_out_dtau])
         inverse_dynamics_func = cs.Function("inverse_dynamics", [self.x, self.v_dot], [tau_out])
+        inverse_dynamics_deriv_func = cs.Function("inverse_dynamics_deriv", [self.x, self.v_dot],
+                                                  [dtau_dx, dtau_dv_dot])
 
         # Generate files
         m_func.generate("M_func.c", self.gen_opts)
         c_func.generate("C_func.c", self.gen_opts)
         forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
+        forward_dynamics_deriv_func.generate("forward_dynamics_deriv.c", self.gen_opts)
         inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
+        inverse_dynamics_deriv_func.generate("inverse_dynamics_deriv.c", self.gen_opts)
 
         print("Generated dynamics")
 
