@@ -11,7 +11,9 @@ struct Go1 <: Quadruped
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
+    forward_dynamics_deriv_ptr::Ptr{Nothing}
     inverse_dynamics_ptr::Ptr{Nothing}
+    inverse_dynamics_deriv_ptr::Ptr{Nothing}
     velocity_kinematics_ptr::Ptr{Nothing}
     velocity_kinematics_T_ptr::Ptr{Nothing}
     kinematics_bodies::Vector{String}
@@ -46,7 +48,9 @@ struct Go1 <: Quadruped
         M_func_ptr = dlsym(lib, :M_func_wrapper)
         C_func_ptr = dlsym(lib, :C_func_wrapper)
         forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
+        forward_dynamics_deriv_ptr = dlsym(lib, :forward_dynamics_deriv_wrapper)
         inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
+        inverse_dynamics_deriv_ptr = dlsym(lib, :inverse_dynamics_deriv_wrapper)
         velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
         velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
 
@@ -65,7 +69,8 @@ struct Go1 <: Quadruped
             urdf_path, state_order,
             19, 18, 18 + 19, 12,
             μ, torque_limits, joint_limits,
-            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
+            M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
+            inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
             velocity_kinematics_ptr, velocity_kinematics_T_ptr,
             kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
             kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr

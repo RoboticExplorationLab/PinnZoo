@@ -39,12 +39,26 @@ module PinnZoo
         ccall(model.forward_dynamics_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, τ, v̇)
         return v̇
     end
+
+    function forward_dynamics_deriv(model::PinnZooModel, x::Vector{Float64}, τ::Vector{Float64})
+        dv̇_dx, dv̇_dτ = zeros(model.nv, model.nx), zeros(model.nv, model.nv)
+        ccall(model.forward_dynamics_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), 
+                x, τ, dv̇_dx, dv̇_dτ)
+        return dv̇_dx, dv̇_dτ
+    end
     
     function inverse_dynamics(model::PinnZooModel, x::Vector{Float64}, v̇::Vector{Float64})
         τ = zeros(model.nv)
         ccall(model.inverse_dynamics_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, 
                 Ref{Cdouble}), x, v̇, τ)
         return τ
+    end
+
+    function inverse_dynamics_deriv(model::PinnZooModel, x::Vector{Float64}, v̇::Vector{Float64})
+        dτ_dx, dτ_dv̇ = zeros(model.nv, model.nx), zeros(model.nv, model.nv)
+        ccall(model.inverse_dynamics_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, 
+                Ref{Cdouble}, Ref{Cdouble}), x, v̇, dτ_dx, dτ_dv̇)
+        return dτ_dx, dτ_dv̇
     end
 
     function velocity_kinematics(model::PinnZooModel, x::Vector{Float64})
@@ -96,7 +110,8 @@ module PinnZoo
 
     export PinnZooModel, Quadruped
     export is_floating, zero_state, init_state, randn_state
-    export M_func, C_func, forward_dynamics, inverse_dynamics, velocity_kinematics, velocity_kinematics_T
+    export M_func, C_func, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
+    export velocity_kinematics, velocity_kinematics_T
     export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
 
     export Cartpole, Go1, Go2
