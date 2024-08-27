@@ -21,3 +21,9 @@ end
 @testset "Unitree Go2" begin
     test_default_functions(Go2())
 end
+
+# Nadia
+@testset "IHMC Nadia" begin
+    test_default_functions(Nadia())
+    test_default_functions(Nadia(nc_per_foot = 4))
+end

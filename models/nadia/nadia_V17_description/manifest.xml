@@ -1,0 +1,6 @@
+<package>
+  <description brief="nadia_description">nadia_description</description>
+  <depend package="gazebo" />
+  <author>me</author>
+  <license>BSD</license>
+</package>

@@ -12,6 +12,7 @@ module PinnZoo
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
     include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
     include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
+    include(joinpath(MODEL_DIR, "nadia/nadia.jl"))
 
     # Defaults for models
     """
@@ -71,5 +72,5 @@ module PinnZoo
     export velocity_kinematics, velocity_kinematics_T
     export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
 
-    export Cartpole, Go1, Go2
+    export Cartpole, Go1, Go2, Nadia
 end
