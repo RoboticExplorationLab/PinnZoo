@@ -1,0 +1,1098 @@
+<sdf version='1.4'>
+  <model name='nadia'>
+    <link name='PELVIS_LINK'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.0207309 2.023e-05 -0.0309812 0 -0 0</pose>
+        <mass>19.0917</mass>
+        <inertia>
+          <ixx>0.0942</ixx>
+          <ixy>6.05e-06</ixy>
+          <ixz>0.000379</ixz>
+          <iyy>0.0416</iyy>
+          <iyz>3.37e-07</iyz>
+          <izz>0.112</izz>
+        </inertia>
+      </inertial>
+	  <sensor name="pelvis_orientus_imu" type="imu">
+      <pose>-0.00960080 -0.0000010 -0.07599977 0 0 3.141592</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      <topic>imu_sensor</topic>
+    </sensor>	
+    
+    <sensor name="pelvis_gable_imu" type="imu">
+      <pose>0.04096090  -0.17557654 -0.00812384 1.5708 3.141592 0.3926991</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      <topic>imu_sensor</topic>
+    </sensor>		
+    
+    
+      <sensor name="pelvis_stim_imu" type="imu">
+      <pose>-0.03133646 0.02237500 -0.07000000 0.0 3.141592 0.0</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      <topic>imu_sensor</topic>
+    </sensor>
+    
+    							
+    
+      <visual name='PELVIS_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/pelvis.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <link name='LEFT_HIP_YAW_LINK'>
+      <pose>0 0.115 -0.07185 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00629727 0.00606893 -0.0397184 0 -0 0</pose>
+        <mass>1.814</mass>
+        <inertia>
+          <ixx>0.00474191</ixx>
+          <ixy>0.000527</ixy>
+          <ixz>-0.000307</ixz>
+          <iyy>0.00414</iyy>
+          <iyz>1.36e-05</iyz>
+          <izz>0.00569</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_HIP_YAW_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_hip_yaw.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_HIP_Z' type='revolute'>
+      <child>LEFT_HIP_YAW_LINK</child>
+      <parent>PELVIS_LINK</parent>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.7854</lower>
+          <upper>0.7854</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_HIP_ROLL_LINK'>
+      <pose>0.035 0.13 -0.1216 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0132704 0.00316985 -0.054 0 -0 0</pose>
+        <mass>0.762</mass>
+        <inertia>
+          <ixx>0.00102899</ixx>
+          <ixy>-9.31e-06</ixy>
+          <ixz>0.000352</ixz>
+          <iyy>0.00138</iyy>
+          <iyz>3.22e-05</iyz>
+          <izz>0.000663</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_HIP_ROLL_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_hip_roll.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_HIP_X' type='revolute'>
+      <child>LEFT_HIP_ROLL_LINK</child>
+      <parent>LEFT_HIP_YAW_LINK</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.5236</lower>
+          <upper>1.0472</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_THIGH_LINK'>
+      <pose>0.035 0.13 -0.200668 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00093749 0.0113451 -0.178631 0 -0 0</pose>
+        <mass>10.953</mass>
+        <inertia>
+          <ixx>0.162227</ixx>
+          <ixy>-0.000749</ixy>
+          <ixz>0.0156</ixz>
+          <iyy>0.174</iyy>
+          <iyz>0.00213</iyz>
+          <izz>0.0528</izz>
+        </inertia>
+      </inertial>
+      <sensor name="left_thigh_imu" type="imu">
+      <pose>0.05793744 0.01666131 -0.09511697 2.025  0.000 -1.571</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+    </sensor>										   
+      <visual name='LEFT_THIGH_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_thigh.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_HIP_Y' type='revolute'>
+      <child>LEFT_THIGH_LINK</child>
+      <parent>LEFT_HIP_ROLL_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>0.314</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_KNEE_LINKAGE_LINK'>
+      <pose>0.035 0.13 -0.580668 0 -0 0</pose>
+      <inertial>
+        <pose>0.00901763 0.00753613 -0.0436823 0 -0 0</pose>
+        <mass>0.936</mass>
+        <inertia>
+          <ixx>0.00261734</ixx>
+          <ixy>3.06e-07</ixy>
+          <ixz>0.000313</ixz>
+          <iyy>0.00159</iyy>
+          <iyz>1.51e-06</iyz>
+          <izz>0.00128</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_KNEE_LINKAGE_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_knee_linkage.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_KNEE_LINKAGE_UPPER_Y' type='revolute'>
+      <child>LEFT_KNEE_LINKAGE_LINK</child>
+      <parent>LEFT_THIGH_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.6</upper>
+          <effort>20</effort>
+          <velocity>150</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_KNEE_SHELL_LINK'>
+      <pose>0.0138691 0.13 -0.535353 0 -0 0</pose>
+      <inertial>
+        <pose>0.0248995 0.00826196 -0.0533022 0 -0 0</pose>
+        <mass>1.101</mass>
+        <inertia>
+          <ixx>0.00642</ixx>
+          <ixy>-3.64e-05</ixy>
+          <ixz>1.43e-05</ixz>
+          <iyy>0.00456</iyy>
+          <iyz>-6.54e-05</iyz>
+          <izz>0.00566</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_KNEE_SHELL_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_knee_shell.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_KNEE_SHELL_UPPER_Y' type='revolute'>
+      <child>LEFT_KNEE_SHELL_LINK</child>
+      <parent>LEFT_THIGH_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.62</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_SHIN_LINK'>
+      <pose>0.0561879 0.13 -0.636886 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0184149 0.00228086 -0.220542 0 -0 0</pose>
+        <mass>5.42</mass>
+        <inertia>
+          <ixx>0.0644378</ixx>
+          <ixy>-0.000214</ixy>
+          <ixz>-0.00538</ixz>
+          <iyy>0.0583</iyy>
+          <iyz>-0.000962</iyz>
+          <izz>0.0136</izz>
+        </inertia>
+      </inertial>
+      <sensor name="left_shin_imu" type="imu">
+      <pose>-0.03216129 -0.07159184 -0.1864738 -1.570796 0.0 0.0</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+    </sensor>		 
+      <visual name='LEFT_SHIN_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/left_shin.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_KNEE_SHELL_LOWER_Y' type='revolute'>
+      <child>LEFT_SHIN_LINK</child>
+      <parent>LEFT_KNEE_SHELL_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.62</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_ANKLE_LINK'>
+      <pose>0.0478857 0.13 -1.03903 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00072338 -6.619e-05 -0.00399965 0 -0 0</pose>
+        <mass>0.56</mass>
+        <inertia>
+          <ixx>0.000459</ixx>
+          <ixy>2.65e-08</ixy>
+          <ixz>-2.43e-06</ixz>
+          <iyy>0.000336</iyy>
+          <iyz>1.48e-07</iyz>
+          <izz>0.000645</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_ANKLE_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/ankle.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='LEFT_ANKLE_Y' type='revolute'>
+      <child>LEFT_ANKLE_LINK</child>
+      <parent>LEFT_SHIN_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.0472</lower>
+          <upper>0.698132</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='LEFT_FOOT_LINK'>
+      <pose>0.0478857 0.13 -1.04903 0 -0 0</pose>
+      <inertial>
+        <pose>0.03075449 0.00007807 -0.04382467 0 -0 0</pose>
+        <mass>1.75</mass>
+        <inertia>
+          <ixx>0.00345011</ixx>
+          <ixy>-0.0000073</ixy>
+          <ixz>0.0014225</ixz>
+          <iyy>0.00955764</iyy>
+          <iyz>-2.269e-7</iyz>
+          <izz>0.00881313</izz>
+        </inertia>
+      </inertial>
+      <visual name='LEFT_FOOT_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/foot.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <sensor name="left_foot_imu" type="imu">
+      <pose>0.053 0.0 -0.063 0.0 0.0 1.57079</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      </sensor> 
+    </link>
+    <joint name='LEFT_ANKLE_X' type='revolute'>
+      <child>LEFT_FOOT_LINK</child>
+      <parent>LEFT_ANKLE_LINK</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.436332</lower>
+          <upper>0.436332</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_HIP_YAW_LINK'>
+      <pose>0 -0.115 -0.07185 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00629727 -0.00606893 -0.0397184 0 -0 0</pose>
+        <mass>1.814</mass>
+        <inertia>
+          <ixx>0.00474191</ixx>
+          <ixy>-0.000527</ixy>
+          <ixz>-0.000307</ixz>
+          <iyy>0.00414</iyy>
+          <iyz>-1.36e-05</iyz>
+          <izz>0.00569</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_HIP_YAW_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_hip_yaw.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_HIP_Z' type='revolute'>
+      <child>RIGHT_HIP_YAW_LINK</child>
+      <parent>PELVIS_LINK</parent>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.7854</lower>
+          <upper>0.7854</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_HIP_ROLL_LINK'>
+      <pose>0.035 -0.13 -0.1216 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0132704 -0.00316985 -0.054 0 -0 0</pose>
+        <mass>0.762</mass>
+        <inertia>
+          <ixx>0.00102899</ixx>
+          <ixy>9.31e-06</ixy>
+          <ixz>0.000352</ixz>
+          <iyy>0.00138</iyy>
+          <iyz>-3.22e-05</iyz>
+          <izz>0.000663</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_HIP_ROLL_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_hip_roll.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_HIP_X' type='revolute'>
+      <child>RIGHT_HIP_ROLL_LINK</child>
+      <parent>RIGHT_HIP_YAW_LINK</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1.0472</lower>
+          <upper>0.5236</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_THIGH_LINK'>
+      <pose>0.035 -0.13 -0.200668 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00093749 -0.0113451 -0.178631 0 -0 0</pose>
+        <mass>10.953</mass>
+        <inertia>
+          <ixx>0.162227</ixx>
+          <ixy>0.000749</ixy>
+          <ixz>0.0156</ixz>
+          <iyy>0.174</iyy>
+          <iyz>-0.00213</iyz>
+          <izz>0.0528</izz>
+        </inertia>
+      </inertial>
+      <sensor name="right_thigh_imu" type="imu">
+      <pose>0.05793670 0.01066129 -0.09511742 2.025  0.000 -1.571</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+    </sensor>		   
+      <visual name='RIGHT_THIGH_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_thigh.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_HIP_Y' type='revolute'>
+      <child>RIGHT_THIGH_LINK</child>
+      <parent>RIGHT_HIP_ROLL_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.57</lower>
+          <upper>0.314</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_KNEE_LINKAGE_LINK'>
+      <pose>0.035 -0.13 -0.580668 0 -0 0</pose>
+      <inertial>
+        <pose>0.00901763 -0.00753613 -0.0436823 0 -0 0</pose>
+        <mass>0.936</mass>
+        <inertia>
+          <ixx>0.00261734</ixx>
+          <ixy>-3.06e-07</ixy>
+          <ixz>0.000313</ixz>
+          <iyy>0.00159</iyy>
+          <iyz>-1.51e-06</iyz>
+          <izz>0.00128</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_KNEE_LINKAGE_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_knee_linkage.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_KNEE_LINKAGE_UPPER_Y' type='revolute'>
+      <child>RIGHT_KNEE_LINKAGE_LINK</child>
+      <parent>RIGHT_THIGH_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.62</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_KNEE_SHELL_LINK'>
+      <pose>0.0138691 -0.13 -0.535353 0 -0 0</pose>
+      <inertial>
+        <pose>0.0248995 -0.00826196 -0.0533022 0 -0 0</pose>
+        <mass>1.101</mass>
+        <inertia>
+          <ixx>0.00642</ixx>
+          <ixy>3.64e-05</ixy>
+          <ixz>1.43e-05</ixz>
+          <iyy>0.00456</iyy>
+          <iyz>6.54e-05</iyz>
+          <izz>0.00566</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_KNEE_SHELL_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_knee_shell.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_KNEE_SHELL_UPPER_Y' type='revolute'>
+      <child>RIGHT_KNEE_SHELL_LINK</child>
+      <parent>RIGHT_THIGH_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.62</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_SHIN_LINK'>
+      <pose>0.0561879 -0.13 -0.636886 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0183705 -0.00241134 -0.219913 0 -0 0</pose>
+        <mass>5.42</mass>
+        <inertia>
+          <ixx>0.0644431</ixx>
+          <ixy>0.000202</ixy>
+          <ixz>-0.00539</ixz>
+          <iyy>0.0583</iyy>
+          <iyz>0.000906</iyz>
+          <izz>0.0136</izz>
+        </inertia>
+      </inertial>
+      <sensor name="right_shin_imu" type="imu">
+      <pose>-0.002838710 0.07159142 -0.1864738 -1.570796 0.0 3.141592</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+    </sensor>		
+      <visual name='RIGHT_SHIN_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/right_shin.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_KNEE_SHELL_LOWER_Y' type='revolute'>
+      <child>RIGHT_SHIN_LINK</child>
+      <parent>RIGHT_KNEE_SHELL_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.62</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_ANKLE_LINK'>
+      <pose>0.0478857 -0.13 -1.03903 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00072338 6.619e-05 -0.00399965 0 -0 0</pose>
+        <mass>0.56</mass>
+        <inertia>
+          <ixx>0.000459</ixx>
+          <ixy>-2.65e-08</ixy>
+          <ixz>-2.43e-06</ixz>
+          <iyy>0.000336</iyy>
+          <iyz>-1.48e-07</iyz>
+          <izz>0.000645</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_ANKLE_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/ankle.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='RIGHT_ANKLE_Y' type='revolute'>
+      <child>RIGHT_ANKLE_LINK</child>
+      <parent>RIGHT_SHIN_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.0472</lower>
+          <upper>0.698132</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='RIGHT_FOOT_LINK'>
+      <pose>0.0478857 -0.13 -1.04903 0 -0 0</pose>
+      <inertial>
+        <pose>0.032048 4e-06 -0.028422 0 -0 0</pose>
+        <mass>1.75</mass>
+        <inertia>
+          <ixx>0.00261</ixx>
+          <ixy>-3.59e-07</ixy>
+          <ixz>0.00102</ixz>
+          <iyy>0.011</iyy>
+          <iyz>-2.99e-07</iyz>
+          <izz>0.0121</izz>
+        </inertia>
+      </inertial>
+      <visual name='RIGHT_FOOT_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/foot.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <sensor name="right_foot_imu" type="imu">
+      <pose>0.053 0.0 -0.063 0.0 0.0 1.57079</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      </sensor>			
+    </link>
+    <joint name='RIGHT_ANKLE_X' type='revolute'>
+      <child>RIGHT_FOOT_LINK</child>
+      <parent>RIGHT_ANKLE_LINK</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.436332</lower>
+          <upper>0.436332</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='SPINE_YAW_LINK'>
+      <pose>0.08 0 0.00635 0 -0 0</pose>
+      <inertial>
+        <pose>-0.00853118 -2.697e-05 0.0379145 0 -0 0</pose>
+        <mass>0.91</mass>
+        <inertia>
+          <ixx>0.00374289</ixx>
+          <ixy>1.25498e-07</ixy>
+          <ixz>0.000271325</ixz>
+          <iyy>0.00403003</iyy>
+          <iyz>-1.38016e-07</iyz>
+          <izz>0.00621298</izz>
+        </inertia>
+      </inertial>
+      <visual name='SPINE_YAW_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/spine_yaw.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='SPINE_Z' type='revolute'>
+      <child>SPINE_YAW_LINK</child>
+      <parent>PELVIS_LINK</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.0472</lower>
+          <upper>1.0472</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='SPINE_ROLL_LINK'>
+      <pose>0.08 0 0.0884 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0190498 7e-08 0.0197924 0 -0 0</pose>
+        <mass>0.44</mass>
+        <inertia>
+          <ixx>0.000373262</ixx>
+          <ixy>-1.51442e-10</ixy>
+          <ixz>-6.69067e-05</ixz>
+          <iyy>0.000649978</iyy>
+          <iyz>-1.27858e-10</iyz>
+          <izz>0.000419409</izz>
+        </inertia>
+      </inertial>
+      <visual name='SPINE_ROLL_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/spine_roll.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='SPINE_X' type='revolute'>
+      <child>SPINE_ROLL_LINK</child>
+      <parent>SPINE_YAW_LINK</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.523599</lower>
+          <upper>0.523599</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='TORSO_LINK'>
+      <pose>0.08 0 0.0984 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0361387 -2.81e-06 0.259086 0 -0 0</pose>
+        <mass>15.34</mass>
+        <inertia>
+          <ixx>0.534505</ixx>
+          <ixy>8.4152e-05</ixy>
+          <ixz>-0.00672956</ixz>
+          <iyy>0.50541</iyy>
+          <iyz>0.000207997</iyz>
+          <izz>0.379402</izz>
+        </inertia>
+      </inertial>
+      <visual name='TORSO_LINK_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://nadia_V16_description/meshes/torso.obj</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <sensor name="torso_imu" type="imu">
+      <pose>0.04529 -0.02427 0.33757 3.141592 0 0</pose>
+      <always_on>1</always_on>
+        <imu>
+          <noise>
+            <type>gaussian</type>
+            <rate>
+              <mean>0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </rate>
+            <accel>
+              <mean>0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </accel>
+          </noise>
+        </imu>
+      <visualize>1</visualize>
+      <topic>imu_sensor</topic>
+    </sensor>				  
+    </link>
+    <joint name='SPINE_Y' type='revolute'>
+      <child>TORSO_LINK</child>
+      <parent>SPINE_ROLL_LINK</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.34</lower>
+          <upper>0.98</upper>
+          <effort>1000</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.05</damping>
+        </dynamics>
+      </axis>
+    </joint>
+  </model>
+</sdf>

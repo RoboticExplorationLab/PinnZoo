@@ -1,0 +1,725 @@
+<?xml version = "1.0" ?>
+<robot name="nadia" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<joint name="LEFT_HIP_Z" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0.115 -0.07185" />
+    <axis xyz="0 0 -1" />
+    <parent link="PELVIS_LINK" />
+    <child link="LEFT_HIP_YAW_LINK" />
+    <limit effort="1000" lower="-0.7854" upper="0.7854" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_HIP_Z" type="revolute">
+    <origin rpy="0 0 0" xyz="0 -0.115 -0.07185" />
+    <axis xyz="0 0 -1" />
+    <parent link="PELVIS_LINK" />
+    <child link="RIGHT_HIP_YAW_LINK" />
+    <limit effort="1000" lower="-0.7854" upper="0.7854" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_HIP_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0.035 0.015 -0.04975" />
+    <axis xyz="1 0 0" />
+    <parent link="LEFT_HIP_YAW_LINK" />
+    <child link="LEFT_HIP_ROLL_LINK" />
+    <limit effort="1000" lower="-0.5236" upper="1.0472" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_HIP_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0.035 -0.015 -0.04975" />
+    <axis xyz="1 0 0" />
+    <parent link="RIGHT_HIP_YAW_LINK" />
+    <child link="RIGHT_HIP_ROLL_LINK" />
+    <limit effort="1000" lower="-1.0472" upper="0.5236" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_HIP_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.079068" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_HIP_ROLL_LINK" />
+    <child link="LEFT_THIGH_LINK" />
+    <limit effort="1000" lower="-1.57" upper="0.314" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_HIP_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.079068" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_HIP_ROLL_LINK" />
+    <child link="RIGHT_THIGH_LINK" />
+    <limit effort="1000" lower="-1.57" upper="0.314" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_KNEE_SHELL_UPPER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.02113091 0 -0.33468461" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_THIGH_LINK" />
+    <child link="LEFT_KNEE_SHELL_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_KNEE_SHELL_UPPER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.02113091 0 -0.33468461" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_THIGH_LINK" />
+    <child link="RIGHT_KNEE_SHELL_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_KNEE_LINKAGE_UPPER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.38" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_THIGH_LINK" />
+    <child link="LEFT_KNEE_LINKAGE_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_KNEE_LINKAGE_UPPER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.38" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_THIGH_LINK" />
+    <child link="RIGHT_KNEE_LINKAGE_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_KNEE_SHELL_LOWER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0.04231885 0 -0.10153381" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_KNEE_SHELL_LINK" />
+    <child link="LEFT_SHIN_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_KNEE_SHELL_LOWER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0.04231885 0 -0.10153381" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_KNEE_SHELL_LINK" />
+    <child link="RIGHT_SHIN_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_KNEE_LINKAGE_LOWER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.01711428 0 -0.0883578" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_KNEE_LINKAGE_LINK" />
+    <child link="LEFT_SHIN_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_KNEE_LINKAGE_LOWER_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.01711428 0 -0.0883578" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_KNEE_LINKAGE_LINK" />
+    <child link="RIGHT_SHIN_LINK" />
+    <limit effort="1000" lower="0" upper="2.62" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_ANKLE_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.00830222 0 -0.40213938" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_SHIN_LINK" />
+    <child link="LEFT_ANKLE_LINK" />
+    <limit effort="1000" lower="-1.0472" upper="0.698132" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_ANKLE_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.00830222 0 -0.40213938" />
+    <axis xyz="0 1 0" />
+    <parent link="RIGHT_SHIN_LINK" />
+    <child link="RIGHT_ANKLE_LINK" />
+    <limit effort="1000" lower="-1.0472" upper="0.698132" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_ANKLE_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.01" />
+    <axis xyz="1 0 0" />
+    <parent link="LEFT_ANKLE_LINK" />
+    <child link="LEFT_FOOT_LINK" />
+    <limit effort="1000" lower="-0.436332" upper="0.436332" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_ANKLE_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.01" />
+    <axis xyz="1 0 0" />
+    <parent link="RIGHT_ANKLE_LINK" />
+    <child link="RIGHT_FOOT_LINK" />
+    <limit effort="1000" lower="-0.436332" upper="0.436332" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="SPINE_Z" type="revolute">
+    <origin rpy="0 0 0" xyz="0.08 0 0.00635" />
+    <axis xyz="0 0 1" />
+    <parent link="PELVIS_LINK" />
+    <child link="SPINE_YAW_LINK" />
+    <limit effort="1000" lower="-1.0472" upper="1.0472" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="SPINE_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0.08205" />
+    <axis xyz="1 0 0" />
+    <parent link="SPINE_YAW_LINK" />
+    <child link="SPINE_ROLL_LINK" />
+    <limit effort="1000" lower="-0.523599" upper="0.523599" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="SPINE_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0.01" />
+    <axis xyz="0 1 0" />
+    <parent link="SPINE_ROLL_LINK" />
+    <child link="TORSO_LINK" />
+    <limit effort="1000" lower="-1.0472" upper="1.0472" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_SHOULDER_Y" type="revolute">
+    <origin rpy="0.785398 0 -0.785398" xyz="0.05 0.165 0.173" />
+    <axis xyz="0 1 0" />
+    <parent link="TORSO_LINK" />
+    <child link="LEFT_SHOULDER_PITCH_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_SHOULDER_X" type="revolute">
+    <origin rpy="2.356194 3.1415492 3.1415492" xyz="0 0.14 0" />
+    <axis xyz="-1 0 0" />
+    <parent link="LEFT_SHOULDER_PITCH_LINK" />
+    <child link="LEFT_SHOULDER_ROLL_LINK" />
+    <limit effort="1000" lower="-3.141592" upper="0.785398" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_SHOULDER_Z" type="revolute">
+    <origin rpy="0 0 0.785398" xyz="-0.09 0 0" />
+    <axis xyz="0 0 1" />
+    <parent link="LEFT_SHOULDER_ROLL_LINK" />
+    <child link="LEFT_SHOULDER_YAW_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_ELBOW_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.4" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_SHOULDER_YAW_LINK" />
+    <child link="LEFT_ELBOW_PITCH_LINK" />
+    <limit effort="1000" lower="-2.79253" upper="1.22173" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_WRIST_Z" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.025 0.025 0" />
+    <axis xyz="0 0 1" />
+    <parent link="LEFT_ELBOW_PITCH_LINK" />
+    <child link="LEFT_WRIST_YAW_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_WRIST_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.3515" />
+    <axis xyz="1 0 0" />
+    <parent link="LEFT_WRIST_YAW_LINK" />
+    <child link="LEFT_WRIST_ROLL_LINK" />
+    <limit effort="1000" lower="-2.61799" upper="2.61799" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="LEFT_WRIST_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <axis xyz="0 1 0" />
+    <parent link="LEFT_WRIST_ROLL_LINK" />
+    <child link="LEFT_WRIST_PITCH_LINK" />
+    <limit effort="1000" lower="-3.141592" upper="0.785398" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_SHOULDER_Y" type="revolute">
+    <origin rpy="0.785398 3.1415492 0.785398" xyz="0.05 -0.165 0.173" />
+    <axis xyz="0 -1 0" />
+    <parent link="TORSO_LINK" />
+    <child link="RIGHT_SHOULDER_PITCH_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_SHOULDER_X" type="revolute">
+    <origin rpy="2.356194 0 0" xyz="0 -0.14 0" />
+    <axis xyz="-1 0 0" />
+    <parent link="RIGHT_SHOULDER_PITCH_LINK" />
+    <child link="RIGHT_SHOULDER_ROLL_LINK" />
+    <limit effort="1000" lower="-3.141592" upper="0.785398" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_SHOULDER_Z" type="revolute">
+    <origin rpy="0 0 2.35619449" xyz="0.09 0 0" />
+    <axis xyz="0 0 -1" />
+    <parent link="RIGHT_SHOULDER_ROLL_LINK" />
+    <child link="RIGHT_SHOULDER_YAW_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_ELBOW_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.4" />
+    <axis xyz="0 -1 0" />
+    <parent link="RIGHT_SHOULDER_YAW_LINK" />
+    <child link="RIGHT_ELBOW_PITCH_LINK" />
+    <limit effort="1000" lower="-1.22173" upper="2.79253" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_WRIST_Z" type="revolute">
+    <origin rpy="0 0 0" xyz="-0.025 -0.025 0" />
+    <axis xyz="0 0 1" />
+    <parent link="RIGHT_ELBOW_PITCH_LINK" />
+    <child link="RIGHT_WRIST_YAW_LINK" />
+    <limit effort="1000" lower="-1.5708" upper="1.5708" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_WRIST_X" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 -0.3515" />
+    <axis xyz="1 0 0" />
+    <parent link="RIGHT_WRIST_YAW_LINK" />
+    <child link="RIGHT_WRIST_ROLL_LINK" />
+    <limit effort="1000" lower="-2.61799" upper="2.61799" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_WRIST_Y" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <axis xyz="0 -1 0" />
+    <parent link="RIGHT_WRIST_ROLL_LINK" />
+    <child link="RIGHT_WRIST_PITCH_LINK" />
+    <limit effort="1000" lower="-0.785398" upper="3.141592" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<link name="PELVIS_LINK">
+  <inertial>
+    <mass value="22.09173958"/>
+    <origin rpy="0 0 0" xyz="0.02073086 2.023E-05 -0.0309812"/>
+    <inertia ixx="0.0942" ixy="6.05E-06" ixz="0.000379" iyy="0.0416" iyz="3.37E-07" izz="0.112" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/pelvis.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_HIP_YAW_LINK">
+  <inertial>
+    <mass value="1.814"/>
+    <origin rpy="0 0 0" xyz="-0.00629727 0.00606893 -0.03971844"/>
+    <inertia ixx="0.004741914" ixy="0.000527" ixz="-0.000307" iyy="0.00414" iyz="1.36E-05" izz="0.00569" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_hip_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_HIP_YAW_LINK">
+  <inertial>
+    <mass value="1.814"/>
+    <origin rpy="0 0 0" xyz="-0.00629727 -0.00606893 -0.03971844"/>
+    <inertia ixx="0.004741914" ixy="-0.000527" ixz="-0.000307" iyy="0.00414" iyz="-1.36E-05" izz="0.00569" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_hip_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_HIP_ROLL_LINK">
+  <inertial>
+    <mass value="0.762"/>
+    <origin rpy="0 0 0" xyz="-0.01327037 0.00316985 -0.05399997"/>
+    <inertia ixx="0.001028994" ixy="-9.31E-06" ixz="0.000352" iyy="0.00138" iyz="3.22E-05" izz="0.000663" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_hip_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_HIP_ROLL_LINK">
+  <inertial>
+    <mass value="0.762"/>
+    <origin rpy="0 0 0" xyz="-0.01327037 -0.00316985 -0.05399997"/>
+    <inertia ixx="0.001028994" ixy="9.31E-06" ixz="0.000352" iyy="0.00138" iyz="-3.22E-05" izz="0.000663" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_hip_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_THIGH_LINK">
+  <inertial>
+    <mass value="10.953"/>
+    <origin rpy="0 0 0" xyz="-0.00093749 0.01134511 -0.17863144"/>
+    <inertia ixx="0.1622268263" ixy="-0.000749" ixz="0.0156" iyy="0.174" iyz="0.00213" izz="0.0528" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_thigh.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_THIGH_LINK">
+  <inertial>
+    <mass value="10.953"/>
+    <origin rpy="0 0 0" xyz="-0.00093749 -0.01134511 -0.17863144"/>
+    <inertia ixx="0.1622268263" ixy="0.000749" ixz="0.0156" iyy="0.174" iyz="-0.00213" izz="0.0528" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_thigh.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_KNEE_LINKAGE_LINK">
+  <inertial>
+    <mass value="0.936"/>
+    <origin rpy="0 0 0" xyz="0.00901763 0.00753613 -0.04368231"/>
+    <inertia ixx="0.002617337" ixy="3.06E-07" ixz="0.000313" iyy="0.00159" iyz="1.51E-06" izz="0.00128" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_knee_linkage.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_KNEE_LINKAGE_LINK">
+  <inertial>
+    <mass value="0.936"/>
+    <origin rpy="0 0 0" xyz="0.00901763 -0.00753613 -0.04368231"/>
+    <inertia ixx="0.002617337" ixy="-3.06E-07" ixz="0.000313" iyy="0.00159" iyz="-1.51E-06" izz="0.00128" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_knee_linkage.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_KNEE_SHELL_LINK">
+  <inertial>
+    <mass value="1.101"/>
+    <origin rpy="0 0 0" xyz="0.02489954 0.00826196 -0.05330217"/>
+    <inertia ixx="0.00642" ixy="-3.64E-05" ixz="1.43E-05" iyy="0.00456" iyz="-6.54E-05" izz="0.00566" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_knee_shell.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_KNEE_SHELL_LINK">
+  <inertial>
+    <mass value="1.101"/>
+    <origin rpy="0 0 0" xyz="0.02489954 -0.00826196 -0.05330217"/>
+    <inertia ixx="0.00642" ixy="3.64E-05" ixz="1.43E-05" iyy="0.00456" iyz="6.54E-05" izz="0.00566" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_knee_shell.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_SHIN_LINK">
+  <inertial>
+    <mass value="5.42"/>
+    <origin rpy="0 0 0" xyz="-0.01841492 0.00228086 -0.22054239"/>
+    <inertia ixx="0.064437783" ixy="-0.000214" ixz="-0.00538" iyy="0.0583" iyz="-0.000962" izz="0.0136" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_shin.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_SHIN_LINK">
+  <inertial>
+    <mass value="5.42"/>
+    <origin rpy="0 0 0" xyz="-0.01837047 -0.00241134 -0.21991278"/>
+    <inertia ixx="0.064443143" ixy="0.000202" ixz="-0.00539" iyy="0.0583" iyz="0.000906" izz="0.0136" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_shin.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_ANKLE_LINK">
+  <inertial>
+    <mass value="0.56"/>
+    <origin rpy="0 0 0" xyz="-0.00072338 -6.619E-05 -0.00399965"/>
+    <inertia ixx="0.000459" ixy="2.65E-08" ixz="-2.43E-06" iyy="0.000336" iyz="1.48E-07" izz="0.000645" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/ankle.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_ANKLE_LINK">
+  <inertial>
+    <mass value="0.56"/>
+    <origin rpy="0 0 0" xyz="-0.00072338 6.619E-05 -0.00399965"/>
+    <inertia ixx="0.000459" ixy="-2.65E-08" ixz="-2.43E-06" iyy="0.000336" iyz="-1.48E-07" izz="0.000645" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/ankle.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_FOOT_LINK">
+  <inertial>
+    <mass value="2.096"/>
+    <origin rpy="0 0 0" xyz="0.032048 -4E-06 -0.028422"/>
+    <inertia ixx="0.00261" ixy="3.59E-07" ixz="0.00102" iyy="0.011" iyz="2.99E-07" izz="0.0121" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/foot.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_FOOT_LINK">
+  <inertial>
+    <mass value="2.096"/>
+    <origin rpy="0 0 0" xyz="0.032048 4E-06 -0.028422"/>
+    <inertia ixx="0.00261" ixy="-3.59E-07" ixz="0.00102" iyy="0.011" iyz="-2.99E-07" izz="0.0121" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/foot.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="SPINE_YAW_LINK">
+  <inertial>
+    <mass value="2.36218539415472"/>
+    <origin rpy="0 0 0" xyz="-0.00853118 -2.697E-05 0.03791445"/>
+    <inertia ixx="0.00374289408" ixy="1.25497934E-07" ixz="0.000271325072" iyy="0.00403002777" iyz="-1.38015692E-07" izz="0.0062129847" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/spine_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="SPINE_ROLL_LINK">
+  <inertial>
+    <mass value="0.600173767011269"/>
+    <origin rpy="0 0 0" xyz="-0.01904983 7E-08 0.01979244"/>
+    <inertia ixx="0.000373262301" ixy="-1.51441878E-10" ixz="-6.69067307E-05" iyy="0.000649978475" iyz="-1.27858402E-10" izz="0.000419408851" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/spine_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="TORSO_LINK">
+  <inertial>
+    <mass value="23.4184601199744"/>
+    <origin rpy="0 0 0" xyz="-0.03613868 -2.81E-06 0.25908586"/>
+    <inertia ixx="0.534504681" ixy="8.41519717E-05" ixz="-0.00672956305" iyy="0.505409852" iyz="0.000207996773" izz="0.379402013" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/torso.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_SHOULDER_PITCH_LINK">
+  <inertial>
+    <mass value="2.15589261"/>
+    <origin rpy="0 0 0" xyz="-0.00061517 0.08619519 -0.00070052"/>
+    <inertia ixx="0.00736431" ixy="9.025E-05" ixz="2.165E-05" iyy="0.00224199" iyz="4.387E-05" izz="0.00716415" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_shoulder_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_SHOULDER_ROLL_LINK">
+  <inertial>
+    <mass value="0.30700667"/>
+    <origin rpy="0 0 0" xyz="0.05852117 6.97E-06 -0.0147532"/>
+    <inertia ixx="0.00016911" ixy="-1.645E-07" ixz="4.498E-05" iyy="0.00024254" iyz="9.995E-08" izz="0.00024862" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_shoulder_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_SHOULDER_YAW_LINK">
+  <inertial>
+    <mass value="1.35705544"/>
+    <origin rpy="0 0 0" xyz="-0.00206549 -9.57E-05 -0.21227866"/>
+    <inertia ixx="0.04111522" ixy="2.502E-05" ixz="-0.00033157" iyy="0.04149294" iyz="-0.00053552" izz="0.00205424" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_shoulder_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_ELBOW_PITCH_LINK">
+  <inertial>
+    <mass value="0.21270667"/>
+    <origin rpy="0 0 0" xyz="-0.01686351 0.03150019 -0.03048447"/>
+    <inertia ixx="0.00022274" ixy="1.07E-06" ixz="-4.607E-05" iyy="0.00027199" iyz="-2.447E-07" izz="0.00011761" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_elbow_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_WRIST_YAW_LINK">
+  <inertial>
+    <mass value="1.36215261"/>
+    <origin rpy="0 0 0" xyz="-0.0493961 -0.00040517 -0.19874839"/>
+    <inertia ixx="0.01901181" ixy="-5.06E-06" ixz="-0.00374424" iyy="0.02039678" iyz="-5.162E-05" izz="0.00281203" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_wrist_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_WRIST_ROLL_LINK">
+  <inertial>
+    <mass value="0.08878"/>
+    <origin rpy="0 0 0" xyz="-0.03287224 0.0151452 0.00154896"/>
+    <inertia ixx="1.654E-05" ixy="-6.75E-06" ixz="-2.01E-06" iyy="4.551E-05" iyz="-3.977E-07" izz="4.368E-05" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_wrist_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="LEFT_WRIST_PITCH_LINK">
+  <inertial>
+    <mass value="0.86476928"/>
+    <origin rpy="0 0 0" xyz="-0.00703365 0.00143124 -0.04468126"/>
+    <inertia ixx="0.00271698" ixy="-5.47E-06" ixz="-0.00011746" iyy="0.0026955" iyz="-5.563E-05" izz="0.00068247" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/left_wrist_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_SHOULDER_PITCH_LINK">
+  <inertial>
+    <mass value="1.91982173"/>
+    <origin rpy="0 0 0" xyz="-0.00035826 -0.08483028 -0.00019984"/>
+    <inertia ixx="0.00661306" ixy="-3.857E-05" ixz="-3.07E-06" iyy="0.002" iyz="-1.54E-06" izz="0.00639663" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_shoulder_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_SHOULDER_ROLL_LINK">
+  <inertial>
+    <mass value="0.29060959"/>
+    <origin rpy="0 0 0" xyz="0.0580072 0 -0.015"/>
+    <inertia ixx="0.0001679" ixy="1.232E-11" ixz="3.536E-05" iyy="0.00022202" iyz="-3.293E-10" izz="0.00023384" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_shoulder_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_SHOULDER_YAW_LINK">
+  <inertial>
+    <mass value="1.35705544"/>
+    <origin rpy="0 0 0" xyz="-0.00479811 0.0011108 -0.22568679"/>
+    <inertia ixx="0.03578036" ixy="-5.5E-06" ixz="-0.00038162" iyy="0.03611672" iyz="0.00026423" izz="0.00126808" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_shoulder_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_ELBOW_PITCH_LINK">
+  <inertial>
+    <mass value="0.15240729"/>
+    <origin rpy="0 0 0" xyz="-0.01712318 -0.02965684 -0.03207382"/>
+    <inertia ixx="0.00014064" ixy="-4.05E-06" ixz="-3.194E-05" iyy="0.00017745" iyz="-7.29E-06" izz="6.356E-05" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_elbow_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_WRIST_YAW_LINK">
+  <inertial>
+    <mass value="0.94923182"/>
+    <origin rpy="0 0 0" xyz="-0.04386733 0.00016634 -0.20283717"/>
+    <inertia ixx="0.01447767" ixy="3.6E-06" ixz="-0.00309274" iyy="0.01543563" iyz="1.983E-05" izz="0.00166222" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_wrist_yaw.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_WRIST_ROLL_LINK">
+  <inertial>
+    <mass value="0.06787294"/>
+    <origin rpy="0 0 0" xyz="-0.03446913 -0.01510164 0.00307072"/>
+    <inertia ixx="1.256E-05" ixy="4.35E-06" ixz="-2.23E-06" iyy="3.499E-05" iyz="7.281E-07" izz="3.295E-05" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_wrist_pitch.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+<link name="RIGHT_WRIST_PITCH_LINK">
+  <inertial>
+    <mass value="0.8001314"/>
+    <origin rpy="0 0 0" xyz="-0.00593976 -0.00113474 -0.05258741"/>
+    <inertia ixx="0.00256548" ixy="9.28E-06" ixz="-8.095E-05" iyy="0.00257318" iyz="5.619E-05" izz="0.0005269" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/right_wrist_roll.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+</robot>

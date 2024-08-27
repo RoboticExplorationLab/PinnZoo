@@ -1,0 +1,16 @@
+import os, sys
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.abspath("../../src"))
+from symbolic_generator import SymbolicGenerator
+
+symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf', 
+                             floating = True,
+                             kinematics_bodies=['L_C', 'R_C'],
+                             gen_dir="./generated_code/simple_1cp")
+symb_gen.generate()
+symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf', 
+                             floating = True,
+                             kinematics_bodies=['L_FL', 'L_FR', 'L_RL', 'L_RR',
+                                                'R_FL', 'R_FR', 'R_RL', 'R_RR'],
+                             gen_dir="./generated_code/simple_4cp")
+symb_gen.generate()
