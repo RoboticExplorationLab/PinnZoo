@@ -23,9 +23,9 @@ struct Nadia <: PinnZooModel
         local lib
         try
             if simple && nc_per_foot == 1
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go1.so"))
-            elseif simple && nc_per_foot == 1
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go1.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
+            elseif simple && nc_per_foot == 4
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
             else
                 println("specified configuration is not yet supported")
                 @error ""

@@ -1,4 +1,6 @@
 # Functions that are generic to Quadruped models (specifically Unitree Go1 and Go2)
+abstract type Quadruped <: PinnZooModel end
+
 @doc raw"""
     error_jacobian(quad::Quadruped, x)
 
