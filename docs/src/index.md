@@ -1,6 +1,10 @@
 # PinnZoo.jl Documentation
+
+```@contents
+```
+
 ### Conventions
-- Quaternions use \[$$q_w$$ $$q_x$$ $$q_y$$ $$q_z$$\] order and represent body to world rotations
+- Quaternions use \[$$q_w$$ $$q_x$$ $$q_y$$ $$q_z$$\] order and represent body to world rotations, using Hamilton's convention $$i^2 = j^2 = k^2 = -1$$
 - Floating base joints use \[$$x$$ $$y$$ $$z$$ $$q_w$$ $$q_x$$ $$q_y$$ $$q_z$$\]$ order where the position is in the world frame
 - Linear and angular velocities corresponding to a floating base joint are in the body frame
 
@@ -28,6 +32,11 @@ we refer to as $$E\_T$$ is not equal to $$E^T$$.
 
 When the translation velocity of a floating is in the body frame, but the position is in the world frame, so E(q) includes a body-to-world rotation matrix.
 
+## Index
+
+```@index
+```
+
 ## Dynamics Functions
 ```@docs
 M_func
@@ -44,4 +53,24 @@ kinematics
 kinematics_jacobian
 kinematics_velocity
 kinematics_velocity_jacobian
+```
+
+## Utility Functions
+```@docs
+is_floating
+zero_state
+randn_state
+init_state
+```
+
+## Quaternion functions
+```@docs
+quat_to_axis_angle
+axis_angle_to_quat
+quat_conjugate
+skew
+L_mult
+R_mult
+attitude_jacobian
+quat_to_rot
 ```

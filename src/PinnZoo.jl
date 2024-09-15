@@ -14,11 +14,39 @@ module PinnZoo
     include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
 
     # Defaults for models
+    """
+        is_floating(model::PinnZooModel)
+    
+    Return whether the model includes a floating base joint
+    """
     is_floating(model::PinnZooModel) = false
 
     # Generate state (override if state vector contains a quaternion)
+    """
+        zero_state(model::PinnZooModel)
+
+    Return the neutral state of the model.
+    !!! warning
+        This currently defaults to all zeros unless overridden and will be wrong if there is a quaternion in the state.
+    """
     zero_state(model::PinnZooModel) = zeros(model.nx)
+
+    """
+        randn_state(model::PinnZooModel)
+
+    Return a state vector where every coordinate is drawn from a normal distribution
+    !!! warning
+        This currently does not respect the unit norm constraint on quaternions unless overridden
+    """
     randn_state(model::PinnZooModel) = randn(model.nx)
+
+    """
+        init_state(model::PinnZooModel)
+
+    Return a custom initial state for the model (like standing) if defined, otherwise returns all zeros
+    !!! warning
+        This currently defaults to all zeros unless overridden and will be wrong if there is a quaternion in the state.
+    """
     init_state(model::PinnZooModel) = zeros(model.nx) # Define for each model if desired
 
     # Dynamics functions
