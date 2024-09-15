@@ -108,6 +108,5 @@ When generating code you can specify a set of bodies in the URDF to generate the
 - kinematics_velocity_jacobian(x) $\rightarrow$ jacobian of the kinematics_velocity function with respect to x. The first nq columns will be the same as the kinematics_jacobian. The last nv columns will be the same as the time derivative of the kinematics_jacobian.
 
 # TODO
-- Add generation of $E(q)$, the velocity kinematics
 - Generalize error_state and apply_Δx functions for any model with a quaternion in the state
 - Fix tests for quadruped (more general solution for joint order mismatches between RigidBodyDynamics.jl and Pinocchio)
