@@ -108,3 +108,6 @@ inverse_kinematics(model::Go2, x, foot_locs)
 ```
 
 ### IHMC Nadia
+```@docs
+Nadia
+```
