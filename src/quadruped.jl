@@ -1,4 +1,10 @@
 # Functions that are generic to Quadruped models (specifically Unitree Go1 and Go2)
+@doc raw"""
+    error_jacobian(quad::Quadruped, x)
+
+Return the jacobian mapping Δx to x where Δx is in the tangent space (look at state_error for our choice
+of tangent space).
+"""
 function error_jacobian(quad::Quadruped, x)
 
     return [
@@ -7,6 +13,12 @@ function error_jacobian(quad::Quadruped, x)
     ]
 end
 
+@doc raw"""
+    error_jacobian_T(quad::Quadruped, x)
+
+Return the jacobian mapping x to Δx where Δx is in the tangent space (look at state_error for our choice
+of tangent space).
+"""
 function error_jacobian_T(quad::Quadruped, x)
     return [
         velocity_kinematics_T(quad, x) zeros(quad.nv, length(x) - quad.nq)
@@ -14,6 +26,12 @@ function error_jacobian_T(quad::Quadruped, x)
     ]
 end
 
+@doc raw"""
+    apply_Δx(quad::Quadruped, x_k, Δx)
+
+Return Δx added to x while respecting the configuration space/tangent space relationship (i.e. do quaternion multiplication,
+rotate Δbody pos from body frame to world frame)
+"""
 function apply_Δx(quad::Quadruped, x_k, Δx)
     x_next = zeros(promote_type(eltype(x_k), eltype(Δx)), length(x_k))
     x_next[1:3] = x_k[1:3] + quat_to_rot(x_k[4:7])*Δx[1:3]
@@ -22,6 +40,12 @@ function apply_Δx(quad::Quadruped, x_k, Δx)
     return x_next
 end
 
+@doc raw"""
+    state_error(quad::Quadruped, x, x0)
+
+Return the state_error between x and x0, using axis-angles for quaternion error, and representing body position error in the
+body frame (matches with body velocity convention).
+"""
 function state_error(quad::Quadruped, x, x0)
     return [
         quat_to_rot(x0[4:7])'*(x[1:3] - x0[1:3])
@@ -30,12 +54,21 @@ function state_error(quad::Quadruped, x, x0)
     ]
 end
 
-# Input jacobian
+@doc raw"""
+    B_func(quad::Quadruped)
+
+Return the input jacobian mapping motor torques into joint torques
+"""
 function B_func(quad::Quadruped)
     return [zeros(6, 12); I(12)]
 end
 
-# Attempt to wrap joints into joint limits
+@doc raw"""
+    fix_joint_limits(model::Quadruped, x; supress_error = false)
+
+Return x with joint angles wrapped to 2pi to fit within joint limits if possible. If not
+and supress_error is false, this will error. Otherwise, this will return a clamped version.
+"""
 function fix_joint_limits(model::Quadruped, x; supress_error = false)
     x = copy(x)
     success = true
@@ -60,7 +93,12 @@ function fix_joint_limits(model::Quadruped, x; supress_error = false)
     return x
 end
 
-# Solve for ik nearest to the given reference
+@doc raw"""
+    nearest_ik(model::Quadruped, q, foot_locs; obey_limits = true)
+
+Return the ik solution for the given foot_locs and body orientation in q that is closest to the current
+joint angles in q (defined by minimum norm per joint).
+"""
 function nearest_ik(model::Quadruped, q, foot_locs; obey_limits = true)
     q = copy(q)
     foot_q = inverse_kinematics(model, q, foot_locs)
