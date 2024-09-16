@@ -1,3 +1,8 @@
+@doc raw"""
+    Cartpole() <: PinnZooModel
+
+Return a Cartpole dynamics model
+"""
 struct Cartpole <: PinnZooModel
     urdf_path::String
     nq

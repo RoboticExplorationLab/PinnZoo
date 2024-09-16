@@ -1,3 +1,8 @@
+@doc raw"""
+    Go1(; μ = 0.3) <: Quadruped
+
+Return the Unitree Go1 dynamics and kinematics model
+"""
 struct Go1 <: Quadruped
     urdf_path::String
     state_order::Vector{String}
@@ -81,6 +86,12 @@ end
 is_floating(model::Go1) = true
 zero_state(model::Go1) = [zeros(3); 1; zeros(model.nx - 4)]
 randn_state(model::Go1) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
+
+@doc raw"""
+    init_state(model::Go1)
+
+Return state vector with the robot on the ground in the starting pose
+"""
 function init_state(model::Go1)
     x = zero_state(model)
     x[3] = 0.058
@@ -90,6 +101,12 @@ function init_state(model::Go1)
     return x
 end
 
+@doc raw"""
+    inverse_kinematics(model::Go1, x, foot_locs)
+
+Return 12 by 2 matrix containing the 2 possible joint angle solutions that put the feet at foot_locs given
+the body pose in x. Will be populated with NaN or Inf if solutions don't exist.
+"""
 function inverse_kinematics(model::Go1, x, foot_locs)
     # Leg variables
     hip_to_thigh = 0.08

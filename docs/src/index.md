@@ -74,3 +74,37 @@ R_mult
 attitude_jacobian
 quat_to_rot
 ```
+
+## Quadruped functions
+TODO: Generalize state error and related functions to all models
+```@docs
+state_error
+apply_Δx
+error_jacobian
+error_jacobian_T
+B_func
+fix_joint_limits
+nearest_ik
+```
+
+# Models
+### Cartpole
+```@docs
+Cartpole
+```
+
+### Unitree Go1
+```@docs
+Go1
+init_state(model::Go1)
+inverse_kinematics(model::Go1, x, foot_locs)
+```
+
+### Unitree Go2
+```@docs
+Go2
+init_state(model::Go2)
+inverse_kinematics(model::Go2, x, foot_locs)
+```
+
+### IHMC Nadia
