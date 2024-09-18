@@ -1,6 +1,6 @@
 <mujoco model="nadia scene">
   <include file="nadiaV17.fullRobot.simpleKnees.cycloidArms.xml"/>
-  <option integrator="implicitfast" impratio="100"/>
+  <option integrator="implicitfast" impratio="10000" noslip_iterations="5" noslip_tolerance="1e-10" cone="elliptic" />
 
   <statistic center="0 0 0.1" extent="0.8"/>
 
