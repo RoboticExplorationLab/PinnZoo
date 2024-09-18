@@ -4,8 +4,8 @@
   <default>
     <default class="collision">
         <default class="foot">
-          <geom pos="0 0 0"  priority="1" condim="6"
-            friction="1 0.02 0.01" type="mesh" mesh="foot"/>
+          <geom pos="0 0 0"  priority="1" condim="6" solimp="0 0.95 0.001 0.5 2"
+            friction="1 0.02 0.01" type="sphere" size="0.008"/>
         </default>
         <default class="torso">
           <geom pos="0 0 0"  priority="1" condim="6"
@@ -68,7 +68,10 @@
                   <inertial pos="0.0307545 7.807e-05 -0.0438247" quat="0.436273 0.55545 0.558752 0.434668" mass="1.75" diaginertia="0.00955766 0.00916707 0.00309615"/>
                   <joint name="LEFT_ANKLE_X" pos="0 0 0" axis="1 0 0" range="-0.436332 0.436332" actuatorfrcrange="-1000 1000" damping="0.05"/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="foot"/>
-                  <geom name="LEFT" class="foot"/>
+                  <geom name="L_RL" class="foot" pos = "-0.072  0.038 -0.08"/>
+                  <geom name="L_RR" class="foot" pos = "-0.072 -0.038 -0.08"/>
+                  <geom name="L_FL" class="foot" pos = "0.178  0.021 -0.08"/>
+                  <geom name="L_FR" class="foot" pos = "0.178 -0.021 -0.08"/>
                 </body>
               </body>
             </body>
@@ -99,7 +102,11 @@
                   <inertial pos="0.032048 4e-06 -0.028422" quat="0.436273 0.55545 0.558752 0.434668" mass="1.75" diaginertia="0.00955766 0.00916707 0.00309615"/>
                   <joint name="RIGHT_ANKLE_X" pos="0 0 0" axis="1 0 0" range="-0.436332 0.436332" actuatorfrcrange="-1000 1000" damping="0.05"/>
                   <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="foot"/>
-                  <geom name="RIGHT" class="foot"/>
+                  <!-- <geom name="RIGHT" class="foot"/> -->
+                  <geom name="R_RL" class="foot" pos = "-0.072  0.038 -0.08"/>
+                  <geom name="R_RR" class="foot" pos = "-0.072 -0.038 -0.08"/>
+                  <geom name="R_FL" class="foot" pos = "0.178  0.021 -0.08"/>
+                  <geom name="R_FR" class="foot" pos = "0.178 -0.021 -0.08"/>
                 </body>
               </body>
             </body>

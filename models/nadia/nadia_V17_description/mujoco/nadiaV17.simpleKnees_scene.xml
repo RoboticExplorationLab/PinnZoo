@@ -1,5 +1,6 @@
 <mujoco model="nadia scene">
   <include file="nadiaV17.fullRobot.simpleKnees.cycloidArms.xml"/>
+  <option integrator="implicitfast" impratio="100"/>
 
   <statistic center="0 0 0.1" extent="0.8"/>
 
@@ -18,7 +19,7 @@
 
   <worldbody>
     <light directional="true" diffuse=".8 .8 .8" pos="0 0 10" dir="0 0 -10"/>
-    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" priority="1" condim="6"
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" priority="2" condim="6" solimp="0 0.95 0.001 0.5 2"
             friction="1 0.02 0.01"/>
   </worldbody>
 </mujoco>
