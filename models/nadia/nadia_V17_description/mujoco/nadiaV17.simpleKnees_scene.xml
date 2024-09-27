@@ -2,12 +2,12 @@
   <include file="nadiaV17.fullRobot.simpleKnees.cycloidArms.xml"/>
   <option integrator="implicitfast" impratio="10000" noslip_iterations="5" noslip_tolerance="1e-10" cone="elliptic" />
 
-  <statistic center="0 0 0.1" extent="0.8"/>
+  <statistic center="0 0 0.7" extent="1.5"/>
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
     <rgba haze="0.15 0.25 0.35 1"/>
-    <global azimuth="-130" elevation="-20"/>
+    <global azimuth="170" elevation="-7" />
   </visual>
 
   <asset>
