@@ -11,6 +11,8 @@ struct Nadia <: PinnZooModel
     nx
     nu
     nc
+    orders::Dict{Symbol, StateOrder}
+    conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     μ::Float64 # Friction coefficient
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
@@ -45,6 +47,13 @@ struct Nadia <: PinnZooModel
             urdf_path = joinpath(MODEL_DIR, "nadia/nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf")
         end
 
+        # Set up orders and conversions
+        orders, conversions = init_conversions(lib)
+        nq = length(orders[:nominal].config_names)
+        nv = length(orders[:nominal].vel_names)
+        nx = nq + nv
+        nu = length(orders[:nominal].torque_names)
+
         # Dynamics
         M_func_ptr = dlsym(lib, :M_func_wrapper)
         C_func_ptr = dlsym(lib, :C_func_wrapper)
@@ -69,7 +78,7 @@ struct Nadia <: PinnZooModel
 
         return new(
             urdf_path,
-            30, 29, 30 + 29, 23, nc_per_foot*2,
+            nq, nv, nx, nu, nc_per_foot*2, orders, conversions,
             μ,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
             inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,

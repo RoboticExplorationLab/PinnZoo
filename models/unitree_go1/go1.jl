@@ -10,6 +10,8 @@ struct Go1 <: Quadruped
     nv
     nx
     nu
+    orders::Dict{Symbol, StateOrder}
+    conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     μ::Float64 # Friction coefficient
     torque_limits::Vector{Float64}
     joint_limits::Matrix{Float64}
@@ -36,6 +38,13 @@ struct Go1 <: Quadruped
 
         # Path to URDF (useful for visualization/testing)
         urdf_path = joinpath(MODEL_DIR, "unitree_go1/go1.urdf")
+
+        # Set up orders and conversions
+        orders, conversions = init_conversions(lib)
+        nq = length(orders[:nominal].config_names)
+        nv = length(orders[:nominal].vel_names)
+        nx = nq + nv
+        nu = length(orders[:nominal].torque_names)
 
         # Definition of state_order
         state_order = ["x", "y", "z", "q_w", "q_x", "q_y", "q_z", 
@@ -72,7 +81,7 @@ struct Go1 <: Quadruped
 
         return new(
             urdf_path, state_order,
-            19, 18, 18 + 19, 12,
+            nq, nv, nx, nu, orders, conversions,
             μ, torque_limits, joint_limits,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
             inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,

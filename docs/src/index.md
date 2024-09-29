@@ -37,6 +37,23 @@ When the translation velocity of a floating is in the body frame, but the positi
 ```@index
 ```
 
+## Order Conversion Functions
+The functions below can be used as helpers to convert between different vector orders to help interfacing with different dynamics packages.
+For example, to use a configuration vector from this package in mujoco, you can do
+```
+q_mujoco = change_order(model, q_pinnzo, :nominal, :mujoco)
+```
+
+```@docs
+StateOrder
+ConversionIndices
+change_order!
+change_order
+change_orders!
+change_orders
+generate_conversions
+```
+
 ## Dynamics Functions
 ```@docs
 M_func
