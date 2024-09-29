@@ -7,6 +7,9 @@ module PinnZoo
     const SHARED_LIBRARY_DIR = joinpath(@__DIR__, "../build")
     const MODEL_DIR = joinpath(@__DIR__, "../models")
 
+    # Vector order functions (helps with conversions between our convention, MuJoCo, and RigidBodyDynamics)
+    include(joinpath(@__DIR__, "vector_orders.jl"))
+
     # Dynamics functions (from codegen)
     include(joinpath(@__DIR__, "dynamics.jl"))
     
@@ -64,6 +67,10 @@ module PinnZoo
     ## Exports
     # Types
     export PinnZooModel
+
+    # Conversions
+    export StateOrder, ConversionIndices, generate_conversions
+    export change_order, change_order!, change_orders, change_orders!
 
     # Code-genned functions
     export is_floating, zero_state, init_state, randn_state

@@ -6,11 +6,13 @@ from symbolic_generator import SymbolicGenerator
 symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf', 
                              floating = True,
                              kinematics_bodies=['L_C', 'R_C'],
-                             gen_dir="./generated_code/simple_1cp")
+                             gen_dir="./generated_code/simple_1cp",
+                             actuated_dofs = slice(6,29))
 symb_gen.generate()
 symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf', 
                              floating = True,
                              kinematics_bodies=['L_FL', 'L_FR', 'L_RL', 'L_RR',
                                                 'R_FL', 'R_FR', 'R_RL', 'R_RR'],
-                             gen_dir="./generated_code/simple_4cp")
+                             gen_dir="./generated_code/simple_4cp",
+                             actuated_dofs = slice(6,29))
 symb_gen.generate()

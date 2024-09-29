@@ -8,7 +8,7 @@ import numpy as np
 
 class SymbolicGenerator:
     def __init__(self, urdf_path, gen_dir = "./generated_code", 
-                 kinematics_bodies = [], floating = False, mesh_dir="."):
+                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None):
         # Load the URDF model
         if floating:
             self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
@@ -36,6 +36,12 @@ class SymbolicGenerator:
         # and define the state vector order
         self.define_state_order()
 
+        # Define actuators
+        if actuated_dofs is None:
+            self.torque_order = self.state_order[self.nq:]
+        else:
+            self.torque_order = self.state_order[self.nq:][actuated_dofs]
+
         # Create directory to save files to if it doesn't exist
         self.gen_dir = os.path.abspath(gen_dir)
         if not os.path.exists(self.gen_dir):
@@ -54,6 +60,7 @@ class SymbolicGenerator:
         
         # Print state vector order
         print("\n\tState vector order:", self.state_order)
+        print("\n\tTorque order:", self.torque_order)
 
         # Check that the bodies in kinematics_bodies actually exist
         for body in kinematics_bodies:
@@ -67,6 +74,7 @@ class SymbolicGenerator:
 
         # Define config and velocity vectors to pass to Pinocchio functions
         # pinn_x and x may have different orders (i.e. our convention vs Pinocchios for quaternions)
+        # refer to define_state_order
         self.q = self.pinn_x[:self.nq]
         self.v = self.pinn_x[self.nq:]
         self.q_dot = self.pinn_x_dot[:self.nq]
@@ -78,6 +86,8 @@ class SymbolicGenerator:
         # Change directory for output
         orig_dir = os.getcwd()
         os.chdir(self.gen_dir)
+
+        self.generate_order_functions()
 
         self.generate_dynamics()
 
@@ -160,6 +170,32 @@ class SymbolicGenerator:
         kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
 
         print("Generated kinematics")
+
+    def generate_order_functions(self):
+        with open('vector_orders.c', 'w') as f:
+            f.write('#include <stdio.h>\n\n')
+            f.write('const char* config_names[] = {\n')
+            for name in self.state_order[:self.nq]:
+                f.write(f'    "{name}",\n')
+            f.write('};\n\n')
+            f.write('const char* vel_names[] = {\n')
+            for name in self.state_order[self.nq:]:
+                f.write(f'    "{name}",\n')
+            f.write('};\n\n')
+            f.write('const char* torque_names[] = {\n')
+            for name in self.torque_order:
+                f.write(f'    "{name}",\n')
+            f.write('};\n\n')
+            f.write('const char** get_config_order() {\n')
+            f.write('    return config_names;\n')
+            f.write('}\n')
+            f.write('const char** get_vel_order() {\n')
+            f.write('    return vel_names;\n')
+            f.write('}\n')
+            f.write('const char** get_torque_order() {\n')
+            f.write('    return torque_names;\n')
+            f.write('}\n')
+
 
     def define_state_order(self):
         # Define state order
