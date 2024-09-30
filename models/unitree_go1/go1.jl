@@ -10,6 +10,7 @@ struct Go1 <: Quadruped
     nv
     nx
     nu
+    nc
     orders::Dict{Symbol, StateOrder}
     conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     μ::Float64 # Friction coefficient
@@ -81,7 +82,7 @@ struct Go1 <: Quadruped
 
         return new(
             urdf_path, state_order,
-            nq, nv, nx, nu, orders, conversions,
+            nq, nv, nx, nu, length(kinematics_bodies), orders, conversions,
             μ, torque_limits, joint_limits,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
             inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,

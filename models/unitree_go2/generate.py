@@ -5,5 +5,6 @@ from symbolic_generator import SymbolicGenerator
 
 symb_gen = SymbolicGenerator('go2.urdf', 
                              floating = True,
-                             kinematics_bodies=['FL_foot', 'FR_foot', 'RL_foot', 'RR_foot'])
+                             kinematics_bodies=['FL_foot', 'FR_foot', 'RL_foot', 'RR_foot'],
+                             actuated_dofs = slice(6,18))
 symb_gen.generate()
