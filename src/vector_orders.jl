@@ -13,7 +13,7 @@
 #         This is necessary for the conversion function, which uses size to determine the type of the input.
 
 @doc raw"""
-    StateOrder(config_names, vel_names, torque_names = vel_names[6 + 1:end])
+    StateOrder(config_names, vel_names, torque_names = vel_names)
 
 Struct containing the orders of the configuration, velocity and torque vectors. Can be used to
 help convert between different vector orderings
@@ -22,7 +22,7 @@ struct StateOrder
     config_names::Vector{Symbol}
     vel_names::Vector{Symbol}
     torque_names::Vector{Symbol}
-    function StateOrder(config_names, vel_names, torque_names = vel_names[6 + 1:end])
+    function StateOrder(config_names, vel_names, torque_names = vel_names)
         return new(config_names, vel_names, torque_names)
     end
 end
@@ -51,6 +51,10 @@ function create_conversion(orig_order::StateOrder, new_order::StateOrder)
     config = zeros(length(orig_order.config_names))
     velocity = zeros(length(orig_order.vel_names))
     torque = zeros(length(orig_order.torque_names))
+
+    @assert length(orig_order.config_names) == length(new_order.config_names) "config length doesn't match"
+    @assert length(orig_order.vel_names) == length(new_order.vel_names) "vel length doesn't match"
+    @assert length(orig_order.torque_names) == length(new_order.torque_names) "torque length doesn't match"
 
     # Get config indices
     for new_ind = 1:length(new_order.config_names)
@@ -232,9 +236,9 @@ function generate_conversions(orders::Dict{Symbol, StateOrder},
             conversion = create_conversion(orig_order, new_order)
 
             # Check conversions
-            @assert orig_order.config_names[conversion.config] == new_order.config_names
-            @assert orig_order.vel_names[conversion.velocity] == new_order.vel_names
-            @assert orig_order.torque_names[conversion.torque] == new_order.torque_names
+            @assert orig_order.config_names[conversion.config] == new_order.config_names (orig_order.config_names, new_order.config_names)
+            @assert orig_order.vel_names[conversion.velocity] == new_order.vel_names (orig_order.vel_names, new_order.vel_names)
+            @assert orig_order.torque_names[conversion.torque] == new_order.torque_names (orig_order.torque_names, new_order.torque_names)
 
             # Add to Dict
             conversions[(orig_type, new_type)] = conversion

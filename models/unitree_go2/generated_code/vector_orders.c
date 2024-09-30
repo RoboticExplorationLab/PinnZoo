@@ -44,12 +44,6 @@ const char* vel_names[] = {
 };
 
 const char* torque_names[] = {
-    "lin_v_x",
-    "lin_v_y",
-    "lin_v_z",
-    "ang_v_x",
-    "ang_v_y",
-    "ang_v_z",
     "FL_hip_joint",
     "FL_thigh_joint",
     "FL_calf_joint",
