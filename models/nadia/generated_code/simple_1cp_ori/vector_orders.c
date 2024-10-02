@@ -31,6 +31,7 @@ const char* config_names[] = {
     "RIGHT_SHOULDER_X",
     "RIGHT_SHOULDER_Z",
     "RIGHT_ELBOW_Y",
+    NULL
 };
 
 const char* vel_names[] = {
@@ -63,6 +64,7 @@ const char* vel_names[] = {
     "RIGHT_SHOULDER_X",
     "RIGHT_SHOULDER_Z",
     "RIGHT_ELBOW_Y",
+    NULL
 };
 
 const char* torque_names[] = {
@@ -89,6 +91,7 @@ const char* torque_names[] = {
     "RIGHT_SHOULDER_X",
     "RIGHT_SHOULDER_Z",
     "RIGHT_ELBOW_Y",
+    NULL
 };
 
 const char** get_config_order() {

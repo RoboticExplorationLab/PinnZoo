@@ -20,6 +20,7 @@ const char* config_names[] = {
     "RR_hip_joint",
     "RR_thigh_joint",
     "RR_calf_joint",
+    NULL
 };
 
 const char* vel_names[] = {
@@ -41,6 +42,7 @@ const char* vel_names[] = {
     "RR_hip_joint",
     "RR_thigh_joint",
     "RR_calf_joint",
+    NULL
 };
 
 const char* torque_names[] = {
@@ -56,6 +58,7 @@ const char* torque_names[] = {
     "RR_hip_joint",
     "RR_thigh_joint",
     "RR_calf_joint",
+    NULL
 };
 
 const char** get_config_order() {
