@@ -184,15 +184,15 @@ class SymbolicGenerator:
             f.write('const char* config_names[] = {\n')
             for name in self.state_order[:self.nq]:
                 f.write(f'    "{name}",\n')
-            f.write('};\n\n')
+            f.write('    NULL\n};\n\n')
             f.write('const char* vel_names[] = {\n')
             for name in self.state_order[self.nq:]:
                 f.write(f'    "{name}",\n')
-            f.write('};\n\n')
+            f.write('    NULL\n};\n\n')
             f.write('const char* torque_names[] = {\n')
             for name in self.torque_order:
                 f.write(f'    "{name}",\n')
-            f.write('};\n\n')
+            f.write('    NULL\n};\n\n')
             f.write('const char** get_config_order() {\n')
             f.write('    return config_names;\n')
             f.write('}\n')

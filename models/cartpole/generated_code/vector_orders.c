@@ -3,16 +3,19 @@
 const char* config_names[] = {
     "slider_to_cart",
     "cart_to_pole",
+    NULL
 };
 
 const char* vel_names[] = {
     "slider_to_cart",
     "cart_to_pole",
+    NULL
 };
 
 const char* torque_names[] = {
     "slider_to_cart",
     "cart_to_pole",
+    NULL
 };
 
 const char** get_config_order() {
