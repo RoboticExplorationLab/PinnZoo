@@ -91,7 +91,7 @@ module PinnZoo
     export is_floating, zero_state, init_state, randn_state
     export M_func, C_func, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
     export velocity_kinematics, velocity_kinematics_T
-    export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
+    export kinematics_size, kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
 
     export Cartpole, Go1, Go2, Nadia
 end

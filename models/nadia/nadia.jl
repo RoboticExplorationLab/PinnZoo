@@ -14,6 +14,7 @@ struct Nadia <: PinnZooModel
     orders::Dict{Symbol, StateOrder}
     conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     μ::Float64 # Friction coefficient
+    kinematics_ori::Bool # Whether the kinematics include orientation
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
@@ -27,7 +28,7 @@ struct Nadia <: PinnZooModel
     kinematics_jacobian_ptr::Ptr{Nothing}
     kinematics_velocity_ptr::Ptr{Nothing}
     kinematics_velocity_jacobian_ptr::Ptr{Nothing}
-    function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0)
+    function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = false)
         local lib
         try
             if simple && nc_per_foot == 1
@@ -79,7 +80,7 @@ struct Nadia <: PinnZooModel
         return new(
             urdf_path,
             nq, nv, nx, nu, nc_per_foot*2, orders, conversions,
-            μ,
+            μ, kinematics_ori,
             M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
             inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
             velocity_kinematics_ptr, velocity_kinematics_T_ptr,

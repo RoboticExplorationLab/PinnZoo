@@ -8,7 +8,7 @@ import numpy as np
 
 class SymbolicGenerator:
     def __init__(self, urdf_path, gen_dir = "./generated_code", 
-                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None):
+                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = False):
         # Load the URDF model
         if floating:
             self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
@@ -57,6 +57,7 @@ class SymbolicGenerator:
         print("\n\tJoints:",[name for name in self.model.names])
         if len(kinematics_bodies) > 0:
             print("\n\tKinematics:",kinematics_bodies)
+            print("\n\tInclude orientation:",kinematics_ori)
         
         # Print state vector order
         print("\n\tState vector order:", self.state_order)
@@ -68,6 +69,7 @@ class SymbolicGenerator:
                 print(f"\nERROR: Couldn't find body with name \"{body}\", check that it exists in the list above.")
                 sys.exit()
         self.kinematics_bodies = kinematics_bodies
+        self.kinematics_ori = kinematics_ori
 
     def generate(self):
         print("\nGenerating code")
@@ -143,24 +145,28 @@ class SymbolicGenerator:
         self.generate_velocity_kinematics()
 
         # Forward kinematics (world frame by default)
-        locs = []
+        kinematics = []
         for body in self.kinematics_bodies:
-            locs.append(self.cdata.oMf[self.cmodel.getFrameId(body)].translation)
-        locs = cs.vertcat(*locs)
+            kinematics.append(self.cdata.oMf[self.cmodel.getFrameId(body)].translation)
+            if self.kinematics_ori:
+                quat = self.rotation_matrix_to_quaternion(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
+                kinematics.append(quat)
+
+        kinematics = cs.vertcat(*kinematics)
 
         # Forward kinematics jacobian
-        J = cs.densify(cs.jacobian(locs, self.x)) # v block should be zero
+        J = cs.densify(cs.jacobian(kinematics, self.x)) # v block should be zero
 
         # Kinematics velocity (world frame by default)
-        locs_dot = J[:, :self.nq]@self.E@self.v
+        kinematics_dot = J[:, :self.nq]@self.E@self.v
 
         # # Kinematics velocity jacobian
-        J_dot = cs.densify(cs.jacobian(locs_dot, self.x))
+        J_dot = cs.densify(cs.jacobian(kinematics_dot, self.x))
 
         # Create CasADI functions
-        kinematics = cs.Function("kinematics", [self.x], [locs])
+        kinematics = cs.Function("kinematics", [self.x], [kinematics])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [J])
-        kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [locs_dot])
+        kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [J_dot])
 
         # Generate files
@@ -168,6 +174,7 @@ class SymbolicGenerator:
         kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
         kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
         kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+
 
         print("Generated kinematics")
 
@@ -291,4 +298,17 @@ class SymbolicGenerator:
         velocity_kinematics_T = cs.Function("velocity_kinematics_T", [self.x], [self.E_T])
         velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
         velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
+
+    def rotation_matrix_to_quaternion(self, R):
+
+        epsilon = 1e-7
+        trace = R[0,0] + R[1,1] + R[2,2]
+
+        # Compute qw, qx, qy, qz with additional checks
+        qw = cs.if_else(1 + trace > epsilon, cs.sqrt(1 + trace) / 2, 0)
+        qx = cs.if_else(cs.fabs(qw) > epsilon, (R[2,1] - R[1,2]) / (4 * qw), cs.sqrt(1 + R[0,0] - R[1,1] - R[2,2]) / 2)
+        qy = cs.if_else(cs.fabs(qw) > epsilon, (R[0,2] - R[2,0]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,1] + R[1,0]) / (4 * qx), cs.sqrt(1 + R[1,1] - R[0,0] - R[2,2]) / 2))
+        qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
+
+        return cs.vertcat(qw, qx, qy, qz)
 
