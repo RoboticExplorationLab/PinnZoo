@@ -30,19 +30,16 @@ struct Nadia <: PinnZooModel
     kinematics_velocity_jacobian_ptr::Ptr{Nothing}
     function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = false)
         local lib
-        try
-            if simple && nc_per_foot == 1 && kinematics_ori
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_ori.so"))
-            elseif simple && nc_per_foot == 1
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
-            elseif simple && nc_per_foot == 4
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
-            else
-                println("specified configuration is not yet supported")
-                @error ""
-            end
-        catch e
-            @error "Dynamics library wasn't found. Did you compile it using CMake?"
+        if simple && nc_per_foot == 1 && kinematics_ori
+            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_ori.so"))
+        elseif simple && nc_per_foot == 1
+            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
+        elseif simple && nc_per_foot == 4 && kinematics_ori
+            throw(error("specified configuration is not supported"))
+        elseif simple && nc_per_foot == 4 
+            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
+        else
+            throw(error("specified configuration is either not found or not supported. Did you compile?"))
         end
 
         # Path to URDF (useful for visualization/testing)
