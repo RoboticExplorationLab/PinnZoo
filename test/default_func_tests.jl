@@ -139,19 +139,15 @@ function test_default_functions(model::PinnZooModel)
     J2 = Matrix(FiniteDiff.finite_difference_jacobian(_x -> PinnZoo.kinematics(model, _x), x))
     @test norm(J1 - J2, Inf) < 1e-6
 
-    # Test kinematics velocity (TODO fix for q̇ != v)
-    if (model.nq != model.nv)
-        @warn "kinematics_velocity test is currently unsupported for models with quaternions"
-    else
-        locs_dot1 = kinematics_velocity(model, x)
-        locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*x[model.nq + 1:end]
-        @test norm(locs_dot1 - locs_dot2) < 1e-12
+    # Test kinematics velocity
+    locs_dot1 = kinematics_velocity(model, x)
+    locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*velocity_kinematics(model, x)*x[model.nq + 1:end]
+    @test norm(locs_dot1 - locs_dot2) < 1e-12
 
-        # Test kinematics velocity jacobian (TODO fix for q̇ != v, different ordering)
-        J_dot1 = kinematics_velocity_jacobian(model, x)
-        J_dot2 = FiniteDiff.finite_difference_jacobian(
-            _x -> kinematics_jacobian(model, _x)[:, 1:model.nq]*_x[model.nq + 1:end], x)
-        @test norm(J_dot1 - J_dot2) < 1e-6
-    end
+    # Test kinematics velocity jacobian (TODO fix for q̇ != v, different ordering)
+    J_dot1 = kinematics_velocity_jacobian(model, x)
+    J_dot2 = FiniteDiff.finite_difference_jacobian(
+        _x -> kinematics_jacobian(model, _x)[:, 1:model.nq]*velocity_kinematics(model, _x)*_x[model.nq + 1:end], x)
+    @test norm(J_dot1 - J_dot2) < 1e-6       
 end
 
