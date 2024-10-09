@@ -56,9 +56,17 @@ function test_default_functions(model::PinnZooModel)
     # Helper function to get kinematics (only position supported right now)
     function kinematics(x)
         set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))
-        return vcat([
-            translation(relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot))) 
-            for body in model.kinematics_bodies]...)
+        if hasproperty(model, :kinematics_ori) && model.kinematics_ori
+            return vcat([
+                (frame = relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot));
+                 q = RigidBodyDynamics.QuatRotation(rotation(frame));
+                 [translation(frame); q.w; q.x; q.y; q.z])
+                 for body in model.kinematics_bodies]...)
+        else
+            return vcat([
+                translation(relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot))) 
+                for body in model.kinematics_bodies]...)
+        end
     end
 
     # Set configuration and velocity
@@ -103,8 +111,19 @@ function test_default_functions(model::PinnZooModel)
     @test norm(J2 - J4, Inf) < 1e-4
 
     # Test velocity kinematics (TODO fix for q̇ != v)
-    if (model.nq != model.nv)
-        @warn "velocity kinematics test is currently unsupported for models with quaternions"
+    if (model.nq - model.nv == 1 && is_floating(model))
+        E = zeros(model.nq, model.nv);
+        E[1:3, 1:3] = quat_to_rot(x[4:7])
+        E[4:7, 4:6] = 0.5*attitude_jacobian(x[4:7])
+        E[8:end, 7:end] = I(model.nq - 7)
+        @test norm(velocity_kinematics(model, x) - E) < 1e-12
+        E_T = zeros(model.nv, model.nq);
+        E_T[1:3, 1:3] = quat_to_rot(x[4:7])'
+        E_T[4:6, 4:7] = 2*attitude_jacobian(x[4:7])'
+        E_T[7:end, 8:end] = I(model.nq - 7)
+        @test norm(velocity_kinematics_T(model, x) - E_T) < 1e-12
+    elseif model.nq != model.nv
+        @warn "velocity kinematics test is currently unsupported for models with quaternions that are not part of a floating base or continuous joints (nq != nv)"
     else
         @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
         @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
@@ -122,7 +141,7 @@ function test_default_functions(model::PinnZooModel)
 
     # Test kinematics velocity (TODO fix for q̇ != v)
     if (model.nq != model.nv)
-        @warn "velocity kinematics test is currently unsupported for models with quaternions"
+        @warn "kinematics_velocity test is currently unsupported for models with quaternions"
     else
         locs_dot1 = kinematics_velocity(model, x)
         locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*x[model.nq + 1:end]

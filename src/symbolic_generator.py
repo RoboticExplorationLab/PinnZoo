@@ -275,7 +275,7 @@ class SymbolicGenerator:
                 E_T_jnt[:3, :3] = rot_mat.T
 
                 # Create attitude jacobian
-                attitude_jacobian = cs.vertcat(-quat[1:4].T, quat[0]*cs.SX.eye(3) - skew_v)
+                attitude_jacobian = cs.vertcat(-quat[1:4].T, quat[0]*cs.SX.eye(3) + skew_v)
 
                 # Attitude jacobian to convert angular velocity to quaternion time derivative
                 E_jnt[3:, 3:] = 0.5*attitude_jacobian

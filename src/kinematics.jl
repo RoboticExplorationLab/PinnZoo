@@ -3,7 +3,7 @@
 Returns the size of the kinematics vector usually 3*model.nc, but is 7*model.nc if 
 model.kinematics_ori exists and is true
 """
-kinematics_size(model::PinnZooModel) = ((hasfield(typeof(model), :kinematics_ori) && model.kinematics_ori) ? 7 : 3)*length(model.kinematics_bodies)
+kinematics_size(model::PinnZooModel) = ((hasproperty(model, :kinematics_ori) && model.kinematics_ori) ? 7 : 3)*length(model.kinematics_bodies)
 
 @doc raw"""
     kinematics(model::PinnZooModel, x::Vector{Float64})
