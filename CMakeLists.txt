@@ -54,3 +54,14 @@ include_directories(${DIR})
 file(GLOB SOURCES "${DIR}*.c") 
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Nadia simple knee 1 contact point per foot with orientation ----- ###
+project(nadia_simple_1cp_ori) # Change this for each model
+
+set(DIR models/nadia/generated_code/simple_1cp_ori/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})

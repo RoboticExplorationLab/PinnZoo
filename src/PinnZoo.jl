@@ -41,28 +41,22 @@ module PinnZoo
         zero_state(model::PinnZooModel)
 
     Return the neutral state of the model.
-    !!! warning
-        This currently defaults to all zeros unless overridden and will be wrong if there is a quaternion in the state.
     """
-    zero_state(model::PinnZooModel) = zeros(model.nx)
+    zero_state(model::PinnZooModel) = is_floating(model) ? [zeros(3); 1; zeros(model.nx - 4)] : zeros(model.nx)
 
     """
         randn_state(model::PinnZooModel)
 
     Return a state vector where every coordinate is drawn from a normal distribution
-    !!! warning
-        This currently does not respect the unit norm constraint on quaternions unless overridden
     """
-    randn_state(model::PinnZooModel) = randn(model.nx)
+    randn_state(model::PinnZooModel) = is_floating(model) ? [randn(3); normalize(randn(4)); randn(model.nx - 7)] : randn(model.nx)
 
     """
         init_state(model::PinnZooModel)
 
     Return a custom initial state for the model (like standing) if defined, otherwise returns all zeros
-    !!! warning
-        This currently defaults to all zeros unless overridden and will be wrong if there is a quaternion in the state.
     """
-    init_state(model::PinnZooModel) = zeros(model.nx) # Define for each model if desired
+    init_state(model::PinnZooModel) = zero_state(model) # Define for each model if desired
     
     ## Exports
     # Types

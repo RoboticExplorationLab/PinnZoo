@@ -94,8 +94,6 @@ struct Go1 <: Quadruped
 end
 
 is_floating(model::Go1) = true
-zero_state(model::Go1) = [zeros(3); 1; zeros(model.nx - 4)]
-randn_state(model::Go1) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
 
 @doc raw"""
     init_state(model::Go1)
