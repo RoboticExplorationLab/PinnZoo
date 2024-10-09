@@ -31,7 +31,9 @@ struct Nadia <: PinnZooModel
     function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = false)
         local lib
         try
-            if simple && nc_per_foot == 1
+            if simple && nc_per_foot == 1 && kinematics_ori
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_ori.so"))
+            elseif simple && nc_per_foot == 1
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
             elseif simple && nc_per_foot == 4
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
