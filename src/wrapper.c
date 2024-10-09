@@ -1,9 +1,15 @@
 #include "M_func.h"
 #include "C_func.h"
 #include "forward_dynamics.h"
+#include "forward_dynamics_deriv.h"
 #include "inverse_dynamics.h"
+#include "inverse_dynamics_deriv.h"
+#include "velocity_kinematics.h"
+#include "velocity_kinematics_T.h"
 #include "kinematics.h"
 #include "kinematics_jacobian.h"
+#include "kinematics_velocity.h"
+#include "kinematics_velocity_jacobian.h"
 
 void M_func_wrapper(double* x_in, double* M_out) {
     const double* args[1] = {x_in};
@@ -29,12 +35,44 @@ void forward_dynamics_wrapper(double* x_in, double* tau_in, double* vdot_out) {
     forward_dynamics(args, res, iw, w, 0);
 }
 
+void forward_dynamics_deriv_wrapper(double* x_in, double* tau_in, double* dvdot_dx_out, double* dvdout_dtau_out) {
+    const double* args[2] = {x_in, tau_in};
+    double* res[2] = {dvdot_dx_out, dvdout_dtau_out};
+    long long int iw[0];
+    double w[0];
+    forward_dynamics_deriv(args, res, iw, w, 0);
+}
+
 void inverse_dynamics_wrapper(double* x_in, double* vdot_in, double* tau_out) {
     const double* args[2] = {x_in, vdot_in};
     double* res[1] = {tau_out};
     long long int iw[0];
     double w[0];
     inverse_dynamics(args, res, iw, w, 0);
+}
+
+void inverse_dynamics_deriv_wrapper(double* x_in, double* vdot_in, double* dtau_dx_out, double* dtau_dv_dot_out) {
+    const double* args[2] = {x_in, vdot_in};
+    double* res[2] = {dtau_dx_out, dtau_dv_dot_out};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics_deriv(args, res, iw, w, 0);
+}
+
+void velocity_kinematics_wrapper(double* x_in, double* E_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {E_out};
+    long long int iw[0];
+    double w[0];
+    velocity_kinematics(args, res, iw, w, 0);
+}
+
+void velocity_kinematics_T_wrapper(double* x_in, double* E_T_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {E_T_out};
+    long long int iw[0];
+    double w[0];
+    velocity_kinematics_T(args, res, iw, w, 0);
 }
 
 void kinematics_wrapper(double* x_in, double* locs_out) {
@@ -51,6 +89,22 @@ void kinematics_jacobian_wrapper(double* x_in, double* J_out) {
     long long int iw[0];
     double w[0];
     kinematics_jacobian(args, res, iw, w, 0);
+}
+
+void kinematics_velocity_wrapper(double* x_in, double* locs_dot_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {locs_dot_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_velocity(args, res, iw, w, 0);
+}
+
+void kinematics_velocity_jacobian_wrapper(double* x_in, double* J_dot_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {J_dot_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_velocity_jacobian(args, res, iw, w, 0);
 }
 
 

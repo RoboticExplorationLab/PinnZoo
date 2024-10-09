@@ -1,0 +1,188 @@
+<?xml version = "1.0" ?>
+<robot name="nadia" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- right arm -->
+<joint name="RIGHT_SHOULDER_Y" type="revolute">
+    <origin xyz="0.001 -0.185 0.173" rpy="-0.785398163 0.0 0.785398163"   />
+    <axis xyz="0.0 1.0 0.0" />
+    <parent link="TORSO_LINK" />
+    <child link="RIGHT_SHOULDER_PITCH_LINK" />
+    <limit effort="1000" lower="-3.141592" upper="1.22173" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_SHOULDER_X" type="revolute">
+    <origin rpy="0.785398163 0.0 0.0" xyz="0.0 -0.15676000 -0.01300000" />
+    <axis xyz="1 0 0" />
+    <parent link="RIGHT_SHOULDER_PITCH_LINK" />
+    <child link="RIGHT_SHOULDER_ROLL_LINK" />
+    <limit effort="1000" lower="-2.87979" upper="0.261799" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_SHOULDER_Z" type="revolute">
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 -0.035 0.0" />
+    <axis xyz="0.0 0.0 1.0" />
+    <parent link="RIGHT_SHOULDER_ROLL_LINK" />
+    <child link="RIGHT_SHOULDER_YAW_LINK" />
+    <limit effort="1000" lower="-1.22173" upper="1.91986" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+<joint name="RIGHT_ELBOW_Y" type="revolute">
+    <origin rpy="0.0 0.0 0.0" xyz="0.015 0.0 -0.4" />
+    <axis xyz="0.0 1.0 0.0" />
+    <parent link="RIGHT_SHOULDER_YAW_LINK" />
+    <child link="RIGHT_ELBOW_PITCH_LINK" />
+    <limit effort="1000" lower="-2.35619" upper="0.174532925" velocity = "100" />
+    <dynamics damping="0.05" friction="0.0"/>
+</joint>
+
+<link name="TORSO_LINK">
+  <inertial>
+    <mass value="13.5"/>
+    <origin rpy="0 0 0" xyz="-0.03613868 -2.81E-06 0.25908586"/>
+    <inertia ixx="0.534504681" ixy="8.41519717E-05" ixz="-0.00672956305" iyy="0.505409852" iyz="0.000207996773" izz="0.379402013" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V16_description/meshes/torso_cycloidmounts.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+
+<link name="RIGHT_SHOULDER_PITCH_LINK">
+  <inertial>
+    <mass value="2.917"/>
+    <origin rpy="0 0 0" xyz="-0.00117 -0.1400097 -0.00621"/>
+    <inertia ixx="0.0108367" ixy="1.356e-4" ixz="-2.666e-5" iyy="0.00498324" iyz="0.00090758" izz="0.01142661" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_PITCH_LINK.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+
+<!-- RIGHT SHOULDER PITCH IMU Information --> 
+<joint name="RIGHT_SHOULDER_PITCH_IMU_JOINT" type="fixed">
+	<origin rpy="-1.570796 1.570796 0" xyz="0.0174 -0.06944 -0.03025"/>
+	<axis xyz="0 0 1"/>
+	<parent link="RIGHT_SHOULDER_PITCH_LINK"/>
+	<child link="RIGHT_SHOULDER_PITCH_IMU_LINK"/>
+</joint>
+
+<link name="RIGHT_SHOULDER_PITCH_IMU_LINK">
+    <inertial>
+      <mass value="0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+</link>
+
+<gazebo reference="RIGHT_SHOULDER_PITCH_IMU_LINK">
+	<sensor name="right_shoulder_pitch_imu" type="imu">
+	  <imuTransform>0.0174 0.06944 -0.03025 -1.570796 1.570796 0</imuTransform>
+	  <always_on>true</always_on>
+	  <pose>0 0 0 0 0 0 </pose>
+	  <imu>
+		<noise>
+		  <type>gaussian</type>
+		  <rate>
+			<mean>0</mean>
+			<stddev>0.0002</stddev>
+			<bias_mean>7.5e-06</bias_mean>
+			<bias_stddev>8e-07</bias_stddev>
+		  </rate>
+		  <accel>
+			<mean>0</mean>
+			<stddev>0.017</stddev>
+			<bias_mean>0.1</bias_mean>
+			<bias_stddev>0.001</bias_stddev>
+		  </accel>
+		</noise>
+	  </imu>
+	</sensor>
+</gazebo>
+
+<link name="RIGHT_SHOULDER_ROLL_LINK">
+  <inertial>
+    <mass value="1.17068"/>
+    <origin rpy="0 0 0" xyz="0.01053 0.02124 -0.1052690"/>
+    <inertia ixx="0.00787035" ixy="1.667e-4" ixz="-0.00075945" iyy="0.00727481" iyz="0.000988837" izz="0.00182144" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_ROLL_LINK.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+
+<link name="RIGHT_SHOULDER_YAW_LINK">
+  <inertial>
+    <mass value="2.53059"/>
+    <origin rpy="0 0 0" xyz="0.00479 0.00062 -0.3624141"/>
+    <inertia ixx="0.02277422" ixy="5.053e-5" ixz="0.0012266" iyy="0.0225956" iyz="-2.571e-4" izz="0.00260312" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_YAW_LINK.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+
+<!-- Right Shoulder Yaw IMU -->
+<joint name="RIGHT_SHOULDER_YAW_IMU_JOINT" type="fixed">
+	<origin rpy="-1.570796 3.1415926 -0.314159" xyz="-0.00763459 -0.0123324 -0.318"/>
+	<axis xyz="0 0 1"/>
+	<parent link="RIGHT_SHOULDER_YAW_LINK"/> 
+	<child link="RIGHT_SHOULDER_YAW_IMU_LINK"/>
+</joint>
+
+<link name="RIGHT_SHOULDER_YAW_IMU_LINK">
+    <inertial>
+      <mass value="0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+ </link>
+
+<gazebo reference="RIGHT_SHOULDER_YAW_IMU_LINK">
+<sensor name="right_shoulder_yaw_imu" type="imu">
+  <imuTransform>-0.00763459 -0.0123324 -0.318 -1.570796 3.1415926 -0.314159</imuTransform>
+  <always_on>true</always_on>
+  <pose>0 0 0 0 0 0 </pose>
+  <imu>
+	<noise>
+	  <type>gaussian</type>
+	  <rate>
+		<mean>0</mean>
+		<stddev>0.0002</stddev>
+		<bias_mean>7.5e-06</bias_mean>
+		<bias_stddev>8e-07</bias_stddev>
+	  </rate>
+	  <accel>
+		<mean>0</mean>
+		<stddev>0.017</stddev>
+		<bias_mean>0.1</bias_mean>
+		<bias_stddev>0.001</bias_stddev>
+	  </accel>
+	</noise>
+  </imu>
+</sensor>
+</gazebo>
+
+<link name="RIGHT_ELBOW_PITCH_LINK">
+  <inertial>
+    <mass value="0.6007"/>
+    <origin rpy="0 0 0" xyz="-0.01090935 -0.01147189 -0.10388715"/>
+    <inertia ixx="0.00760733" ixy="2.242e-5" ixz="-2.583e-4" iyy="0.00767556" iyz="0.00061995" izz="4.554e-4" />
+  </inertial>
+  <visual>
+    <geometry>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_ELBOW_PITCH_LINK_413mm_LENGTH.obj"/>
+    </geometry>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+  </visual>
+</link>
+</robot>

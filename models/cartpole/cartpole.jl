@@ -1,15 +1,29 @@
+@doc raw"""
+    Cartpole() <: PinnZooModel
+
+Return a Cartpole dynamics model
+"""
 struct Cartpole <: PinnZooModel
     urdf_path::String
     nq
     nv
     nx
+    nu
+    orders::Dict{Symbol, StateOrder}
+    conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
+    forward_dynamics_deriv_ptr::Ptr{Nothing}
     inverse_dynamics_ptr::Ptr{Nothing}
+    inverse_dynamics_deriv_ptr::Ptr{Nothing}
+    velocity_kinematics_ptr::Ptr{Nothing}
+    velocity_kinematics_T_ptr::Ptr{Nothing}
     kinematics_bodies::Vector{String}
     kinematics_ptr::Ptr{Nothing}
     kinematics_jacobian_ptr::Ptr{Nothing}
+    kinematics_velocity_ptr::Ptr{Nothing}
+    kinematics_velocity_jacobian_ptr::Ptr{Nothing}
     function Cartpole()
         local lib
         try
@@ -21,21 +35,37 @@ struct Cartpole <: PinnZooModel
         # Path to URDF (useful for visualization/testing)
         urdf_path = joinpath(MODEL_DIR, "cartpole/cartpole.urdf")
 
+        # Set up orders and conversions
+        orders, conversions = init_conversions(lib)
+        nq = length(orders[:nominal].config_names)
+        nv = length(orders[:nominal].vel_names)
+        nx = nq + nv
+        nu = length(orders[:nominal].torque_names)
+
         # Dynamics
         M_func_ptr = dlsym(lib, :M_func_wrapper)
         C_func_ptr = dlsym(lib, :C_func_wrapper)
         forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
+        forward_dynamics_deriv_ptr = dlsym(lib, :forward_dynamics_deriv_wrapper)
         inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
+        inverse_dynamics_deriv_ptr = dlsym(lib, :inverse_dynamics_deriv_wrapper)
+        velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
+        velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
 
         # Kinematics
         kinematics_bodies = ["pole_tip"]
         kinematics_ptr = dlsym(lib, :kinematics_wrapper)
         kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
+        kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
+        kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
         return new(
             urdf_path,
-            2, 2, 2 + 2,
-            M_func_ptr, C_func_ptr, forward_dynamics_ptr, inverse_dynamics_ptr,
-            kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr
+            nq, nv, nx, nu, orders, conversions,
+            M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
+            inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
+            velocity_kinematics_ptr, velocity_kinematics_T_ptr,
+            kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
+            kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr
         )
     end
 end

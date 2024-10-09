@@ -10,6 +10,7 @@ Models can be found in the models directory. Each model folder should include th
 - a generated_code directory where the C code is
 - a <model_name>.jl file which wraps the C code so it can be called from Julia
 - a README that provides basic model details, such as state vector order, bodies that kinematics were generated for, and anything else that may need clarification.
+- any additional C or Julia files for model specific functions/behaviors (should be documented in README)
 
 Refer to the Generated Code Conventions section below to see what dynamics and kinematics are included for each model. There are many ways you can use these functions, either linking them into your own C or C++ project, or calling them from Python or Julia. We currently provide a Julia wrapper for each model, which you can see how to use in the Get Started section below.
 
@@ -105,3 +106,7 @@ When generating code you can specify a set of bodies in the URDF to generate the
 - kinematics_jacobian(x) $\rightarrow$ jacobian of the kinematics function with respect to x (the velocity portion will be zero by default).
 - kinematics_velocity(x) $\rightarrow$ returns the velocity in the world frame for points on the robot specified during code generation
 - kinematics_velocity_jacobian(x) $\rightarrow$ jacobian of the kinematics_velocity function with respect to x. The first nq columns will be the same as the kinematics_jacobian. The last nv columns will be the same as the time derivative of the kinematics_jacobian.
+
+# TODO
+- Generalize error_state and apply_Δx functions for any model with a quaternion in the state
+- Fix tests for quadruped (more general solution for joint order mismatches between RigidBodyDynamics.jl and Pinocchio)
