@@ -62,6 +62,10 @@ forward_dynamics
 forward_dynamics_deriv
 inverse_dynamics
 inverse_dynamics_deriv
+state_error
+apply_Δx
+error_jacobian
+error_jacobian_T
 ```
 
 ## Kinematics Functions
@@ -95,10 +99,6 @@ quat_to_rot
 ## Quadruped functions
 TODO: Generalize state error and related functions to all models
 ```@docs
-state_error
-apply_Δx
-error_jacobian
-error_jacobian_T
 B_func
 fix_joint_limits
 nearest_ik

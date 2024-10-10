@@ -3,6 +3,7 @@ module PinnZoo
     using LinearAlgebra
 
     abstract type PinnZooModel end
+    abstract type PinnZooFloatingBaseModel <: PinnZooModel end
 
     const SHARED_LIBRARY_DIR = joinpath(@__DIR__, "../build")
     const MODEL_DIR = joinpath(@__DIR__, "../models")
@@ -35,6 +36,7 @@ module PinnZoo
     Return whether the model includes a floating base joint
     """
     is_floating(model::PinnZooModel) = false
+    is_floating(model::PinnZooFloatingBaseModel) = true
 
     # Generate state (override if state vector contains a quaternion)
     """
@@ -42,14 +44,16 @@ module PinnZoo
 
     Return the neutral state of the model.
     """
-    zero_state(model::PinnZooModel) = is_floating(model) ? [zeros(3); 1; zeros(model.nx - 4)] : zeros(model.nx)
+    zero_state(model::PinnZooModel) = zeros(model.nx)
+    zero_state(model::PinnZooFloatingBaseModel) =  [zeros(3); 1; zeros(model.nx - 4)]
 
     """
         randn_state(model::PinnZooModel)
 
     Return a state vector where every coordinate is drawn from a normal distribution
     """
-    randn_state(model::PinnZooModel) = is_floating(model) ? [randn(3); normalize(randn(4)); randn(model.nx - 7)] : randn(model.nx)
+    randn_state(model::PinnZooModel) = randn(model.nx)
+    randn_state(model::PinnZooFloatingBaseModel) = [randn(3); normalize(randn(4)); randn(model.nx - 7)]
 
     """
         init_state(model::PinnZooModel)
@@ -60,7 +64,7 @@ module PinnZoo
     
     ## Exports
     # Types
-    export PinnZooModel
+    export PinnZooModel, PinnZooFloatingBaseModel
 
     # Conversions
     export StateOrder, ConversionIndices, generate_conversions
