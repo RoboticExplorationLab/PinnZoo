@@ -4,7 +4,7 @@
 Return a Nadia dynamics and kinematics model. Currently supports 1 or 4 contact points per foot,
 and only the simple knee (does not support simple = false)
 """
-struct Nadia <: PinnZooModel
+struct Nadia <: PinnZooFloatingBaseModel
     urdf_path::String
     nq
     nv
@@ -89,36 +89,4 @@ struct Nadia <: PinnZooModel
     end
 end
 
-is_floating(model::Nadia) = true
-
 B_func(model::Nadia) = [zeros(6, model.nu); I(model.nu)]
-
-function error_jacobian(model::Nadia, x)
-    return [
-        velocity_kinematics(model, x) zeros(model.nq, length(x) - model.nq)
-        zeros(length(x) - model.nq, model.nv) I(length(x) - model.nq)
-    ]
-end
-
-function error_jacobian_T(model::Nadia, x)
-    return [
-        velocity_kinematics_T(model, x) zeros(model.nv, length(x) - model.nq)
-        zeros(length(x) - model.nq, model.nq) I(length(x) - model.nq)
-    ]
-end
-
-function apply_Δx(model::Nadia, x_k, Δx)
-    x_next = zeros(promote_type(eltype(x_k), eltype(Δx)), length(x_k))
-    x_next[1:3] = x_k[1:3] + quat_to_rot(x_k[4:7])*Δx[1:3]
-    x_next[4:7] = L_mult(x_k[4:7])*axis_angle_to_quat(Δx[4:6])
-    x_next[8:end] = x_k[8:end] + Δx[7:end]
-    return x_next
-end
-
-function state_error(model::Nadia, x, x0)
-    return [
-        quat_to_rot(x0[4:7])'*(x[1:3] - x0[1:3])
-        quat_to_axis_angle(L_mult(x0[4:7])'*x[4:7])
-        x[8:end] - x0[8:end]
-    ]
-end

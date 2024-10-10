@@ -6,6 +6,9 @@ using LinearAlgebra
 using Random
 
 function test_default_functions(model::PinnZooModel)
+    # Check the model is a supported type
+    @assert model.nq == model.nv || (typeof(model) <: PinnZooFloatingBaseModel && model.nq == model.nv + 1)
+
     # Make random state to test with
     Random.seed!(1)
     x = randn_state(model)
@@ -111,7 +114,7 @@ function test_default_functions(model::PinnZooModel)
     @test norm(J2 - J4, Inf) < 1e-4
 
     # Test velocity kinematics (TODO fix for q̇ != v)
-    if (model.nq - model.nv == 1 && is_floating(model))
+    if typeof(model) <: PinnZooFloatingBaseModel
         E = zeros(model.nq, model.nv);
         E[1:3, 1:3] = quat_to_rot(x[4:7])
         E[4:7, 4:6] = 0.5*attitude_jacobian(x[4:7])
@@ -144,10 +147,26 @@ function test_default_functions(model::PinnZooModel)
     locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*velocity_kinematics(model, x)*x[model.nq + 1:end]
     @test norm(locs_dot1 - locs_dot2) < 1e-12
 
-    # Test kinematics velocity jacobian (TODO fix for q̇ != v, different ordering)
+    # Test kinematics velocity jacobian
     J_dot1 = kinematics_velocity_jacobian(model, x)
     J_dot2 = FiniteDiff.finite_difference_jacobian(
         _x -> kinematics_jacobian(model, _x)[:, 1:model.nq]*velocity_kinematics(model, _x)*_x[model.nq + 1:end], x)
     @test norm(J_dot1 - J_dot2) < 1e-6       
+
+    # If this is a floating base model, check apply_Δx, state_error and error_jacobains
+    if typeof(model) <: PinnZooFloatingBaseModel
+        Δx = randn(model.nv*2)
+        x2 = x + randn(model.nx)
+        x2[4:7] = normalize(x2[4:7])
+
+        @test norm(state_error(model, apply_Δx(model, x, Δx), x) - Δx, Inf) < 1e-12
+        @test norm(apply_Δx(model, x, state_error(model, x2, x)) - x2, Inf) < 1e-12
+
+        E2 = FiniteDiff.finite_difference_jacobian(_Δx -> apply_Δx(model, x, _Δx), zeros(model.nv*2))
+        E_T2 = FiniteDiff.finite_difference_jacobian(_x -> state_error(model, _x, x), x)
+
+        @test norm(error_jacobian(model, x) - E2, Inf) < 1e-7
+        @test norm(error_jacobian_T(model, x) - E_T2, Inf) < 1e-7
+    end
 end
 

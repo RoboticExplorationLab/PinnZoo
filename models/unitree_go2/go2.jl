@@ -97,8 +97,6 @@ struct Go2 <: Quadruped
     end
 end
 
-is_floating(model::Go2) = true
-
 @doc raw"""
     init_state(model::Go2)
 

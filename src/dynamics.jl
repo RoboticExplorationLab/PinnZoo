@@ -92,3 +92,59 @@ function velocity_kinematics_T(model::PinnZooModel, x::Vector{Float64})
     ccall(model.velocity_kinematics_T_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, E_T)
     return E_T
 end
+
+@doc raw"""
+    apply_Δx(model::PinnZooFloatingBaseModel, x_k, Δx)
+
+Return Δx added to x while respecting the configuration space/tangent space relationship (i.e. do quaternion multiplication,
+rotate Δbody pos from body frame to world frame). Δx should be model.nv*2, x_k should be model.nx. Floating base rotation in Δx should be axis angle.
+"""
+function apply_Δx(model::PinnZooFloatingBaseModel, x_k, Δx)
+    x_next = zeros(promote_type(eltype(x_k), eltype(Δx)), length(x_k))
+    x_next[1:3] = x_k[1:3] + quat_to_rot(x_k[4:7])*Δx[1:3]
+    x_next[4:7] = L_mult(x_k[4:7])*axis_angle_to_quat(Δx[4:6])
+    x_next[8:end] = x_k[8:end] + Δx[7:end]
+    return x_next
+end
+
+@doc raw"""
+    state_error(model::PinnZooFloatingBaseModel, x, x0)
+
+Return the state_error between x and x0, using axis-angles for quaternion error, and representing body position error in the
+body frame (matches with body velocity convention).
+"""
+function state_error(model::PinnZooFloatingBaseModel, x, x0)
+    return [
+        quat_to_rot(x0[4:7])'*(x[1:3] - x0[1:3])
+        quat_to_axis_angle(L_mult(x0[4:7])'*x[4:7])
+        x[8:end] - x0[8:end]
+    ]
+end
+
+@doc raw"""
+    error_jacobian(model::PinnZooFloatingBaseModel, x)
+
+Return the jacobian mapping Δx to x where Δx is in the tangent space (look at state_error for our choice
+of tangent space).
+"""
+function error_jacobian(model::PinnZooFloatingBaseModel, x)
+
+    return [
+        velocity_kinematics(model, x) zeros(model.nq, length(x) - model.nq)
+        zeros(length(x) - model.nq, model.nv) I(length(x) - model.nq)
+    ]
+end
+
+@doc raw"""
+    error_jacobian_T(model::PinnZooFloatingBaseModel, x)
+
+Return the jacobian mapping x to Δx where Δx is in the tangent space (look at state_error for our choice
+of tangent space).
+"""
+function error_jacobian_T(model::PinnZooFloatingBaseModel, x)
+    return [
+        velocity_kinematics_T(model, x) zeros(model.nv, length(x) - model.nq)
+        zeros(length(x) - model.nq, model.nq) I(length(x) - model.nq)
+    ]
+end
+
