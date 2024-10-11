@@ -1,14 +1,17 @@
-
 import pinocchio as pin
 import pinocchio.casadi as cpin
 import casadi as cs
 from pinocchio.robot_wrapper import RobotWrapper
 import sys, os
 import numpy as np
+from enum import Enum
+
+# Defininition for kinematics orientation options
+KinematicsOrientation = Enum('KinematicsOrientation', ['NONE', 'Quaternion', 'AxisAngle'])
 
 class SymbolicGenerator:
     def __init__(self, urdf_path, gen_dir = "./generated_code", 
-                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = False):
+                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = KinematicsOrientation.NONE):
         # Load the URDF model
         if floating:
             self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
@@ -57,7 +60,7 @@ class SymbolicGenerator:
         print("\n\tJoints:",[name for name in self.model.names])
         if len(kinematics_bodies) > 0:
             print("\n\tKinematics:",kinematics_bodies)
-            print("\n\tInclude orientation:",kinematics_ori)
+            print("\n\tOrienation representation:",kinematics_ori.name)
         
         # Print state vector order
         print("\n\tState vector order:", self.state_order)
@@ -148,9 +151,12 @@ class SymbolicGenerator:
         kinematics = []
         for body in self.kinematics_bodies:
             kinematics.append(self.cdata.oMf[self.cmodel.getFrameId(body)].translation)
-            if self.kinematics_ori:
+            if self.kinematics_ori == KinematicsOrientation.Quaternion:
                 quat = self.rotation_matrix_to_quaternion(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
                 kinematics.append(quat)
+            elif self.kinematics_ori == KinematicsOrientation.AxisAngle:
+                aa = self.rotation_matrix_to_axisangle(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
+                kinematics.append(aa)
 
         kinematics = cs.vertcat(*kinematics)
 
@@ -174,7 +180,6 @@ class SymbolicGenerator:
         kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
         kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
         kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
-
 
         print("Generated kinematics")
 
@@ -311,4 +316,22 @@ class SymbolicGenerator:
         qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
 
         return cs.vertcat(qw, qx, qy, qz)
+
+    def rotation_matrix_to_axisangle(self, R):
+        
+        epsilon = 1e-7
+        trace = R[0,0] + R[1,1] + R[2,2]
+
+        # Compute quaternion qw, qx, qy, qz with additional checks
+        qw = cs.if_else(1 + trace > epsilon, cs.sqrt(1 + trace) / 2, 0)
+        qx = cs.if_else(cs.fabs(qw) > epsilon, (R[2,1] - R[1,2]) / (4 * qw), cs.sqrt(1 + R[0,0] - R[1,1] - R[2,2]) / 2)
+        qy = cs.if_else(cs.fabs(qw) > epsilon, (R[0,2] - R[2,0]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,1] + R[1,0]) / (4 * qx), cs.sqrt(1 + R[1,1] - R[0,0] - R[2,2]) / 2))
+        qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
+
+        # Compute axis angle
+        qv = cs.vertcat(qx, qy, qz)
+        norm_qv = cs.norm_2(qv)
+        aa = cs.if_else(norm_qv > epsilon, 2*cs.atan2(norm_qv, qw)*qv/norm_qv, cs.vertcat(0, 0, 0))
+
+        return aa
 
