@@ -1,8 +1,9 @@
 @doc raw"""
-    Nadia(; simple = true, nc_per_foot = 1, μ = 1.0)
+    Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = :None)
 
 Return a Nadia dynamics and kinematics model. Currently supports 1 or 4 contact points per foot,
-and only the simple knee (does not support simple = false)
+and only the simple knee (does not support simple = false). For 1 contact point you can also include
+foot orientation (kinematics_ori = :Quaterion or :AxisAngle).
 """
 struct Nadia <: PinnZooFloatingBaseModel
     urdf_path::String
