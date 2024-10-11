@@ -14,7 +14,7 @@ struct Nadia <: PinnZooFloatingBaseModel
     orders::Dict{Symbol, StateOrder}
     conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
     μ::Float64 # Friction coefficient
-    kinematics_ori::Bool # Whether the kinematics include orientation
+    kinematics_ori::Symbol # Type of kinematic orientation
     M_func_ptr::Ptr{Nothing}
     C_func_ptr::Ptr{Nothing}
     forward_dynamics_ptr::Ptr{Nothing}
@@ -28,13 +28,15 @@ struct Nadia <: PinnZooFloatingBaseModel
     kinematics_jacobian_ptr::Ptr{Nothing}
     kinematics_velocity_ptr::Ptr{Nothing}
     kinematics_velocity_jacobian_ptr::Ptr{Nothing}
-    function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = false)
+    function Nadia(; simple = true, nc_per_foot = 1, μ = 1.0, kinematics_ori = :None)
         local lib
-        if simple && nc_per_foot == 1 && kinematics_ori
-            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_ori.so"))
+        if simple && nc_per_foot == 1 && kinematics_ori == :Quaternion
+            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_quat.so"))
+        elseif simple && nc_per_foot == 1 && kinematics_ori == :AxisAngle
+            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_aa.so"))
         elseif simple && nc_per_foot == 1
             lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
-        elseif simple && nc_per_foot == 4 && kinematics_ori
+        elseif simple && nc_per_foot == 4 && kinematics_ori != :None
             throw(error("specified configuration is not supported"))
         elseif simple && nc_per_foot == 4 
             lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))

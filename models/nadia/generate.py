@@ -22,6 +22,7 @@ symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf
                              kinematics_ori = KinematicsOrientation.AxisAngle,
                              gen_dir="./generated_code/simple_1cp_aa",
                              actuated_dofs = slice(6,29))
+symb_gen.generate()
 symb_gen = SymbolicGenerator('nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf', 
                              floating = True,
                              kinematics_bodies=['L_C', 'R_C'],
