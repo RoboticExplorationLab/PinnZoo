@@ -306,7 +306,7 @@ class SymbolicGenerator:
 
     def rotation_matrix_to_quaternion(self, R):
 
-        epsilon = 1e-7
+        epsilon = 1e-12
         trace = R[0,0] + R[1,1] + R[2,2]
 
         # Compute qw, qx, qy, qz with additional checks
@@ -319,7 +319,7 @@ class SymbolicGenerator:
 
     def rotation_matrix_to_axisangle(self, R):
         
-        epsilon = 1e-7
+        epsilon = 1e-12
         trace = R[0,0] + R[1,1] + R[2,2]
 
         # Compute quaternion qw, qx, qy, qz with additional checks
@@ -330,8 +330,8 @@ class SymbolicGenerator:
 
         # Compute axis angle
         qv = cs.vertcat(qx, qy, qz)
-        norm_qv = cs.norm_2(qv)
-        aa = cs.if_else(norm_qv > epsilon, 2*cs.atan2(norm_qv, qw)*qv/norm_qv, cs.vertcat(0, 0, 0))
+        angle = cs.if_else(1 - cs.fabs(qw) >= epsilon, 2 * cs.acos(qw), 0)
+        aa = cs.if_else(angle >= epsilon, angle*qv / cs.sin(angle/2), qv)
 
         return aa
 

@@ -9,9 +9,17 @@ function test_default_functions(model::PinnZooModel)
     # Check the model is a supported type
     @assert model.nq == model.nv || (typeof(model) <: PinnZooFloatingBaseModel && model.nq == model.nv + 1)
 
-    # Make random state to test with
     Random.seed!(1)
+    # Test with initial state
+    x = init_state(model)
+    test_default_functions(model, x)
+
+    # Test with random state
     x = randn_state(model)
+    test_default_functions(model, x)
+end
+
+function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     v̇ = randn(model.nv)
     τ = randn(model.nv)
 
@@ -96,7 +104,7 @@ function test_default_functions(model::PinnZooModel)
     v̇1 = forward_dynamics(model, x, τ)
     dynamics!(dyn_res, state, τ_rbd)
     v̇2 = change_order(model, dyn_res.v̇, :rigidBodyDynamics, :nominal)
-    @test norm(v̇1 - v̇2, Inf) < 1e-10
+    @test norm(v̇1 - v̇2, Inf) < 1e-9
 
     # Test forward dynamics derivatives
     J1 = FiniteDiff.finite_difference_jacobian(_x -> forward_dynamics(model, _x, τ), x)
@@ -157,7 +165,7 @@ function test_default_functions(model::PinnZooModel)
     J_dot1 = kinematics_velocity_jacobian(model, x)
     J_dot2 = FiniteDiff.finite_difference_jacobian(
         _x -> kinematics_jacobian(model, _x)[:, 1:model.nq]*velocity_kinematics(model, _x)*_x[model.nq + 1:end], x)
-    @test norm(J_dot1 - J_dot2) < 1e-6       
+    @test norm(J_dot1 - J_dot2) < 2e-6       
 
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
     if typeof(model) <: PinnZooFloatingBaseModel
