@@ -64,17 +64,19 @@ module PinnZoo
     
     ## Exports
     # Types
-    export PinnZooModel, PinnZooFloatingBaseModel
+    export PinnZooModel, PinnZooFloatingBaseModel, Quadruped
 
     # Conversions
     export StateOrder, ConversionIndices, generate_conversions
     export change_order, change_order!, change_orders, change_orders!
 
-    # Code-genned functions
+    # Helpers, dynamics, kinematics
     export is_floating, zero_state, init_state, randn_state
     export M_func, C_func, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
     export velocity_kinematics, velocity_kinematics_T
+    export kinematics_size
     export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
+    export error_jacobian, error_jacobian_T, apply_Δx, state_error
 
     # Quaternion helpers
     export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,
@@ -82,14 +84,7 @@ module PinnZoo
 
     # Quadruped specific functions
     export Quadruped
-    export error_jacobian, error_jacobian_T, apply_Δx, state_error
     export B_func, fix_joint_limits, inverse_kinematics, nearest_ik
-
-    export PinnZooModel, Quadruped
-    export is_floating, zero_state, init_state, randn_state
-    export M_func, C_func, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
-    export velocity_kinematics, velocity_kinematics_T
-    export kinematics_size, kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
 
     export Cartpole, Go1, Go2, Nadia
 end
