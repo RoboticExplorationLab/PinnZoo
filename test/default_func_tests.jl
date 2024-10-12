@@ -69,19 +69,19 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))
         if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
             return vcat([
-                (frame = relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot));
+                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
                  q = RigidBodyDynamics.QuatRotation(rotation(frame));
                  [translation(frame); q.w; q.x; q.y; q.z])
                  for body in model.kinematics_bodies]...)
         elseif hasproperty(model, :kinematics_ori) && model.kinematics_ori == :AxisAngle
             return vcat([
-                (frame = relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot));
+                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
                  q = RigidBodyDynamics.QuatRotation(rotation(frame));
                  [translation(frame); quat_to_axis_angle([q.w; q.x; q.y; q.z])])
                  for body in model.kinematics_bodies]...)
         else
             return vcat([
-                translation(relative_transform(state, default_frame(findbody(robot, body)), root_frame(robot))) 
+                translation(relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot))) 
                 for body in model.kinematics_bodies]...)
         end
     end

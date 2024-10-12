@@ -24,6 +24,7 @@ module PinnZoo
     include(joinpath(@__DIR__, "quadruped.jl"))
 
     # Include model files here
+    include(joinpath(@__DIR__, "model_macro.jl"))
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
     include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
     include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
