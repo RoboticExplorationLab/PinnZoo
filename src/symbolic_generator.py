@@ -13,6 +13,7 @@ class SymbolicGenerator:
     def __init__(self, urdf_path, gen_dir = "./generated_code", 
                  kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = KinematicsOrientation.NONE):
         # Load the URDF model
+        self.urdf_path = urdf_path
         if floating:
             self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
         else:
@@ -198,6 +199,10 @@ class SymbolicGenerator:
             for name in self.torque_order:
                 f.write(f'    "{name}",\n')
             f.write('    NULL\n};\n\n')
+            f.write('const char* kinematics_bodies[] = {\n')
+            for name in self.kinematics_bodies:
+                f.write(f'    "{name}",\n')
+            f.write('    NULL\n};\n\n')
             f.write('const char** get_config_order() {\n')
             f.write('    return config_names;\n')
             f.write('}\n')
@@ -207,6 +212,12 @@ class SymbolicGenerator:
             f.write('const char** get_torque_order() {\n')
             f.write('    return torque_names;\n')
             f.write('}\n')
+            f.write('const char** get_kinematics_bodies() {\n')
+            f.write('    return kinematics_bodies;\n')
+            f.write('}\n')
+            f.write('const char* get_urdf_path() {\n')
+            f.write(f'    return "{os.path.basename(os.path.dirname(os.getcwd()))+"/"+self.urdf_path}";\n')
+            f.write('}\n');
 
 
     def define_state_order(self):

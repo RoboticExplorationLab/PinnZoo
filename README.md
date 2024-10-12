@@ -107,10 +107,15 @@ When generating code you can specify a set of bodies in the URDF to generate the
 - kinematics_velocity(x) $\rightarrow$ returns the velocity in the world frame for points on the robot specified during code generation
 - kinematics_velocity_jacobian(x) $\rightarrow$ jacobian of the kinematics_velocity function with respect to x. The first nq columns will be the same as the kinematics_jacobian. The last nv columns will be the same as the time derivative of the kinematics_jacobian.
 
+# Helpful info
+
 ### Regenerating code
 You can run the following in the PinnZoo directory to re-generate all the generated code if a change is made to symbolic_generator.py
 `find models -type f -name generate.py -exec python {} \;`
 Make sure to run the PinnZoo test suite after regenerating.
+
+### Generating models
+You can convert from urdf to mjcf using MuJoCo in more recent versions by loading the model and using mj_saveLastXML.
 
 # TODO
 - Generalize error_state and apply_Δx functions for any model with a quaternion in the state
