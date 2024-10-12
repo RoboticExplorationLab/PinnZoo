@@ -90,7 +90,7 @@ class SymbolicGenerator:
         self.gen_opts = dict(with_header = True)
 
         # Change directory for output
-        orig_dir = os.getcwd()
+        self.orig_dir = os.getcwd()
         os.chdir(self.gen_dir)
 
         self.generate_order_functions()
@@ -101,7 +101,7 @@ class SymbolicGenerator:
             self.generate_kinematics()
 
         print("Finished generating to", self.gen_dir)
-        os.chdir(orig_dir)
+        os.chdir(self.orig_dir)
 
     def generate_dynamics(self):
         # Mass matrix
@@ -216,7 +216,14 @@ class SymbolicGenerator:
             f.write('    return kinematics_bodies;\n')
             f.write('}\n')
             f.write('const char* get_urdf_path() {\n')
-            f.write(f'    return "{os.path.basename(os.path.dirname(os.getcwd()))+"/"+self.urdf_path}";\n')
+
+            # Get urdf relative path
+            urdf_full_path = self.orig_dir+"/"+self.urdf_path
+            parts = urdf_full_path.split(os.sep)
+            models_index = len(parts) - 1 - parts[::-1].index('models')
+            subpath = os.sep.join(parts[models_index + 1:])
+            
+            f.write(f'    return "{subpath}";\n')
             f.write('}\n');
 
 

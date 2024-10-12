@@ -94,6 +94,18 @@ const char* torque_names[] = {
     NULL
 };
 
+const char* kinematics_bodies[] = {
+    "L_FL",
+    "L_FR",
+    "L_RL",
+    "L_RR",
+    "R_FL",
+    "R_FR",
+    "R_RL",
+    "R_RR",
+    NULL
+};
+
 const char** get_config_order() {
     return config_names;
 }
@@ -102,4 +114,10 @@ const char** get_vel_order() {
 }
 const char** get_torque_order() {
     return torque_names;
+}
+const char** get_kinematics_bodies() {
+    return kinematics_bodies;
+}
+const char* get_urdf_path() {
+    return "nadia/nadiaV17.fullRobot.simpleKnees.cycloidArms_mj.urdf";
 }

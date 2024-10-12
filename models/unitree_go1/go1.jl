@@ -1,95 +1,14 @@
-@doc raw"""
-    Go1(; μ = 0.3) <: Quadruped
-
-Return the Unitree Go1 dynamics and kinematics model
-"""
-struct Go1 <: Quadruped
-    urdf_path::String
-    state_order::Vector{String}
-    nq
-    nv
-    nx
-    nu
-    nc
-    orders::Dict{Symbol, StateOrder}
-    conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
-    μ::Float64 # Friction coefficient
+@create_pinnzoo_model struct Go1 <: Quadruped
+    μ::Float64
     torque_limits::Vector{Float64}
     joint_limits::Matrix{Float64}
-    M_func_ptr::Ptr{Nothing}
-    C_func_ptr::Ptr{Nothing}
-    forward_dynamics_ptr::Ptr{Nothing}
-    forward_dynamics_deriv_ptr::Ptr{Nothing}
-    inverse_dynamics_ptr::Ptr{Nothing}
-    inverse_dynamics_deriv_ptr::Ptr{Nothing}
-    velocity_kinematics_ptr::Ptr{Nothing}
-    velocity_kinematics_T_ptr::Ptr{Nothing}
-    kinematics_bodies::Vector{String}
-    kinematics_ptr::Ptr{Nothing}
-    kinematics_jacobian_ptr::Ptr{Nothing}
-    kinematics_velocity_ptr::Ptr{Nothing}
-    kinematics_velocity_jacobian_ptr::Ptr{Nothing}
     function Go1(; μ = 0.3)
-        local lib
-        try
-            lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go1.so"))
-        catch e
-            @error "Unitree Go1 dynamics library wasn't found. Did you compile it using CMake?"
-        end
-
-        # Path to URDF (useful for visualization/testing)
-        urdf_path = joinpath(MODEL_DIR, "unitree_go1/go1.urdf")
-
-        # Set up orders and conversions
-        orders, conversions = init_conversions(lib)
-        nq = length(orders[:nominal].config_names)
-        nv = length(orders[:nominal].vel_names)
-        nx = nq + nv
-        nu = length(orders[:nominal].torque_names)
-
-        # Definition of state_order
-        state_order = ["x", "y", "z", "q_w", "q_x", "q_y", "q_z", 
-                "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint", 
-                "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint", 
-                "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint", 
-                "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint", 
-                "lin_v_x", "lin_v_y", "lin_v_z", "ang_v_x", "ang_v_y", "ang_v_z", 
-                "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint", 
-                "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint", 
-                "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint", 
-                "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint"]
-
-        # Dynamics
-        M_func_ptr = dlsym(lib, :M_func_wrapper)
-        C_func_ptr = dlsym(lib, :C_func_wrapper)
-        forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
-        forward_dynamics_deriv_ptr = dlsym(lib, :forward_dynamics_deriv_wrapper)
-        inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
-        inverse_dynamics_deriv_ptr = dlsym(lib, :inverse_dynamics_deriv_wrapper)
-        velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
-        velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
-
-        # Kinematics
-        kinematics_bodies = ["FL_foot", "FR_foot", "RL_foot", "RR_foot"]
-        kinematics_ptr = dlsym(lib, :kinematics_wrapper)
-        kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
-        kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
-        kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
+        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go1.so"))
 
         # Limits
         torque_limits = 23.7*ones(12)
         joint_limits = [repeat([-Inf Inf], 7); repeat([-0.802851 0.802851; -1.0472 4.18879; -2.69653 -0.916298], 4)]
-
-        return new(
-            urdf_path, state_order,
-            nq, nv, nx, nu, length(kinematics_bodies), orders, conversions,
-            μ, torque_limits, joint_limits,
-            M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
-            inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
-            velocity_kinematics_ptr, velocity_kinematics_T_ptr,
-            kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
-            kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr
-        )
+        return new(μ, torque_limits, joint_limits)
     end
 end
 

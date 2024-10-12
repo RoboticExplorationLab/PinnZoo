@@ -32,14 +32,14 @@ macro create_pinnzoo_model(expr)
             kinematics_jacobian_ptr::Ptr{Nothing}
             kinematics_velocity_ptr::Ptr{Nothing}
             kinematics_velocity_jacobian_ptr::Ptr{Nothing}
-            $(new_fields)
+            $(new_fields...)
             function $constructor_name($(constructor_args...))
                 # Load the library
                 local lib
                 try
                     $(constructor_lib)
                 catch e
-                    throw(error("Dynamics library wasn't found. Did you compile it using CMake?"))
+                    throw(e)
                 end
 
                 # Get urdf_path
@@ -71,7 +71,6 @@ macro create_pinnzoo_model(expr)
                 kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
 
                 $(constructor_internals...)
-                println(urdf_path)
                 return new(
                     urdf_path,
                     nq, nv, nx, nu, nc, orders, conversions,
