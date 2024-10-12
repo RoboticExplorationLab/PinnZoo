@@ -110,6 +110,11 @@ nearest_ik
 Cartpole
 ```
 
+### Pendulum
+```@docs
+Pendulum
+```
+
 ### Unitree Go1
 ```@docs
 Go1

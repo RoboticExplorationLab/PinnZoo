@@ -1,3 +1,4 @@
+using Pkg; Pkg.activate(joinpath(@__DIR__, ".."))
 using Test
 using PinnZoo
 using RigidBodyDynamics
@@ -8,6 +9,11 @@ using Random
 include(joinpath(@__DIR__, "default_func_tests.jl"))
 
 @testset "PinnZoo" begin
+    # Pendulum
+    @testset "Pendulum" begin
+        test_default_functions(Pendulum())
+    end
+
     # Cartpole
     @testset "Cartpole" begin
         test_default_functions(Cartpole())

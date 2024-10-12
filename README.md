@@ -109,6 +109,18 @@ When generating code you can specify a set of bodies in the URDF to generate the
 
 # Helpful info
 
+### Adding a model
+To add a model, do the following:
+- Create a folder under models with the model name, with the urdf, a generate.py file and a <name>.jl file. Copy models/pendulum for a basic model,
+  but make the parent type PinnZooFloatingBaseModel if it is a floating base (look at unitree_go1, unitree_go2 or Nadia for more). If curious, look at src/model_macro.jl to see what the macro is doing, it mainly adds a bunch of C pointers to the generated code to your struct, as well as
+  fetching some model info.
+- Run your generate.py file to generate the code
+- Modify CMakeLists.txt to add your shared library
+- cd into build and run `cmake ..` and `cmake --build . --target <model_name>`
+- Modify src/PinnZoo.jl to include your model and export it
+- Modify test/runtests.jl to include your model
+- Run `julia -t auto test/runtests.jl` and make sure your model passes
+
 ### Regenerating code
 You can run the following in the PinnZoo directory to re-generate all the generated code if a change is made to symbolic_generator.py
 `find models -type f -name generate.py -exec python {} \;`

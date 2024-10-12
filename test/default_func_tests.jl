@@ -95,6 +95,9 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     M2 = change_order(model, Matrix(mass_matrix(state)), :rigidBodyDynamics, :nominal)
     @test norm(M1 - M2, Inf) < 1e-12
 
+    # Make sure mass matrix is positive definite
+    @test isposdef(M1)
+
     # Test coriolis matrix
     C1 = C_func(model, x)
     C2 = change_order(model, dynamics_bias(state), :rigidBodyDynamics, :nominal)

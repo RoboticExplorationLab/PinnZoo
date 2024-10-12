@@ -106,6 +106,7 @@ function apply_Δx(model::PinnZooFloatingBaseModel, x_k, Δx)
     x_next[8:end] = x_k[8:end] + Δx[7:end]
     return x_next
 end
+apply_Δx(model::PinnZooModel, x_k, Δx) = x_k + Δx
 
 @doc raw"""
     state_error(model::PinnZooFloatingBaseModel, x, x0)
@@ -120,6 +121,7 @@ function state_error(model::PinnZooFloatingBaseModel, x, x0)
         x[8:end] - x0[8:end]
     ]
 end
+state_error(model::PinnZooModel, x, x0) = x - x0
 
 @doc raw"""
     error_jacobian(model::PinnZooFloatingBaseModel, x)
@@ -128,12 +130,12 @@ Return the jacobian mapping Δx to x where Δx is in the tangent space (look at 
 of tangent space).
 """
 function error_jacobian(model::PinnZooFloatingBaseModel, x)
-
     return [
         velocity_kinematics(model, x) zeros(model.nq, length(x) - model.nq)
         zeros(length(x) - model.nq, model.nv) I(length(x) - model.nq)
     ]
 end
+error_jacobian(model::PinnZooModel, x) = 1.0I(length(x))
 
 @doc raw"""
     error_jacobian_T(model::PinnZooFloatingBaseModel, x)
@@ -147,4 +149,5 @@ function error_jacobian_T(model::PinnZooFloatingBaseModel, x)
         zeros(length(x) - model.nq, model.nq) I(length(x) - model.nq)
     ]
 end
+error_jacobian_T(model::PinnZooModel, x) = 1.0I(length(x))
 
