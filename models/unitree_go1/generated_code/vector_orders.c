@@ -61,6 +61,14 @@ const char* torque_names[] = {
     NULL
 };
 
+const char* kinematics_bodies[] = {
+    "FL_foot",
+    "FR_foot",
+    "RL_foot",
+    "RR_foot",
+    NULL
+};
+
 const char** get_config_order() {
     return config_names;
 }
@@ -69,4 +77,10 @@ const char** get_vel_order() {
 }
 const char** get_torque_order() {
     return torque_names;
+}
+const char** get_kinematics_bodies() {
+    return kinematics_bodies;
+}
+const char* get_urdf_path() {
+    return "unitree_go1/go1.urdf";
 }

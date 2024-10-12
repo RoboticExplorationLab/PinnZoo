@@ -1,4 +1,3 @@
-
 @create_pinnzoo_model struct Cartpole <: PinnZooModel
     function Cartpole()
         lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libcartpole.so"))
