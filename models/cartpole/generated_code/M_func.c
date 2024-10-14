@@ -32,6 +32,7 @@ extern "C" {
 #define casadi_f0 CASADI_PREFIX(f0)
 #define casadi_s0 CASADI_PREFIX(s0)
 #define casadi_s1 CASADI_PREFIX(s1)
+#define casadi_sq CASADI_PREFIX(sq)
 
 /* Symbol visibility in DLLs */
 #ifndef CASADI_SYMBOL_EXPORT
@@ -48,35 +49,29 @@ extern "C" {
   #endif
 #endif
 
+casadi_real casadi_sq(casadi_real x) { return x*x;}
+
 static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
 static const casadi_int casadi_s1[9] = {2, 2, 0, 2, 4, 0, 1, 0, 1};
 
 /* M_func:(i0[4])->(o0[2x2]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3, a4, a5;
-  a0=11.;
+  casadi_real a0, a1, a2, a3;
+  a0=2.;
   if (res[0]!=0) res[0][0]=a0;
-  a0=10.;
-  a1=5.0000000000000000e-01;
-  a2=arg[0]? arg[0][1] : 0;
-  a3=cos(a2);
-  a3=(a1*a3);
-  a4=(a0*a3);
-  if (res[0]!=0) res[0][1]=a4;
-  if (res[0]!=0) res[0][2]=a4;
-  a5=1.;
-  a3=(a3*a4);
-  a4=arg[0]? arg[0][0] : 0;
-  a2=sin(a2);
-  a1=(a1*a2);
-  a2=(a4+a1);
-  a0=(a0*a1);
+  a0=arg[0]? arg[0][1] : 0;
+  a1=cos(a0);
+  if (res[0]!=0) res[0][1]=a1;
+  if (res[0]!=0) res[0][2]=a1;
+  a1=casadi_sq(a1);
+  a2=arg[0]? arg[0][0] : 0;
+  a0=sin(a0);
+  a3=(a2+a0);
+  a3=(a3*a0);
+  a1=(a1+a3);
   a2=(a2*a0);
-  a3=(a3+a2);
-  a5=(a5+a3);
-  a4=(a4*a0);
-  a5=(a5-a4);
-  if (res[0]!=0) res[0][3]=a5;
+  a1=(a1-a2);
+  if (res[0]!=0) res[0][3]=a1;
   return 0;
 }
 

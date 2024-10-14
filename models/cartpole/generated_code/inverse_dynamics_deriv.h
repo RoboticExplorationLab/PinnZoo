@@ -37,7 +37,7 @@ int inverse_dynamics_deriv_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, ca
 #define inverse_dynamics_deriv_SZ_ARG 2
 #define inverse_dynamics_deriv_SZ_RES 2
 #define inverse_dynamics_deriv_SZ_IW 0
-#define inverse_dynamics_deriv_SZ_W 20
+#define inverse_dynamics_deriv_SZ_W 15
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
