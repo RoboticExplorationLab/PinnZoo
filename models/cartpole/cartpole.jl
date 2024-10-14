@@ -8,5 +8,6 @@ end
 @doc raw"""
     Cartpole() <: PinnZooModel
 
-Return a Cartpole dynamics model
+Return a Cartpole dynamics model, cart moves along the x-axis, pole rotates around positive y-axis.
+cart m = 1, pole m = 1, l = 1 (mass concentrated at pole tip).
 """ Cartpole

@@ -37,7 +37,7 @@ int M_func_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw,
 #define M_func_SZ_ARG 1
 #define M_func_SZ_RES 1
 #define M_func_SZ_IW 0
-#define M_func_SZ_W 6
+#define M_func_SZ_W 4
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

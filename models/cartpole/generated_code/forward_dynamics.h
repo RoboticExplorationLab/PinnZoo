@@ -37,7 +37,7 @@ int forward_dynamics_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_i
 #define forward_dynamics_SZ_ARG 2
 #define forward_dynamics_SZ_RES 1
 #define forward_dynamics_SZ_IW 0
-#define forward_dynamics_SZ_W 16
+#define forward_dynamics_SZ_W 14
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
