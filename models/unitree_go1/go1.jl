@@ -13,6 +13,12 @@
 end
 
 @doc raw"""
+    Go1(; μ = 0.3) <: Quadruped
+
+Return the Unitree Go1 dynamics and kinematics model
+""" Go1
+
+@doc raw"""
     init_state(model::Go1)
 
 Return state vector with the robot on the ground in the starting pose

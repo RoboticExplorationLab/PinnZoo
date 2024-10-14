@@ -105,14 +105,19 @@ nearest_ik
 ```
 
 # Models
-### Cartpole
-```@docs
-Cartpole
-```
-
 ### Pendulum
 ```@docs
 Pendulum
+```
+
+### Double Pendulum
+```@docs
+DoublePendulum
+```
+
+### Cartpole
+```@docs
+Cartpole
 ```
 
 ### Unitree Go1

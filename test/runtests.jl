@@ -14,6 +14,11 @@ include(joinpath(@__DIR__, "default_func_tests.jl"))
         test_default_functions(Pendulum())
     end
 
+    # Double Pendulum
+    @testset "Double Pendulum" begin
+        test_default_functions(DoublePendulum())
+    end
+
     # Cartpole
     @testset "Cartpole" begin
         test_default_functions(Cartpole())

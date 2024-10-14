@@ -11,6 +11,17 @@ file(GLOB SOURCES "${DIR}*.c")
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
 
+### ----- Generate dynamics for pendulum ----- ###
+project(double_pendulum) # Change this for each model
+
+set(DIR models/${PROJECT_NAME}/generated_code/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
 ### ----- Generate dynamics for cartpole ----- ###
 project(cartpole) # Change this for each model
 
