@@ -14,7 +14,7 @@ function quat_to_axis_angle(q; tol = 1e-12)
         θ = 2*atan(norm_qv, qs)
         return θ*qv/norm_qv
     else
-        return zeros(3)
+        return 2*qv # Makes sure ForwardDiff works when q is close to/at [1; 0; 0; 0]
     end
 end
 
@@ -29,7 +29,7 @@ function axis_angle_to_quat(ω; tol = 1e-12)
     if norm_ω >= tol
         return [cos(norm_ω/2); ω/norm_ω*sin(norm_ω/2)]
     else
-        return [1; 0; 0; 0]
+        return [cos(0); 0.5*ω]
     end
 end
 
