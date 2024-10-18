@@ -1,4 +1,3 @@
-using Pkg; Pkg.activate(joinpath(@__DIR__, ".."))
 using Test
 using PinnZoo
 using RigidBodyDynamics
