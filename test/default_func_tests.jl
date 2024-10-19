@@ -36,10 +36,12 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         velocity_kinematics_T(model, x)
 
         # Default kinematics functions
-        PinnZoo.kinematics(model, x)
-        kinematics_jacobian(model, x)
-        kinematics_velocity(model, x)
-        kinematics_velocity_jacobian(model, x)
+        if length(model.kinematics_bodies) != 0
+            PinnZoo.kinematics(model, x)
+            kinematics_jacobian(model, x)
+            kinematics_velocity(model, x)
+            kinematics_velocity_jacobian(model, x)
+        end
     end
 
     # Build RigidBodyDynamics.jl model and necessary helpers for testing
@@ -160,6 +162,10 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     else
         @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
         @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
+    end
+
+    if length(model.kinematics_bodies) == 0
+        return
     end
 
     # Test kinematics

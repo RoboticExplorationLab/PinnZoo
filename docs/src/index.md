@@ -122,6 +122,11 @@ DoublePendulum
 Cartpole
 ```
 
+### Quadrotor
+```@docs
+Quadrotor
+```
+
 ### Unitree Go1
 ```@docs
 Go1
