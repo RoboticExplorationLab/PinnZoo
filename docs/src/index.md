@@ -58,6 +58,8 @@ generate_conversions
 ```@docs
 M_func
 C_func
+dynamics
+dynamics_deriv
 forward_dynamics
 forward_dynamics_deriv
 inverse_dynamics

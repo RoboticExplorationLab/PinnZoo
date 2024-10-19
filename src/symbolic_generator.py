@@ -110,11 +110,20 @@ class SymbolicGenerator:
         # Coriolis matrix
         C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
 
+        # Generate velocity kinematics, E(q) such that q_dot = E(q)v
+        self.generate_velocity_kinematics()
+
         # Forward dynamics
         v_dot_out = cs.densify(cpin.aba(self.cmodel, self.cdata, self.q, self.v, self.tau))
         dv_dot_out_dx = cs.densify(cs.jacobian(v_dot_out, self.x))
         dv_dot_out_dtau = cs.densify(cs.jacobian(v_dot_out, self.tau))
-        
+
+        # Dynamics (x_dot = f(x, u))
+        q_dot_out = self.E@self.v
+        x_dot_out = cs.vertcat(q_dot_out, v_dot_out)
+        dx_dot_out_dx = cs.densify(cs.jacobian(x_dot_out, self.x))
+        dx_dot_out_dtau = cs.densify(cs.jacobian(x_dot_out, self.tau))
+
         # Inverse dynamics
         tau_out = cs.densify(cpin.rnea(self.cmodel, self.cdata, self.q, self.v, self.v_dot))
         dtau_dx = cs.densify(cs.jacobian(tau_out, self.x))
@@ -126,6 +135,9 @@ class SymbolicGenerator:
         forward_dynamics_func = cs.Function("forward_dynamics", [self.x, self.tau], [v_dot_out])
         forward_dynamics_deriv_func = cs.Function("forward_dynamics_deriv", [self.x, self.tau], 
                                                   [dv_dot_out_dx, dv_dot_out_dtau])
+        dynamics_func = cs.Function("dynamics", [self.x, self.tau], [x_dot_out])
+        dynamics_deriv_func = cs.Function("dynamics_deriv", [self.x, self.tau], 
+                                                  [dx_dot_out_dx, dx_dot_out_dtau])
         inverse_dynamics_func = cs.Function("inverse_dynamics", [self.x, self.v_dot], [tau_out])
         inverse_dynamics_deriv_func = cs.Function("inverse_dynamics_deriv", [self.x, self.v_dot],
                                                   [dtau_dx, dtau_dv_dot])
@@ -135,6 +147,8 @@ class SymbolicGenerator:
         c_func.generate("C_func.c", self.gen_opts)
         forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
         forward_dynamics_deriv_func.generate("forward_dynamics_deriv.c", self.gen_opts)
+        dynamics_func.generate("dynamics.c", self.gen_opts)
+        dynamics_deriv_func.generate("dynamics_deriv.c", self.gen_opts)
         inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
         inverse_dynamics_deriv_func.generate("inverse_dynamics_deriv.c", self.gen_opts)
 
@@ -144,9 +158,6 @@ class SymbolicGenerator:
         # Perform forward kinematics with the symbolic configuration
         cpin.forwardKinematics(self.cmodel, self.cdata, self.q)
         cpin.updateFramePlacements(self.cmodel, self.cdata)
-
-        # Generate velocity kinematics, E(q) such that q_dot = E(q)v
-        self.generate_velocity_kinematics()
 
         # Forward kinematics (world frame by default)
         kinematics = []
