@@ -2,6 +2,7 @@ using Test
 using PinnZoo
 using RigidBodyDynamics
 using FiniteDiff
+using FiniteDifferences
 using LinearAlgebra
 using Random
 
@@ -28,6 +29,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         # Default dynamics functions
         M_func(model, x)
         C_func(model, x)
+        dynamics(model, x, τ)
         forward_dynamics(model, x, τ)
         PinnZoo.inverse_dynamics(model, x, v̇)
         velocity_kinematics(model, x)
@@ -110,12 +112,23 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     @test norm(v̇1 - v̇2, Inf) < 1e-9
 
     # Test forward dynamics derivatives
-    J1 = FiniteDiff.finite_difference_jacobian(_x -> forward_dynamics(model, _x, τ), x)
-    J2 = FiniteDiff.finite_difference_jacobian(_τ -> forward_dynamics(model, x, _τ), τ)
+    J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> forward_dynamics(model, _x, τ), x)[1]
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _τ -> forward_dynamics(model, x, _τ), τ)[1]
     J3, J4 = forward_dynamics_deriv(model, x, τ)
-    @warn "Forward dynamics derivatives currently fail tests, needs fixing"
-    # @test norm(J1 - J3, Inf) < 1e-6
-    # @test norm(J2 - J4, Inf) < 1e-6
+    @test norm(J1 - J3, Inf) < 5e-7
+    @test norm(J2 - J4, Inf) < 2e-10
+
+    # Test dynamics
+    ẋ1 = dynamics(model, x, τ)
+    ẋ2 = [velocity_kinematics(model, x)*x[model.nq + 1:end]; forward_dynamics(model, x, τ)]
+    @test norm(ẋ1 - ẋ2) < 1e-9
+
+    # Test dynamics derivatives
+    J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> dynamics(model, _x, τ), x)[1]
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _τ -> dynamics(model, x, _τ), τ)[1]
+    J3, J4 = dynamics_deriv(model, x, τ)
+    @test norm(J1 - J3, Inf) < 5e-7
+    @test norm(J2 - J4, Inf) < 2e-10
 
     # Test inverse dynamics
     τ1 = PinnZoo.inverse_dynamics(model, x, v̇);

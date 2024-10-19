@@ -45,6 +45,30 @@ function forward_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64},
 end
 
 @doc raw"""
+    dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
+
+Returns dynamics [q̇; v̇] where q̇ = E(q)v and v̇ = M(x) \ (τ - C) where M is the mass matrix and C is the
+dynamics bias vector.
+"""
+function dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
+    ẋ = zeros(model.nx)
+    ccall(model.dynamics_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, τ, ẋ)
+    return ẋ
+end
+
+@doc raw"""
+    dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
+
+Return a tuple of derivatives of the dynamics (ẋ) with respect to x and τ
+"""
+function dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
+    dẋ_dx, dẋ_dτ = zeros(model.nx, model.nx), zeros(model.nx, model.nv)
+    ccall(model.dynamics_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), 
+            x, τ, dẋ_dx, dẋ_dτ)
+    return dẋ_dx, dẋ_dτ
+end
+
+@doc raw"""
     inverse_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
 
 Return the inverse dynamics τ = M⩒ + C where M is the mass matrix and C is the dynamics
@@ -127,7 +151,7 @@ state_error(model::PinnZooModel, x, x0) = x - x0
     error_jacobian(model::PinnZooFloatingBaseModel, x)
 
 Return the jacobian mapping Δx to x where Δx is in the tangent space (look at state_error for our choice
-of tangent space).
+of tangent space). This matches the derivative of apply_Δx(model, x, Δx) around Δx = 0
 """
 function error_jacobian(model::PinnZooFloatingBaseModel, x)
     return [
@@ -141,7 +165,7 @@ error_jacobian(model::PinnZooModel, x) = 1.0I(length(x))
     error_jacobian_T(model::PinnZooFloatingBaseModel, x)
 
 Return the jacobian mapping x to Δx where Δx is in the tangent space (look at state_error for our choice
-of tangent space).
+of tangent space). This matches the derivative of state_error(model, _x, x) around _x = x (error = 0)
 """
 function error_jacobian_T(model::PinnZooFloatingBaseModel, x)
     return [

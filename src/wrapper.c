@@ -2,6 +2,8 @@
 #include "C_func.h"
 #include "forward_dynamics.h"
 #include "forward_dynamics_deriv.h"
+#include "dynamics.h"
+#include "dynamics_deriv.h"
 #include "inverse_dynamics.h"
 #include "inverse_dynamics_deriv.h"
 #include "velocity_kinematics.h"
@@ -41,6 +43,22 @@ void forward_dynamics_deriv_wrapper(double* x_in, double* tau_in, double* dvdot_
     long long int iw[0];
     double w[0];
     forward_dynamics_deriv(args, res, iw, w, 0);
+}
+
+void dynamics_wrapper(double* x_in, double* tau_in, double* xdot_out) {
+    const double* args[2] = {x_in, tau_in};
+    double* res[1] = {xdot_out};
+    long long int iw[0];
+    double w[0];
+    dynamics(args, res, iw, w, 0);
+}
+
+void dynamics_deriv_wrapper(double* x_in, double* tau_in, double* dxdot_dx_out, double* dxdout_dtau_out) {
+    const double* args[2] = {x_in, tau_in};
+    double* res[2] = {dxdot_dx_out, dxdout_dtau_out};
+    long long int iw[0];
+    double w[0];
+    dynamics_deriv(args, res, iw, w, 0);
 }
 
 void inverse_dynamics_wrapper(double* x_in, double* vdot_in, double* tau_out) {
