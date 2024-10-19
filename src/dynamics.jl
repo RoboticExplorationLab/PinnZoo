@@ -47,11 +47,11 @@ end
 @doc raw"""
     dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
 
-Returns dynamics [q̇; v̇] where q̇ = E(q)v and v̇ = M(x) \ (τ - C) where M is the mass matrix and C is the
+Returns dynamics [v; v̇] where v̇ = M(x) \ (τ - C) where M is the mass matrix and C is the
 dynamics bias vector.
 """
 function dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
-    ẋ = zeros(model.nx)
+    ẋ = zeros(model.nẋ)
     ccall(model.dynamics_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, τ, ẋ)
     return ẋ
 end
@@ -62,7 +62,7 @@ end
 Return a tuple of derivatives of the dynamics (ẋ) with respect to x and τ
 """
 function dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Float64})
-    dẋ_dx, dẋ_dτ = zeros(model.nx, model.nx), zeros(model.nx, model.nv)
+    dẋ_dx, dẋ_dτ = zeros(model.nẋ, model.nx), zeros(model.nẋ, model.nv)
     ccall(model.dynamics_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), 
             x, τ, dẋ_dx, dẋ_dτ)
     return dẋ_dx, dẋ_dτ

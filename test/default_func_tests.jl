@@ -120,7 +120,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
 
     # Test dynamics
     ẋ1 = dynamics(model, x, τ)
-    ẋ2 = [velocity_kinematics(model, x)*x[model.nq + 1:end]; forward_dynamics(model, x, τ)]
+    ẋ2 = [x[model.nq + 1:end]; forward_dynamics(model, x, τ)]
     @test norm(ẋ1 - ẋ2) < 1e-9
 
     # Test dynamics derivatives

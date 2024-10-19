@@ -37,7 +37,7 @@ int dynamics_deriv_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int
 #define dynamics_deriv_SZ_ARG 2
 #define dynamics_deriv_SZ_RES 2
 #define dynamics_deriv_SZ_IW 0
-#define dynamics_deriv_SZ_W 3113
+#define dynamics_deriv_SZ_W 3105
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
