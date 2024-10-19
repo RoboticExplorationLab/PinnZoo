@@ -119,8 +119,7 @@ class SymbolicGenerator:
         dv_dot_out_dtau = cs.densify(cs.jacobian(v_dot_out, self.tau))
 
         # Dynamics (x_dot = f(x, u))
-        q_dot_out = self.E@self.v
-        x_dot_out = cs.vertcat(q_dot_out, v_dot_out)
+        x_dot_out = cs.vertcat(self.v, v_dot_out)
         dx_dot_out_dx = cs.densify(cs.jacobian(x_dot_out, self.x))
         dx_dot_out_dtau = cs.densify(cs.jacobian(x_dot_out, self.tau))
 
