@@ -4,7 +4,7 @@
     L::Float64 # Arn lengths
     function Quadrotor(; L = 0.175, kf = 1.0, km = 0.0245)
         lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libquadrotor.so"))
-        return new()
+        return new(kf, km, L)
     end
 end
 
@@ -15,8 +15,8 @@ Return a Quadrotor dynamics model, with m = 1, I = Diag([0.0046; 0.0046; 0.008])
 """ Quadrotor
 
 function B_func(model::Quadrotor)
-    kt, km, L = model.kf, model.km, model.L
+    kf, km, L = model.kf, model.km, model.L
     B_f = [zeros(2, 4); kf*ones(1, 4)]
-    B_τ = [0 L*kt 0 -L*kt; -L*kt 0 L*kt 0; km -km km -km]
+    B_τ = [0 L*kf 0 -L*kf; -L*kf 0 L*kf 0; km -km km -km]
     return [B_f; B_τ]
 end
