@@ -54,3 +54,14 @@ function kinematics_velocity_jacobian(model::PinnZooModel, x::AbstractVector{Flo
     ccall(model.kinematics_velocity_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J_dot)
     return J_dot
 end
+
+@doc raw"""
+    kinematics_force_jacobian(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+
+Return the jacobian (nv x nx matrix) of (J(x))'*λ with respect to x, where J(x) maps joint velocities into kinematics velocities
+"""
+function kinematics_force_jacobian(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+    J = zeros(model.nv, model.nx)
+    ccall(model.kinematics_force_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, λ, J)
+    return J
+end

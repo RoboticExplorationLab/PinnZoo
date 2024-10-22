@@ -79,7 +79,7 @@ module PinnZoo
     export M_func, C_func, dynamics, dynamics_deriv, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
     export velocity_kinematics, velocity_kinematics_T
     export kinematics_size
-    export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian
+    export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian, kinematics_force_jacobian
     export error_jacobian, error_jacobian_T, apply_Δx, state_error
 
     # Quaternion helpers
