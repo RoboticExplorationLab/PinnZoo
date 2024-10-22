@@ -177,20 +177,27 @@ class SymbolicGenerator:
         # Kinematics velocity (world frame by default)
         kinematics_dot = J[:, :self.nq]@self.E@self.v
 
-        # # Kinematics velocity jacobian
+        # Kinematics velocity jacobian
         J_dot = cs.densify(cs.jacobian(kinematics_dot, self.x))
+
+        # Kinematics force jacobian
+        self.force = cs.SX.sym('force', kinematics.numel())
+        q_f = self.E.T@J[:, :self.nq].T@self.force
+        J_f = cs.densify(cs.jacobian(q_f, self.x))
 
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [kinematics])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [J])
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [J_dot])
+        kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [J_f])
 
         # Generate files
         kinematics.generate("kinematics.c", self.gen_opts)
         kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
         kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
         kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+        kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
 
         print("Generated kinematics")
 
