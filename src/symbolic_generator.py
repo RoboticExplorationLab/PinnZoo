@@ -334,10 +334,21 @@ class SymbolicGenerator:
                       "in, please reach out to Arun Bishop.")
                 sys.exit()
 
+        # Generate jacobian-vector product derivatives
+        q_in = cs.SX.sym('q_in', self.nq)
+        v_in = cs.SX.sym('v_in', self.nv)
+        E_jvp_dx = cs.densify(cs.jacobian(self.E@v_in, self.x))
+        E_T_jvp_dx = cs.densify(cs.jacobian(self.E_T@q_in, self.x))
+
         velocity_kinematics = cs.Function("velocity_kinematics", [self.x], [self.E])
         velocity_kinematics_T = cs.Function("velocity_kinematics_T", [self.x], [self.E_T])
+        velocity_kinematics_jvp_deriv = cs.Function("velocity_kinematics_jvp_deriv", [self.x, v_in], [E_jvp_dx])
+        velocity_kinematics_T_jvp_deriv = cs.Function("velocity_kinematics_T_jvp_deriv", [self.x, q_in], [E_T_jvp_dx])
+
         velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
         velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
+        velocity_kinematics_jvp_deriv.generate("velocity_kinematics_jvp_deriv.c", self.gen_opts)
+        velocity_kinematics_T_jvp_deriv.generate("velocity_kinematics_T_jvp_deriv.c", self.gen_opts)
 
     def rotation_matrix_to_quaternion(self, R):
 

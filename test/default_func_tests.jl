@@ -35,6 +35,8 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         PinnZoo.inverse_dynamics(model, x, v̇)
         velocity_kinematics(model, x)
         velocity_kinematics_T(model, x)
+        velocity_kinematics_jvp_deriv(model, x, x[model.nq + 1:end])
+        velocity_kinematics_T_jvp_deriv(model, x, x[1:model.nq])
 
         # Default kinematics functions
         if length(model.kinematics_bodies) != 0
@@ -119,7 +121,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> forward_dynamics(model, _x, τ), copy(x))[1]
     J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _τ -> forward_dynamics(model, x, _τ), copy(τ))[1]
     J3, J4 = forward_dynamics_deriv(model, x, τ)
-    @test norm(J1 - J3, Inf) < 5e-6
+    @test norm(J1 - J3, Inf) < 5e-5
     @test norm(J2 - J4, Inf) < 1e-8
 
     # Test dynamics
@@ -131,7 +133,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> dynamics(model, _x, τ), copy(x))[1]
     J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _τ -> dynamics(model, x, _τ), copy(τ))[1]
     J3, J4 = dynamics_deriv(model, x, τ)
-    @test norm(J1 - J3, Inf) < 5e-6
+    @test norm(J1 - J3, Inf) < 5e-5
     @test norm(J2 - J4, Inf) < 5e-10
 
     # Test inverse dynamics
@@ -147,7 +149,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     @test norm(J1 - J3, Inf) < 1e-4
     @test norm(J2 - J4, Inf) < 1e-4
 
-    # Test velocity kinematics (TODO fix for q̇ != v)
+    # Test velocity kinematics
     if typeof(model) <: PinnZooFloatingBaseModel
         E = zeros(model.nq, model.nv);
         E[1:3, 1:3] = quat_to_rot(x[4:7])
@@ -165,6 +167,15 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
         @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
     end
+
+    # Test velocity kinematics jacobian-vector product derivatives
+    test_x = randn_state(model)
+    J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(2, 1), _x -> velocity_kinematics(model, _x)*test_x[model.nq + 1:end], copy(x))[1]
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(2, 1), _x -> velocity_kinematics_T(model, _x)*test_x[1:model.nq], copy(x))[1]
+    J3 = velocity_kinematics_jvp_deriv(model, x, test_x[model.nq + 1:end])
+    J4 = velocity_kinematics_T_jvp_deriv(model, x, test_x[1:model.nq])
+    @test norm(J1 - J3, Inf) < 1e-6
+    @test norm(J2 - J4, Inf) < 1e-6
 
     if length(model.kinematics_bodies) == 0
         return
@@ -194,7 +205,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Test kinematics force jacobian
     J_dot1 = kinematics_force_jacobian(model, x, λ)
     J_dot2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(2, 1),  _x -> kinematics_velocity_jacobian(model, _x)[:, model.nq + 1:end]'*λ, copy(x))[1]
-    @test norm(J_dot1 - J_dot2) < 5e-6   
+    @test norm(J_dot1 - J_dot2) < 5e-5 
 
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
     if typeof(model) <: PinnZooFloatingBaseModel

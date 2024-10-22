@@ -118,6 +118,28 @@ function velocity_kinematics_T(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
+    velocity_kinematics_jvp_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v::AbstractVector{Float64})
+
+Derivative of the jacobian vector product E(x)v with respect to x
+"""
+function velocity_kinematics_jvp_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v::AbstractVector{Float64})
+    E = zeros(model.nq, model.nx)
+    ccall(model.velocity_kinematics_jvp_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, v, E)
+    return E
+end
+
+@doc raw"""
+    velocity_kinematics_T_jvp_deriv(model::PinnZooModel, x::AbstractVector{Float64}, q::AbstractVector{Float64})
+
+Derivative of the jacobian vector product E_T(x)q with respect to x
+"""
+function velocity_kinematics_T_jvp_deriv(model::PinnZooModel, x::AbstractVector{Float64}, q::AbstractVector{Float64})
+    E_T = zeros(model.nv, model.nx)
+    ccall(model.velocity_kinematics_T_jvp_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, q, E_T)
+    return E_T
+end
+
+@doc raw"""
     apply_Δx(model::PinnZooFloatingBaseModel, x_k, Δx)
 
 Return Δx added to x while respecting the configuration space/tangent space relationship (i.e. do quaternion multiplication,

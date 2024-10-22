@@ -8,6 +8,8 @@
 #include "inverse_dynamics_deriv.h"
 #include "velocity_kinematics.h"
 #include "velocity_kinematics_T.h"
+#include "velocity_kinematics_jvp_deriv.h"
+#include "velocity_kinematics_T_jvp_deriv.h"
 #include "kinematics.h"
 #include "kinematics_jacobian.h"
 #include "kinematics_velocity.h"
@@ -92,6 +94,22 @@ void velocity_kinematics_T_wrapper(double* x_in, double* E_T_out) {
     long long int iw[0];
     double w[0];
     velocity_kinematics_T(args, res, iw, w, 0);
+}
+
+void velocity_kinematics_jvp_deriv_wrapper(double* x_in, double* v_in, double* E_out) {
+    const double* args[2] = {x_in, v_in};
+    double* res[1] = {E_out};
+    long long int iw[0];
+    double w[0];
+    velocity_kinematics_jvp_deriv(args, res, iw, w, 0);
+}
+
+void velocity_kinematics_T_jvp_deriv_wrapper(double* x_in, double *q_in, double* E_T_out) {
+    const double* args[2] = {x_in, q_in};
+    double* res[1] = {E_T_out};
+    long long int iw[0];
+    double w[0];
+    velocity_kinematics_T_jvp_deriv(args, res, iw, w, 0);
 }
 
 void kinematics_wrapper(double* x_in, double* locs_out) {
