@@ -64,6 +64,10 @@ forward_dynamics
 forward_dynamics_deriv
 inverse_dynamics
 inverse_dynamics_deriv
+velocity_kinematics
+velocity_kinematics_T
+velocity_kinematics_jvp_deriv
+velocity_kinematics_T_jvp_deriv
 state_error
 apply_Δx
 error_jacobian
@@ -76,6 +80,7 @@ kinematics
 kinematics_jacobian
 kinematics_velocity
 kinematics_velocity_jacobian
+kinematics_force_jacobian
 ```
 
 ## Utility Functions
