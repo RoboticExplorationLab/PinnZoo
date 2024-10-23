@@ -221,6 +221,14 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
 
         @test norm(error_jacobian(model, x) - E2, Inf) < 1e-7
         @test norm(error_jacobian_T(model, x) - E_T2, Inf) < 1e-7
+        
+        # Test the derivatives of the jacobian vector products
+        J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> error_jacobian(model, _x)*Δx, copy(x))[1]
+        J2 = error_jacobian_jvp_deriv(model, x, Δx)
+        @test norm(J1 - J2, Inf) < 1e-6
+        J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> error_jacobian_T(model, _x)*x2, copy(x))[1]
+        J2 = error_jacobian_T_jvp_deriv(model, x, x2)
+        @test norm(J1 - J2, Inf) < 1e-6
     end
 end
 
