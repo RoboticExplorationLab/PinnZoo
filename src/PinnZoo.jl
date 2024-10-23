@@ -81,6 +81,7 @@ module PinnZoo
     export kinematics_size
     export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian, kinematics_force_jacobian
     export error_jacobian, error_jacobian_T, apply_Δx, state_error
+    export error_jacobian_jvp_deriv, error_jacobian_T_jvp_deriv
 
     # Quaternion helpers
     export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,

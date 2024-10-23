@@ -72,6 +72,8 @@ state_error
 apply_Δx
 error_jacobian
 error_jacobian_T
+error_jacobian_jvp_deriv
+error_jacobian_T_jvp_deriv
 ```
 
 ## Kinematics Functions

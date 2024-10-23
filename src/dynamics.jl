@@ -184,6 +184,18 @@ end
 error_jacobian(model::PinnZooModel, x) = 1.0I(length(x))
 
 @doc raw"""
+    error_jacobian_jvp_deriv(model::PinnZooFloatingBaseModel, x, Δx)
+
+Returns the jacobian of E(x)*Δx with respect to x
+"""
+function error_jacobian_jvp_deriv(model::PinnZooFloatingBaseModel, x, Δx)
+    return [
+        velocity_kinematics_jvp_deriv(model, x, Δx)
+        zeros(length(x) - model.nq, length(x))
+    ]
+end
+
+@doc raw"""
     error_jacobian_T(model::PinnZooFloatingBaseModel, x)
 
 Return the jacobian mapping x to Δx where Δx is in the tangent space (look at state_error for our choice
@@ -196,4 +208,16 @@ function error_jacobian_T(model::PinnZooFloatingBaseModel, x)
     ]
 end
 error_jacobian_T(model::PinnZooModel, x) = 1.0I(length(x))
+
+@doc raw"""
+    error_jacobian_T_jvp_deriv(model::PinnZooFloatingBaseModel, x, Δx)
+
+Returns the jacobian of E_T(x)*x2 with respect to x
+"""
+function error_jacobian_T_jvp_deriv(model::PinnZooFloatingBaseModel, x, x2)
+    return [
+        velocity_kinematics_T_jvp_deriv(model, x, x2)
+        zeros(length(x) - model.nq, length(x))
+    ]
+end
 
