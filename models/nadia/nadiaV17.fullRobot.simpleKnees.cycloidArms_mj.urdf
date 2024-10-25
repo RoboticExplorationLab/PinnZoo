@@ -222,7 +222,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/pelvis.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/pelvis.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -276,7 +276,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/left_hip_yaw.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/left_hip_yaw.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -290,7 +290,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/right_hip_yaw.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/right_hip_yaw.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -304,7 +304,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/left_hip_roll.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/left_hip_roll.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -318,7 +318,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/right_hip_roll.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/right_hip_roll.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -332,7 +332,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/left_thigh.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/left_thigh.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -386,7 +386,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/right_thigh.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/right_thigh.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -440,7 +440,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/left_shin.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/left_shin.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -495,7 +495,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/right_shin.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/right_shin.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -549,7 +549,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/ankle.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/ankle.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -563,7 +563,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/ankle.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/ankle.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -577,7 +577,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/foot.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/foot.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -591,7 +591,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/foot.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/foot.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -605,7 +605,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/spine_yaw.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/spine_yaw.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -619,7 +619,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/spine_roll.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/spine_roll.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -633,7 +633,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V16_description/meshes/torso_cycloidmounts.obj"/>
+      <mesh filename="package://nadia_V16_description/meshes/torso_cycloidmounts.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -721,7 +721,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_PITCH_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_PITCH_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -776,7 +776,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_ROLL_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_ROLL_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -790,7 +790,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_YAW_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/LEFT_SHOULDER_YAW_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -845,7 +845,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/LEFT_ELBOW_PITCH_LINK_413mm_LENGTH.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/LEFT_ELBOW_PITCH_LINK_413mm_LENGTH.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -893,7 +893,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_PITCH_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_PITCH_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -948,7 +948,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_ROLL_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_ROLL_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -962,7 +962,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_YAW_LINK.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_SHOULDER_YAW_LINK.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
@@ -1017,7 +1017,7 @@
   </inertial>
   <visual>
     <geometry>
-      <mesh filename="nadia_V17_description/meshes/cycloidal_arm/RIGHT_ELBOW_PITCH_LINK_413mm_LENGTH.obj"/>
+      <mesh filename="package://nadia_V17_description/meshes/cycloidal_arm/RIGHT_ELBOW_PITCH_LINK_413mm_LENGTH.obj"/>
     </geometry>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </visual>
