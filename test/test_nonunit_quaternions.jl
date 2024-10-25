@@ -7,6 +7,7 @@ using Random
 using Plots
 using FiniteDifferences
 
+model = Nadia(kinematics_ori = :AxisAngle);
 model = Go1()
 
 # Euler using inverse dynamics
@@ -41,21 +42,25 @@ function dynamics_residual_jacobian(model, x_k, u_k, x_next, h)
     B = B_func(model)
     A = kinematics_velocity_jacobian(model, x_k)[:, model.nq + 1:end]
     dx, dv̇ = inverse_dynamics_deriv(model, x_k, (v_next - v_k)/h)
-    J[model.nq + 1:end, :] = hcat(dx - dv̇*[zeros(model.nv, model.nq) I(model.nv)]/h - kinematics_force_jacobian(model, x_k, u_k[13:end]),
+    J[model.nq + 1:end, :] = hcat(dx - dv̇*[zeros(model.nv, model.nq) I(model.nv)]/h - kinematics_force_jacobian(model, x_k, u_k[model.nu + 1:end]),
             -[B A'], dv̇*[zeros(model.nv, model.nq) I(model.nv)]/h)
 
     return J
 end
 
-x1 = randn(model.nx)
-x2 = randn(model.nx)
-x2[4:7] /= norm(x2[4:7]*2)
-nu = 12 + 12
-u = randn(nu)
-dynamics_residual(model, x1, u, x2, 0.05)
+for _ = 1:100
 
-J1 = dynamics_residual_jacobian(model, x1, u, x2, 0.05)
-J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), z -> dynamics_residual(model, z[1:model.nx], z[model.nx .+ (1:nu)],
-        z[model.nx + nu .+ (1:model.nx)], 0.05), copy([x1; u; x2]))[1]
-norm(J1 - J2, Inf)
+    x1 = randn(model.nx)
+    x2 = randn(model.nx)
+    x2[4:7] /= norm(x2[4:7]*2)
+    nu = model.nu + kinematics_size(model)
+    u = randn(nu)
+    dynamics_residual(model, x1, u, x2, 0.05)
+
+    J1 = dynamics_residual_jacobian(model, x1, u, x2, 0.05)
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), z -> dynamics_residual(model, z[1:model.nx], z[model.nx .+ (1:nu)],
+            z[model.nx + nu .+ (1:model.nx)], 0.05), copy([x1; u; x2]))[1]
+    @assert !any(isnan.(J1))
+    norm(J1 - J2, Inf)
+end
 
