@@ -25,12 +25,7 @@ Return the quaternion corresponding to the provided axis angle
 """
 function axis_angle_to_quat(ω; tol = 1e-12)
     norm_ω = norm(ω)
-    
-    if norm_ω >= tol
-        return [cos(norm_ω/2); ω/norm_ω*sin(norm_ω/2)]
-    else
-        return [cos(0); 0.5*ω]
-    end
+    return [cos(norm_ω/2); ω*0.5*sinc(norm_ω/π/2)] # sinc(x) = sin(πx)/(πx) 
 end
 
 @doc raw"""

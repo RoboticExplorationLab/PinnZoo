@@ -166,7 +166,7 @@ class SymbolicGenerator:
                 quat = self.rotation_matrix_to_quaternion(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
                 kinematics.append(quat)
             elif self.kinematics_ori == KinematicsOrientation.AxisAngle:
-                aa = self.rotation_matrix_to_axisangle(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
+                aa = cpin.log3(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
                 kinematics.append(aa)
 
         kinematics = cs.vertcat(*kinematics)
@@ -362,22 +362,3 @@ class SymbolicGenerator:
         qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
 
         return cs.vertcat(qw, qx, qy, qz)
-
-    def rotation_matrix_to_axisangle(self, R):
-        
-        epsilon = 1e-12
-        trace = R[0,0] + R[1,1] + R[2,2]
-
-        # Compute quaternion qw, qx, qy, qz with additional checks
-        qw = cs.if_else(1 + trace > epsilon, cs.sqrt(1 + trace) / 2, 0)
-        qx = cs.if_else(cs.fabs(qw) > epsilon, (R[2,1] - R[1,2]) / (4 * qw), cs.sqrt(1 + R[0,0] - R[1,1] - R[2,2]) / 2)
-        qy = cs.if_else(cs.fabs(qw) > epsilon, (R[0,2] - R[2,0]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,1] + R[1,0]) / (4 * qx), cs.sqrt(1 + R[1,1] - R[0,0] - R[2,2]) / 2))
-        qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
-
-        # Compute axis angle
-        qv = cs.vertcat(qx, qy, qz)
-        angle = cs.if_else(1 - cs.fabs(qw) >= epsilon, 2 * cs.acos(qw), 0)
-        aa = cs.if_else(angle >= epsilon, angle*qv / cs.sin(angle/2), qv)
-
-        return aa
-
