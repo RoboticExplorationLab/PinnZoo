@@ -49,31 +49,94 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
+static const casadi_int casadi_s0[10] = {6, 1, 0, 6, 0, 1, 2, 3, 4, 5};
 static const casadi_int casadi_s1[7] = {3, 1, 0, 3, 0, 1, 2};
-static const casadi_int casadi_s2[15] = {2, 4, 0, 2, 4, 6, 8, 0, 1, 0, 1, 0, 1, 0, 1};
+static const casadi_int casadi_s2[27] = {3, 6, 0, 3, 6, 9, 12, 15, 18, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
 
-/* kinematics_force_jacobian:(i0[4],i1[3])->(o0[2x4]) */
+/* kinematics_force_jacobian:(i0[6],i1[3])->(o0[3x6]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3;
+  casadi_real a0, a1, a10, a2, a3, a4, a5, a6, a7, a8, a9;
   a0=0.;
   if (res[0]!=0) res[0][0]=a0;
   if (res[0]!=0) res[0][1]=a0;
   if (res[0]!=0) res[0][2]=a0;
+  if (res[0]!=0) res[0][3]=a0;
   a1=arg[1]? arg[1][2] : 0;
   a2=arg[0]? arg[0][1] : 0;
   a3=cos(a2);
-  a1=(a1*a3);
-  a3=arg[1]? arg[1][1] : 0;
-  a2=sin(a2);
-  a3=(a3*a2);
-  a1=(a1-a3);
-  a1=(-a1);
-  if (res[0]!=0) res[0][3]=a1;
-  if (res[0]!=0) res[0][4]=a0;
-  if (res[0]!=0) res[0][5]=a0;
+  a4=arg[0]? arg[0][2] : 0;
+  a5=cos(a4);
+  a6=(a5*a3);
+  a7=sin(a4);
+  a8=sin(a2);
+  a9=(a7*a8);
+  a6=(a6-a9);
+  a6=(a3+a6);
+  a6=(a1*a6);
+  a9=arg[1]? arg[1][1] : 0;
+  a5=(a5*a8);
+  a7=(a7*a3);
+  a5=(a5+a7);
+  a8=(a8+a5);
+  a8=(a9*a8);
+  a6=(a6-a8);
+  a6=(-a6);
+  if (res[0]!=0) res[0][4]=a6;
+  a6=cos(a4);
+  a8=cos(a2);
+  a5=(a6*a8);
+  a7=sin(a4);
+  a3=sin(a2);
+  a10=(a7*a3);
+  a5=(a5-a10);
+  a5=(a1*a5);
+  a6=(a6*a3);
+  a7=(a7*a8);
+  a6=(a6+a7);
+  a6=(a9*a6);
+  a5=(a5-a6);
+  a5=(-a5);
+  if (res[0]!=0) res[0][5]=a5;
   if (res[0]!=0) res[0][6]=a0;
-  if (res[0]!=0) res[0][7]=a0;
+  a5=cos(a2);
+  a6=cos(a4);
+  a7=(a5*a6);
+  a8=sin(a2);
+  a3=sin(a4);
+  a10=(a8*a3);
+  a7=(a7-a10);
+  a7=(a1*a7);
+  a5=(a5*a3);
+  a8=(a8*a6);
+  a5=(a5+a8);
+  a5=(a9*a5);
+  a7=(a7-a5);
+  a7=(-a7);
+  if (res[0]!=0) res[0][7]=a7;
+  a7=cos(a2);
+  a5=cos(a4);
+  a8=(a7*a5);
+  a2=sin(a2);
+  a4=sin(a4);
+  a6=(a2*a4);
+  a8=(a8-a6);
+  a1=(a1*a8);
+  a7=(a7*a4);
+  a2=(a2*a5);
+  a7=(a7+a2);
+  a9=(a9*a7);
+  a1=(a1-a9);
+  a1=(-a1);
+  if (res[0]!=0) res[0][8]=a1;
+  if (res[0]!=0) res[0][9]=a0;
+  if (res[0]!=0) res[0][10]=a0;
+  if (res[0]!=0) res[0][11]=a0;
+  if (res[0]!=0) res[0][12]=a0;
+  if (res[0]!=0) res[0][13]=a0;
+  if (res[0]!=0) res[0][14]=a0;
+  if (res[0]!=0) res[0][15]=a0;
+  if (res[0]!=0) res[0][16]=a0;
+  if (res[0]!=0) res[0][17]=a0;
   return 0;
 }
 

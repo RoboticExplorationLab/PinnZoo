@@ -28,6 +28,7 @@ module PinnZoo
     include(joinpath(MODEL_DIR, "pendulum/pendulum.jl"))
     include(joinpath(MODEL_DIR, "double_pendulum/double_pendulum.jl"))
     include(joinpath(MODEL_DIR, "cartpole/cartpole.jl"))
+    include(joinpath(MODEL_DIR, "double_cartpole/double_cartpole.jl"))
     include(joinpath(MODEL_DIR, "quadrotor/quadrotor.jl"))
     include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
     include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
@@ -91,5 +92,5 @@ module PinnZoo
     export Quadruped
     export B_func, fix_joint_limits, inverse_kinematics, nearest_ik
 
-    export Pendulum, DoublePendulum, Cartpole, Quadrotor, Go1, Go2, Nadia
+    export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, Quadrotor, Go1, Go2, Nadia
 end
