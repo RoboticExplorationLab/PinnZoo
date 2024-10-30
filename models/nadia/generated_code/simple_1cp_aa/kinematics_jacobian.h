@@ -37,7 +37,7 @@ int kinematics_jacobian_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casad
 #define kinematics_jacobian_SZ_ARG 1
 #define kinematics_jacobian_SZ_RES 1
 #define kinematics_jacobian_SZ_IW 0
-#define kinematics_jacobian_SZ_W 227
+#define kinematics_jacobian_SZ_W 416
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
