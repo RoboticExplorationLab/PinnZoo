@@ -48,12 +48,12 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
-static const casadi_int casadi_s1[6] = {2, 1, 0, 2, 0, 1};
+static const casadi_int casadi_s0[10] = {6, 1, 0, 6, 0, 1, 2, 3, 4, 5};
+static const casadi_int casadi_s1[7] = {3, 1, 0, 3, 0, 1, 2};
 
-/* inverse_dynamics:(i0[4],i1[2])->(o0[2]) */
+/* inverse_dynamics:(i0[6],i1[3])->(o0[3]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3, a4, a5, a6, a7, a8, a9;
+  casadi_real a0, a1, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a2, a3, a4, a5, a6, a7, a8, a9;
   a0=arg[1]? arg[1][0] : 0;
   a1=arg[0]? arg[0][1] : 0;
   a2=cos(a1);
@@ -62,34 +62,80 @@ static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw,
   a1=sin(a1);
   a5=(a4*a1);
   a3=(a3+a5);
-  a5=arg[0]? arg[0][3] : 0;
-  a6=arg[0]? arg[0][2] : 0;
+  a5=arg[0]? arg[0][4] : 0;
+  a6=arg[0]? arg[0][3] : 0;
   a7=(a1*a6);
   a8=(a5*a7);
   a3=(a3-a8);
   a8=arg[1]? arg[1][1] : 0;
+  a9=(a3-a8);
+  a10=(a5*a7);
+  a10=(a9+a10);
+  a11=arg[0]? arg[0][2] : 0;
+  a12=cos(a11);
   a3=(a3-a8);
-  a8=(a5*a7);
-  a8=(a3+a8);
-  a8=(a2*a8);
+  a13=(a12*a3);
+  a11=sin(a11);
   a4=(a4*a2);
-  a9=(a1*a0);
-  a4=(a4-a9);
-  a2=(a2*a6);
-  a6=(a5*a2);
-  a4=(a4-a6);
-  a6=(a2-a5);
-  a5=(a5*a6);
+  a14=(a1*a0);
+  a4=(a4-a14);
+  a6=(a2*a6);
+  a14=(a5*a6);
+  a4=(a4-a14);
+  a14=(a11*a4);
+  a13=(a13+a14);
+  a14=arg[0]? arg[0][5] : 0;
+  a15=(a6-a5);
+  a16=(a11*a15);
+  a17=(a12*a7);
+  a16=(a16+a17);
+  a17=(a14*a16);
+  a13=(a13-a17);
+  a17=arg[1]? arg[1][2] : 0;
+  a17=(a17+a8);
+  a13=(a13-a17);
+  a17=(a14+a5);
+  a8=(a17*a16);
+  a8=(a13+a8);
+  a18=(a12*a8);
+  a19=(a12*a4);
+  a3=(a11*a3);
+  a19=(a19-a3);
+  a15=(a12*a15);
+  a3=(a11*a7);
+  a15=(a15-a3);
+  a14=(a14*a15);
+  a19=(a19-a14);
+  a14=(a15-a17);
+  a17=(a17*a14);
+  a19=(a19+a17);
+  a17=(a11*a19);
+  a18=(a18-a17);
+  a10=(a10+a18);
+  a2=(a2*a10);
+  a10=(a6-a5);
+  a5=(a5*a10);
   a4=(a4+a5);
+  a11=(a11*a8);
+  a12=(a12*a19);
+  a11=(a11+a12);
+  a4=(a4+a11);
   a1=(a1*a4);
-  a8=(a8-a1);
-  a0=(a0+a8);
+  a2=(a2-a1);
+  a0=(a0+a2);
   if (res[0]!=0) res[0][0]=a0;
-  a6=(a7*a6);
-  a2=(a2*a7);
-  a6=(a6-a2);
-  a6=(a6-a3);
-  if (res[0]!=0) res[0][1]=a6;
+  a10=(a7*a10);
+  a6=(a6*a7);
+  a10=(a10-a6);
+  a10=(a10-a9);
+  a14=(a16*a14);
+  a15=(a15*a16);
+  a14=(a14-a15);
+  a14=(a14-a13);
+  a18=(a14-a18);
+  a10=(a10+a18);
+  if (res[0]!=0) res[0][1]=a10;
+  if (res[0]!=0) res[0][2]=a14;
   return 0;
 }
 

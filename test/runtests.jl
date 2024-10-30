@@ -23,7 +23,12 @@ include(joinpath(@__DIR__, "default_func_tests.jl"))
         test_default_functions(Cartpole())
     end
 
-    # Cartpole
+     # Double Cartpole
+     @testset "Double Cartpole" begin
+        test_default_functions(DoubleCartpole())
+    end
+
+    # Quadrotor
     @testset "Quadrotor" begin
         test_default_functions(Quadrotor())
     end

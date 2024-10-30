@@ -15,7 +15,7 @@ extern "C" {
   #define _CASADI_NAMESPACE_CONCAT(NS, ID) NS ## ID
   #define CASADI_PREFIX(ID) CASADI_NAMESPACE_CONCAT(CODEGEN_PREFIX, ID)
 #else
-  #define CASADI_PREFIX(ID) kinematics_velocity_ ## ID
+  #define CASADI_PREFIX(ID) velocity_kinematics_ ## ID
 #endif
 
 #include <math.h>
@@ -48,95 +48,93 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
-static const casadi_int casadi_s1[7] = {3, 1, 0, 3, 0, 1, 2};
+static const casadi_int casadi_s0[10] = {6, 1, 0, 6, 0, 1, 2, 3, 4, 5};
+static const casadi_int casadi_s1[15] = {3, 3, 0, 3, 6, 9, 0, 1, 2, 0, 1, 2, 0, 1, 2};
 
-/* kinematics_velocity:(i0[4])->(o0[3]) */
+/* velocity_kinematics:(i0[6])->(o0[3x3]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3;
-  a0=0.;
+  casadi_real a0, a1;
+  a0=1.;
   if (res[0]!=0) res[0][0]=a0;
-  a0=arg[0]? arg[0][2] : 0;
-  a1=arg[0]? arg[0][1] : 0;
-  a2=cos(a1);
-  a3=arg[0]? arg[0][3] : 0;
-  a2=(a2*a3);
-  a0=(a0-a2);
-  if (res[0]!=0) res[0][1]=a0;
-  a1=sin(a1);
-  a1=(a1*a3);
-  a1=(-a1);
+  a1=0.;
+  if (res[0]!=0) res[0][1]=a1;
   if (res[0]!=0) res[0][2]=a1;
+  if (res[0]!=0) res[0][3]=a1;
+  if (res[0]!=0) res[0][4]=a0;
+  if (res[0]!=0) res[0][5]=a1;
+  if (res[0]!=0) res[0][6]=a1;
+  if (res[0]!=0) res[0][7]=a1;
+  if (res[0]!=0) res[0][8]=a0;
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
+CASADI_SYMBOL_EXPORT int velocity_kinematics(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
   return casadi_f0(arg, res, iw, w, mem);
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity_alloc_mem(void) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_alloc_mem(void) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity_init_mem(int mem) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_init_mem(int mem) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_velocity_free_mem(int mem) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_free_mem(int mem) {
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity_checkout(void) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_checkout(void) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_velocity_release(int mem) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_release(int mem) {
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_velocity_incref(void) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_incref(void) {
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_velocity_decref(void) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_decref(void) {
 }
 
-CASADI_SYMBOL_EXPORT casadi_int kinematics_velocity_n_in(void) { return 1;}
+CASADI_SYMBOL_EXPORT casadi_int velocity_kinematics_n_in(void) { return 1;}
 
-CASADI_SYMBOL_EXPORT casadi_int kinematics_velocity_n_out(void) { return 1;}
+CASADI_SYMBOL_EXPORT casadi_int velocity_kinematics_n_out(void) { return 1;}
 
-CASADI_SYMBOL_EXPORT casadi_real kinematics_velocity_default_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT casadi_real velocity_kinematics_default_in(casadi_int i) {
   switch (i) {
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const char* kinematics_velocity_name_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT const char* velocity_kinematics_name_in(casadi_int i) {
   switch (i) {
     case 0: return "i0";
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const char* kinematics_velocity_name_out(casadi_int i) {
+CASADI_SYMBOL_EXPORT const char* velocity_kinematics_name_out(casadi_int i) {
   switch (i) {
     case 0: return "o0";
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const casadi_int* kinematics_velocity_sparsity_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT const casadi_int* velocity_kinematics_sparsity_in(casadi_int i) {
   switch (i) {
     case 0: return casadi_s0;
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const casadi_int* kinematics_velocity_sparsity_out(casadi_int i) {
+CASADI_SYMBOL_EXPORT const casadi_int* velocity_kinematics_sparsity_out(casadi_int i) {
   switch (i) {
     case 0: return casadi_s1;
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
   if (sz_arg) *sz_arg = 1;
   if (sz_res) *sz_res = 1;
   if (sz_iw) *sz_iw = 0;
@@ -144,7 +142,7 @@ CASADI_SYMBOL_EXPORT int kinematics_velocity_work(casadi_int *sz_arg, casadi_int
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_velocity_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
   if (sz_arg) *sz_arg = 1*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 1*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 0*sizeof(casadi_int);

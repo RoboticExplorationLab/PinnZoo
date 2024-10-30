@@ -48,25 +48,51 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
+static const casadi_int casadi_s0[10] = {6, 1, 0, 6, 0, 1, 2, 3, 4, 5};
 static const casadi_int casadi_s1[7] = {3, 1, 0, 3, 0, 1, 2};
 
-/* kinematics_velocity:(i0[4])->(o0[3]) */
+/* kinematics_velocity:(i0[6])->(o0[3]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3;
+  casadi_real a0, a1, a10, a11, a2, a3, a4, a5, a6, a7, a8, a9;
   a0=0.;
   if (res[0]!=0) res[0][0]=a0;
-  a0=arg[0]? arg[0][2] : 0;
+  a0=arg[0]? arg[0][3] : 0;
   a1=arg[0]? arg[0][1] : 0;
   a2=cos(a1);
-  a3=arg[0]? arg[0][3] : 0;
-  a2=(a2*a3);
-  a0=(a0-a2);
-  if (res[0]!=0) res[0][1]=a0;
+  a3=arg[0]? arg[0][2] : 0;
+  a4=cos(a3);
+  a5=(a4*a2);
+  a6=sin(a3);
+  a7=sin(a1);
+  a8=(a6*a7);
+  a5=(a5-a8);
+  a5=(a2+a5);
+  a8=arg[0]? arg[0][4] : 0;
+  a5=(a5*a8);
+  a0=(a0-a5);
+  a5=cos(a1);
+  a9=cos(a3);
+  a10=(a5*a9);
   a1=sin(a1);
-  a1=(a1*a3);
-  a1=(-a1);
-  if (res[0]!=0) res[0][2]=a1;
+  a3=sin(a3);
+  a11=(a1*a3);
+  a10=(a10-a11);
+  a11=arg[0]? arg[0][5] : 0;
+  a10=(a10*a11);
+  a0=(a0-a10);
+  if (res[0]!=0) res[0][1]=a0;
+  a4=(a4*a7);
+  a6=(a6*a2);
+  a4=(a4+a6);
+  a7=(a7+a4);
+  a7=(a7*a8);
+  a5=(a5*a3);
+  a1=(a1*a9);
+  a5=(a5+a1);
+  a5=(a5*a11);
+  a7=(a7+a5);
+  a7=(-a7);
+  if (res[0]!=0) res[0][2]=a7;
   return 0;
 }
 

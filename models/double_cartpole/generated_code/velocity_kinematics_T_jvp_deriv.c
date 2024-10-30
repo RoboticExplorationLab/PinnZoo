@@ -15,7 +15,7 @@ extern "C" {
   #define _CASADI_NAMESPACE_CONCAT(NS, ID) NS ## ID
   #define CASADI_PREFIX(ID) CASADI_NAMESPACE_CONCAT(CODEGEN_PREFIX, ID)
 #else
-  #define CASADI_PREFIX(ID) kinematics_force_jacobian_ ## ID
+  #define CASADI_PREFIX(ID) velocity_kinematics_T_jvp_deriv_ ## ID
 #endif
 
 #include <math.h>
@@ -49,73 +49,74 @@ extern "C" {
   #endif
 #endif
 
-static const casadi_int casadi_s0[8] = {4, 1, 0, 4, 0, 1, 2, 3};
+static const casadi_int casadi_s0[10] = {6, 1, 0, 6, 0, 1, 2, 3, 4, 5};
 static const casadi_int casadi_s1[7] = {3, 1, 0, 3, 0, 1, 2};
-static const casadi_int casadi_s2[15] = {2, 4, 0, 2, 4, 6, 8, 0, 1, 0, 1, 0, 1, 0, 1};
+static const casadi_int casadi_s2[27] = {3, 6, 0, 3, 6, 9, 12, 15, 18, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
 
-/* kinematics_force_jacobian:(i0[4],i1[3])->(o0[2x4]) */
+/* velocity_kinematics_T_jvp_deriv:(i0[6],i1[3])->(o0[3x6]) */
 static int casadi_f0(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem) {
-  casadi_real a0, a1, a2, a3;
+  casadi_real a0;
   a0=0.;
   if (res[0]!=0) res[0][0]=a0;
   if (res[0]!=0) res[0][1]=a0;
   if (res[0]!=0) res[0][2]=a0;
-  a1=arg[1]? arg[1][2] : 0;
-  a2=arg[0]? arg[0][1] : 0;
-  a3=cos(a2);
-  a1=(a1*a3);
-  a3=arg[1]? arg[1][1] : 0;
-  a2=sin(a2);
-  a3=(a3*a2);
-  a1=(a1-a3);
-  a1=(-a1);
-  if (res[0]!=0) res[0][3]=a1;
+  if (res[0]!=0) res[0][3]=a0;
   if (res[0]!=0) res[0][4]=a0;
   if (res[0]!=0) res[0][5]=a0;
   if (res[0]!=0) res[0][6]=a0;
   if (res[0]!=0) res[0][7]=a0;
+  if (res[0]!=0) res[0][8]=a0;
+  if (res[0]!=0) res[0][9]=a0;
+  if (res[0]!=0) res[0][10]=a0;
+  if (res[0]!=0) res[0][11]=a0;
+  if (res[0]!=0) res[0][12]=a0;
+  if (res[0]!=0) res[0][13]=a0;
+  if (res[0]!=0) res[0][14]=a0;
+  if (res[0]!=0) res[0][15]=a0;
+  if (res[0]!=0) res[0][16]=a0;
+  if (res[0]!=0) res[0][17]=a0;
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem){
   return casadi_f0(arg, res, iw, w, mem);
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_alloc_mem(void) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv_alloc_mem(void) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_init_mem(int mem) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv_init_mem(int mem) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_force_jacobian_free_mem(int mem) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_T_jvp_deriv_free_mem(int mem) {
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_checkout(void) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv_checkout(void) {
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_force_jacobian_release(int mem) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_T_jvp_deriv_release(int mem) {
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_force_jacobian_incref(void) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_T_jvp_deriv_incref(void) {
 }
 
-CASADI_SYMBOL_EXPORT void kinematics_force_jacobian_decref(void) {
+CASADI_SYMBOL_EXPORT void velocity_kinematics_T_jvp_deriv_decref(void) {
 }
 
-CASADI_SYMBOL_EXPORT casadi_int kinematics_force_jacobian_n_in(void) { return 2;}
+CASADI_SYMBOL_EXPORT casadi_int velocity_kinematics_T_jvp_deriv_n_in(void) { return 2;}
 
-CASADI_SYMBOL_EXPORT casadi_int kinematics_force_jacobian_n_out(void) { return 1;}
+CASADI_SYMBOL_EXPORT casadi_int velocity_kinematics_T_jvp_deriv_n_out(void) { return 1;}
 
-CASADI_SYMBOL_EXPORT casadi_real kinematics_force_jacobian_default_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT casadi_real velocity_kinematics_T_jvp_deriv_default_in(casadi_int i) {
   switch (i) {
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const char* kinematics_force_jacobian_name_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT const char* velocity_kinematics_T_jvp_deriv_name_in(casadi_int i) {
   switch (i) {
     case 0: return "i0";
     case 1: return "i1";
@@ -123,14 +124,14 @@ CASADI_SYMBOL_EXPORT const char* kinematics_force_jacobian_name_in(casadi_int i)
   }
 }
 
-CASADI_SYMBOL_EXPORT const char* kinematics_force_jacobian_name_out(casadi_int i) {
+CASADI_SYMBOL_EXPORT const char* velocity_kinematics_T_jvp_deriv_name_out(casadi_int i) {
   switch (i) {
     case 0: return "o0";
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT const casadi_int* kinematics_force_jacobian_sparsity_in(casadi_int i) {
+CASADI_SYMBOL_EXPORT const casadi_int* velocity_kinematics_T_jvp_deriv_sparsity_in(casadi_int i) {
   switch (i) {
     case 0: return casadi_s0;
     case 1: return casadi_s1;
@@ -138,14 +139,14 @@ CASADI_SYMBOL_EXPORT const casadi_int* kinematics_force_jacobian_sparsity_in(cas
   }
 }
 
-CASADI_SYMBOL_EXPORT const casadi_int* kinematics_force_jacobian_sparsity_out(casadi_int i) {
+CASADI_SYMBOL_EXPORT const casadi_int* velocity_kinematics_T_jvp_deriv_sparsity_out(casadi_int i) {
   switch (i) {
     case 0: return casadi_s2;
     default: return 0;
   }
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
   if (sz_arg) *sz_arg = 2;
   if (sz_res) *sz_res = 1;
   if (sz_iw) *sz_iw = 0;
@@ -153,7 +154,7 @@ CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_work(casadi_int *sz_arg, casa
   return 0;
 }
 
-CASADI_SYMBOL_EXPORT int kinematics_force_jacobian_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
+CASADI_SYMBOL_EXPORT int velocity_kinematics_T_jvp_deriv_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w) {
   if (sz_arg) *sz_arg = 2*sizeof(const casadi_real*);
   if (sz_res) *sz_res = 1*sizeof(casadi_real*);
   if (sz_iw) *sz_iw = 0*sizeof(casadi_int);
