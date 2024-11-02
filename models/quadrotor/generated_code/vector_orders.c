@@ -32,6 +32,7 @@ const char* torque_names[] = {
 };
 
 const char* kinematics_bodies[] = {
+    "quadrotor",
     NULL
 };
 
