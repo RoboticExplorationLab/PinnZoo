@@ -2,9 +2,10 @@
     kf::Float64 # Motor thrust constant
     km::Float64 # Motor torque constant
     L::Float64 # Arn lengths
+    kinematics_ori::Symbol
     function Quadrotor(; L = 0.175, kf = 1.0, km = 0.0245)
         lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libquadrotor.so"))
-        return new(kf, km, L)
+        return new(kf, km, L, :AxisAngle)
     end
 end
 
