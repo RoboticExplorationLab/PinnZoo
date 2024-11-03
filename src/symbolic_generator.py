@@ -15,15 +15,31 @@ class SymbolicGenerator:
         # Load the URDF model
         self.urdf_path = urdf_path
         if floating:
-            self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer())
+            self.model = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir, root_joint = pin.JointModelFreeFlyer()).model
         else:
-            self.robot = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir)
-        self.model = self.robot.model
+            self.model = RobotWrapper.BuildFromURDF(urdf_path, mesh_dir).model
+
+        # (untested) If make_fixed isn't empty, remove the joints in make_fixed from the model
+        # Get the ID of all existing joints
+        # if len(make_fixed) != 0:
+        #     q_fixed = pin.neutral(self.model)
+        #     jointsToFix = []
+        #     for i in range(len(make_fixed)):
+        #         name = make_fixed[i][0]
+        #         config = make_fixed[i][1]
+        #         if self.model.existJointName(name):
+        #             jointsToFix.append(self.model.getJointId(name))
+        #             q_fixed[self.model.joints[self.model.getJointId(name)].idx_q] = config
+        #         else:
+        #             raise Exception('Error: joint ' + str(name) + ' not found in model!')
+                    
+        #     self.model = pin.buildReducedModel(self.model, jointsToFix, q_fixed)
+
         self.data = self.model.createData()
 
         # Get dimensions
-        self.nq = self.robot.model.nq
-        self.nv = self.robot.model.nv
+        self.nq = self.model.nq
+        self.nv = self.model.nv
         self.nx = self.nq + self.nv
         self.bodies = [self.model.frames[i].name for i in range(2, self.model.nframes)]
 
