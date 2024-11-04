@@ -11,6 +11,7 @@ macro create_pinnzoo_model(expr)
     return quote
         using Libdl
         struct $struct_def
+            lib::Ptr{Nothing}
             urdf_path::String
             nq::Int64
             nv::Int64
@@ -84,7 +85,7 @@ macro create_pinnzoo_model(expr)
 
                 $(constructor_internals...)
                 return new(
-                    urdf_path,
+                    lib, urdf_path,
                     nq, nv, nx, nẋ, nu, nc, orders, conversions,
                     M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
                     dynamics_ptr, dynamics_deriv_ptr, inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,

@@ -159,6 +159,9 @@ apply_Δx(model::PinnZooModel, x_k, Δx) = x_k + Δx
 
 Return the state_error between x and x0, using axis-angles for quaternion error, and representing body position error in the
 body frame (matches with body velocity convention).
+
+Here we use q0'q for the quaternion error because we defined the attitude jacobian as f(q0Δq) (delta on the left), so
+q0Δq = q => Δq = q0'q
 """
 function state_error(model::PinnZooFloatingBaseModel, x, x0)
     return [
