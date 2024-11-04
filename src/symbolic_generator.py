@@ -185,27 +185,27 @@ class SymbolicGenerator:
                 aa = cpin.log3(self.cdata.oMf[self.cmodel.getFrameId(body)].rotation)
                 kinematics.append(aa)
 
-        kinematics = cs.vertcat(*kinematics)
+        self.kinematics = cs.vertcat(*kinematics)
 
         # Forward kinematics jacobian
-        J = cs.densify(cs.jacobian(kinematics, self.x)) # v block should be zero
+        self.J = cs.densify(cs.jacobian(self.kinematics, self.x)) # v block is zero
 
         # Kinematics velocity (world frame by default)
-        kinematics_dot = J[:, :self.nq]@self.E@self.v
+        self.kinematics_dot = self.J[:, :self.nq]@self.E@self.v
 
         # Kinematics velocity jacobian
-        J_dot = cs.densify(cs.jacobian(kinematics_dot, self.x))
+        self.J_dot = cs.densify(cs.jacobian(self.kinematics_dot, self.x))
 
         # Kinematics force jacobian
-        self.force = cs.SX.sym('force', kinematics.numel())
-        q_f = self.E.T@J[:, :self.nq].T@self.force
+        self.force = cs.SX.sym('force', self.kinematics.numel())
+        q_f = self.E.T@self.J[:, :self.nq].T@self.force
         J_f = cs.densify(cs.jacobian(q_f, self.x))
 
         # Create CasADI functions
-        kinematics = cs.Function("kinematics", [self.x], [kinematics])
-        kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [J])
-        kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [kinematics_dot])
-        kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [J_dot])
+        kinematics = cs.Function("kinematics", [self.x], [self.kinematics])
+        kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [self.J])
+        kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
+        kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [J_f])
 
         # Generate files
@@ -304,20 +304,39 @@ class SymbolicGenerator:
             
     # Generates E(q) such that q_dot = E(q)v
     def generate_velocity_kinematics(self):
-        self.E = cs.SX.zeros(self.nq, self.nv)
-        self.E_T = cs.SX.zeros(self.nv, self.nq)
+        self.E, self.E_T = self.build_velocity_kinematics(self.x)
+
+        # Generate jacobian-vector product derivatives
+        q_in = cs.SX.sym('q_in', self.nq)
+        v_in = cs.SX.sym('v_in', self.nv)
+        E_jvp_dx = cs.densify(cs.jacobian(self.E@v_in, self.x))
+        E_T_jvp_dx = cs.densify(cs.jacobian(self.E_T@q_in, self.x))
+
+        velocity_kinematics = cs.Function("velocity_kinematics", [self.x], [self.E])
+        velocity_kinematics_T = cs.Function("velocity_kinematics_T", [self.x], [self.E_T])
+        velocity_kinematics_jvp_deriv = cs.Function("velocity_kinematics_jvp_deriv", [self.x, v_in], [E_jvp_dx])
+        velocity_kinematics_T_jvp_deriv = cs.Function("velocity_kinematics_T_jvp_deriv", [self.x, q_in], [E_T_jvp_dx])
+
+        velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
+        velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
+        velocity_kinematics_jvp_deriv.generate("velocity_kinematics_jvp_deriv.c", self.gen_opts)
+        velocity_kinematics_T_jvp_deriv.generate("velocity_kinematics_T_jvp_deriv.c", self.gen_opts)
+
+    def build_velocity_kinematics(self, x):
+        E = cs.SX.zeros(self.nq, self.nv)
+        E_T = cs.SX.zeros(self.nv, self.nq)
 
         for jnt_idx in range(self.model.njoints):
             joint = self.model.joints[jnt_idx]
             if joint.nq == 1: # Trivial relationship, q_dot = v
-                self.E[joint.idx_q, joint.idx_v] = 1
-                self.E_T[joint.idx_v, joint.idx_q] = 1
+                E[joint.idx_q, joint.idx_v] = 1
+                E_T[joint.idx_v, joint.idx_q] = 1
             elif joint.nq == 7: # Floating base
                 E_jnt = cs.SX.zeros(7, 6)
                 E_T_jnt = cs.SX.zeros(6, 7)
 
                 # Extract quaterion, build cross product matrix for the vector part
-                quat = self.x[joint.idx_q + 3:joint.idx_q + 7]
+                quat = x[joint.idx_q + 3:joint.idx_q + 7]
                 skew_v = cs.vertcat(
                     cs.horzcat(0, -quat[3], quat[2]),
                     cs.horzcat(quat[3], 0, -quat[1]),
@@ -337,8 +356,8 @@ class SymbolicGenerator:
                 E_jnt[3:, 3:] = 0.5*attitude_jacobian
                 E_T_jnt[3:, 3:] = 2*attitude_jacobian.T
 
-                self.E[joint.idx_q:joint.idx_q + joint.nq, joint.idx_v:joint.idx_v + joint.nv] = E_jnt
-                self.E_T[joint.idx_v:joint.idx_v + joint.nv, joint.idx_q:joint.idx_q + joint.nq] = E_T_jnt
+                E[joint.idx_q:joint.idx_q + joint.nq, joint.idx_v:joint.idx_v + joint.nv] = E_jnt
+                E_T[joint.idx_v:joint.idx_v + joint.nv, joint.idx_q:joint.idx_q + joint.nq] = E_T_jnt
             else:
                 print(f"ERROR: Encountered an unsupported joint named \"{self.model.names[jnt_idx]}\"")
                 print("This error occurs when the joint has a number of configuration variables (joint.nq)"
@@ -350,21 +369,7 @@ class SymbolicGenerator:
                       "in, please reach out to Arun Bishop.")
                 sys.exit()
 
-        # Generate jacobian-vector product derivatives
-        q_in = cs.SX.sym('q_in', self.nq)
-        v_in = cs.SX.sym('v_in', self.nv)
-        E_jvp_dx = cs.densify(cs.jacobian(self.E@v_in, self.x))
-        E_T_jvp_dx = cs.densify(cs.jacobian(self.E_T@q_in, self.x))
-
-        velocity_kinematics = cs.Function("velocity_kinematics", [self.x], [self.E])
-        velocity_kinematics_T = cs.Function("velocity_kinematics_T", [self.x], [self.E_T])
-        velocity_kinematics_jvp_deriv = cs.Function("velocity_kinematics_jvp_deriv", [self.x, v_in], [E_jvp_dx])
-        velocity_kinematics_T_jvp_deriv = cs.Function("velocity_kinematics_T_jvp_deriv", [self.x, q_in], [E_T_jvp_dx])
-
-        velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
-        velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
-        velocity_kinematics_jvp_deriv.generate("velocity_kinematics_jvp_deriv.c", self.gen_opts)
-        velocity_kinematics_T_jvp_deriv.generate("velocity_kinematics_T_jvp_deriv.c", self.gen_opts)
+        return E, E_T
 
     def rotation_matrix_to_quaternion(self, R):
 
