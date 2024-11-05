@@ -130,6 +130,4 @@ include_directories(${DIR})
 
 file(GLOB SOURCES "${DIR}*.c") 
 
-
-
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${DIR}/custom_wrapper.c ${SOURCES})
