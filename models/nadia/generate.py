@@ -41,7 +41,7 @@ symb_gen.generate()
 
 # Custom residual functions
 def both_feet_dynamics_gen(symb_gen):
-    nx, nv, nq, nc = symb_gen.nx, symb_gen.nv, symb_gen.nq, symb_gen.kinematics.numel()
+    nx, nv, nq, nc = symb_gen.nx, symb_gen.nv, symb_gen.nq, len(symb_gen.kinematics_bodies)*6
     cmodel, cdata = symb_gen.cmodel, symb_gen.cdata
     kinematics_bodies = symb_gen.kinematics_bodies
 
@@ -78,16 +78,21 @@ def both_feet_dynamics_gen(symb_gen):
 
     # Compute kinematics terms
     x_k_sym = cs.SX.sym('x_k_sym', nx) # Fully symbolic for jacobian calculation
-    cpin.forwardKinematics(cmodel, cdata, x_k_sym[:nq])
+    cpin.forwardKinematics(cmodel, cdata, x_k_sym[:nq], x_k_sym[nq:])
     cpin.updateFramePlacements(cmodel, cdata)
     kinematics = []
+    kinematics_dot = []
     for body in kinematics_bodies:
-        kinematics.append(cdata.oMf[cmodel.getFrameId(body)].translation)
-        aa = cpin.log3(cdata.oMf[cmodel.getFrameId(body)].rotation)
+        id = cmodel.getFrameId(body)
+        kinematics.append(cdata.oMf[id].translation)
+        aa = cpin.log3(cdata.oMf[id].rotation)
         kinematics.append(aa)
+        kin_vel = cpin.getFrameVelocity(cmodel, cdata, id, cpin.ReferenceFrame.LOCAL_WORLD_ALIGNED)
+        kinematics_dot.append(kin_vel.linear)
+        kinematics_dot.append(kin_vel.angular)
     kinematics = cs.vertcat(*kinematics)
+    kinematics_dot = cs.vertcat(*kinematics_dot)
     E = cs.substitute(cs.densify(cs.jacobian(cpin.integrate(cmodel, x_k_sym[:nq], x_k_sym[nq:]), x_k_sym[nq:])), x_k_sym[nq:], cs.SX.zeros(nv))
-    kinematics_dot = cs.jacobian(kinematics, x_k_sym)[:, :nq]@E@x_k_sym[nq:]
     J = cs.densify(cs.jacobian(kinematics_dot, x_k_sym))
     J = cs.horzcat(J[:, :nq]@E, J[:, nq:])
 
@@ -103,17 +108,18 @@ def both_feet_dynamics_gen(symb_gen):
 
     # Get jacobian
     stacked = cs.vertcat(delta_x_k, u_k, f_k, delta_x_next)
-    # res_J = cs.densify(cs.jacobian(res, delta_x_k))
+    res_J = cs.densify(cs.jacobian(res, stacked))
 
     # Code generation
     orig_dir = os.getcwd()
     os.chdir(symb_gen.gen_dir)
 
-    contact_res_func = cs.Function("contact_res", [delta_x_k, u_k, f_k, delta_x_next, dt, alpha], [res])
-    # contact_res_deriv_func = cs.Function("contact_res_deriv", [delta_x_k, u_k, f_k, delta_x_next, dt, alpha], [res_J])
-    contact_res_func.generate("contact_res.c", symb_gen.gen_opts)
-    # contact_res_deriv_func.generate("contact_res_deriv.c", symb_gen.gen_opts)
+    gen_opts = dict(with_header = True)
 
+    contact_res_func = cs.Function("contact_res", [delta_x_k, u_k, f_k, delta_x_next, dt, alpha], [res])
+    contact_res_deriv_func = cs.Function("contact_res_deriv", [delta_x_k, u_k, f_k, delta_x_next, dt, alpha], [res_J])
+    contact_res_func.generate("contact_res.c", gen_opts)
+    contact_res_deriv_func.generate("contact_res_deriv.c", symb_gen.gen_opts)
 
     os.chdir(orig_dir)
 
