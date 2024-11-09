@@ -3,6 +3,7 @@
     μ::Float64 # Friction coefficient
     foot_width::Float64
     foot_depth::Float64
+    fixed_arms::Bool
     function Nadia(; simple = true, nc_per_foot = 1, μ::Float64 = 1.0, kinematics_ori::Symbol = :None, 
                 fixed_arms::Bool = false, foot_width::Float64 = 0.0295, foot_depth::Float64 = 0.125)
         lib = let 
@@ -24,7 +25,7 @@
             lib
         end
 
-        return new(kinematics_ori, μ, foot_width, foot_depth)
+        return new(kinematics_ori, μ, foot_width, foot_depth, fixed_arms)
     end
 end
 
