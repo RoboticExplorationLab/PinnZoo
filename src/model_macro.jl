@@ -60,6 +60,12 @@ macro create_pinnzoo_model(expr)
                 nẋ = nv + nv
                 nu = length(orders[:nominal].torque_names)
 
+                # Add Pinocchio
+                pin_config_names = copy(orders[:nominal].config_names)
+                pin_config_names[4:6], pin_config_names[7] = pin_config_names[5:7], pin_config_names[4]
+                orders[:pinocchio] = StateOrder(pin_config_names, orders[:nominal].vel_names, orders[:nominal].torque_names)
+                generate_conversions(orders, conversions)
+
                 # Dynamics
                 M_func_ptr = dlsym(lib, :M_func_wrapper)
                 C_func_ptr = dlsym(lib, :C_func_wrapper)
