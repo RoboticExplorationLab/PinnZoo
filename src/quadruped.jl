@@ -29,7 +29,7 @@ function fix_joint_limits(model::Quadruped, x; supress_error = false)
         end
         success = success && (model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
         if !(model.joint_limits[j, 2] > x[j] > model.joint_limits[j, 1])
-            push!(failed_joints, model.state_order[j])
+            push!(failed_joints, model.orders[:nominal].config_names[j])
         end
     end
     if !success && !supress_error
