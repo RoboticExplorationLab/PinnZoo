@@ -62,7 +62,9 @@ macro create_pinnzoo_model(expr)
 
                 # Add Pinocchio
                 pin_config_names = copy(orders[:nominal].config_names)
-                pin_config_names[4:6], pin_config_names[7] = pin_config_names[5:7], pin_config_names[4]
+                if (length(orders[:nominal].config_names) >= 7 && orders[:nominal].config_names[4] == :q_w) # Handle floating base order difference for Pinocchio
+                    pin_config_names[4:6], pin_config_names[7] = pin_config_names[5:7], pin_config_names[4]
+                end
                 orders[:pinocchio] = StateOrder(pin_config_names, orders[:nominal].vel_names, orders[:nominal].torque_names)
                 generate_conversions(orders, conversions)
 
