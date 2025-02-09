@@ -47,6 +47,7 @@ include(joinpath(@__DIR__, "default_func_tests.jl"))
     @testset "IHMC Nadia" begin
         test_default_functions(Nadia())
         test_default_functions(Nadia(nc_per_foot = 4))
+        test_default_functions(Nadia(nc_per_foot = 4, fixed_arms = true))
         test_default_functions(Nadia(kinematics_ori = :Quaternion))
         test_default_functions(Nadia(kinematics_ori = :AxisAngle))
         test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true))
