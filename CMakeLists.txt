@@ -131,3 +131,14 @@ include_directories(${DIR})
 file(GLOB SOURCES "${DIR}*.c") 
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${DIR}/custom_wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Nadia simple knee 4 contact point per foot, no arms ----- ###
+project(nadia_simple_4cp_no_arms) # Change this for each model
+
+set(DIR models/nadia/generated_code/simple_4cp_no_arms/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
