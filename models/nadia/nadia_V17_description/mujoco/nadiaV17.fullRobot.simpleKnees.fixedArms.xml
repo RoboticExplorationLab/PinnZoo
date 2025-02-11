@@ -1,5 +1,5 @@
 <mujoco model="nadia">
-  <compiler angle="radian" meshdir="../../" convexhull="true"/>
+  <compiler angle="radian" meshdir="../../" />
 
   <default>
     <default class="collision">
@@ -122,50 +122,17 @@
           <joint name="SPINE_X" pos="0 0 0" axis="1 0 0" range="-0.523599 0.523599" actuatorfrcrange="-1000 1000" damping="0.05"/>
           <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="spine_roll"/>
           <body name="TORSO_LINK" pos="0 0 0.01">
-            <inertial pos="-0.0361387 -2.81e-06 0.259086" quat="0.999765 0.000864511 0.0216369 0.00125896" mass="13.5" diaginertia="0.534796 0.50541 0.37911"/>
-            <joint name="SPINE_Y" pos="0 0 0" axis="0 1 0" range="-1.0472 1.0472" actuatorfrcrange="-1000 1000" damping="0.05"/>
-            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="torso_cycloidmounts"/>
-            <geom name="torso" class="torso"/>
-            <body name="LEFT_SHOULDER_PITCH_LINK" pos="0.001 0.185 0.173" quat="0.853553 0.353553 -0.146447 -0.353553">
-              <inertial pos="-0.00117 0.14001 -0.00621" quat="0.52476 0.468101 -0.460926 0.541346" mass="2.917" diaginertia="0.0115521 0.0108398 0.00485466"/>
-              <!-- <joint name="LEFT_SHOULDER_Y" pos="0 0 0" axis="0 1 0" range="-3.14159 1.22173" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_PITCH_LINK"/>
-              <body name="LEFT_SHOULDER_ROLL_LINK" pos="0 0.15676 -0.013" quat="0.92388 -0.382683 0 0">
-                <inertial pos="0.01053 0.02124 -0.105269" quat="0.993677 0.0889004 0.0581547 0.0363529" mass="1.17068" diaginertia="0.0079679 0.00744654 0.00155216"/>
-                <!-- <joint name="LEFT_SHOULDER_X" pos="0 0 0" axis="1 0 0" range="-0.261799 2.87979" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_ROLL_LINK"/>
-                <body name="LEFT_SHOULDER_YAW_LINK" pos="0 0.035 0">
-                  <inertial pos="0.00479 0.00062 -0.362414" quat="0.997214 -0.00851189 -0.0297516 0.0678708" mass="2.53059" diaginertia="0.0228533 0.0225942 0.00252544"/>
-                  <!-- <joint name="LEFT_SHOULDER_Z" pos="0 0 0" axis="0 0 1" range="-1.91986 1.22173" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                  <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_YAW_LINK"/>
-                  <body name="LEFT_ELBOW_PITCH_LINK" pos="0.015 0 -0.4">
-                    <inertial pos="-0.0109093 -0.0114719 -0.103887" quat="0.70708 0.0427709 -0.0172854 0.705627" mass="0.6007" diaginertia="0.00772841 0.00761665 0.000393237"/>
-                    <!-- <joint name="LEFT_ELBOW_Y" pos="0 0 0" axis="0 1 0" range="-2.35619 0.174533" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_ELBOW_PITCH_LINK_413mm_LENGTH"/>
-                  </body>
-                </body>
-              </body>
-            </body>
-            <body name="RIGHT_SHOULDER_PITCH_LINK" pos="0.001 -0.185 0.173" quat="0.853553 -0.353553 -0.146447 0.353553">
-              <inertial pos="-0.00117 -0.14001 -0.00621" quat="0.52476 0.468101 -0.460926 0.541346" mass="2.917" diaginertia="0.0115521 0.0108398 0.00485466"/>
-              <!-- <joint name="RIGHT_SHOULDER_Y" pos="0 0 0" axis="0 1 0" range="-3.14159 1.22173" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_PITCH_LINK"/>
-              <body name="RIGHT_SHOULDER_ROLL_LINK" pos="0 -0.15676 -0.013" quat="0.92388 0.382683 0 0">
-                <inertial pos="-0.01053 -0.02124 -0.105269" quat="0.993677 -0.0889004 0.0581547 -0.0363529" mass="1.17068" diaginertia="0.0079679 0.00744654 0.00155216"/>
-                <!-- <joint name="RIGHT_SHOULDER_X" pos="0 0 0" axis="1 0 0" range="-2.87979 0.261799" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_ROLL_LINK"/>
-                <body name="RIGHT_SHOULDER_YAW_LINK" pos="0 -0.035 0">
-                  <inertial pos="0.00479 0.00062 -0.362414" quat="0.997214 -0.00851189 -0.0297516 0.0678708" mass="2.53059" diaginertia="0.0228533 0.0225942 0.00252544"/>
-                  <!-- <joint name="RIGHT_SHOULDER_Z" pos="0 0 0" axis="0 0 1" range="-1.22173 1.91986" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                  <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_YAW_LINK"/>
-                  <body name="RIGHT_ELBOW_PITCH_LINK" pos="0.015 0 -0.4">
-                    <inertial pos="-0.0109093 -0.0114719 -0.103887" quat="0.70708 0.0427709 -0.0172854 0.705627" mass="0.6007" diaginertia="0.00772841 0.00761665 0.000393237"/>
-                    <!-- <joint name="RIGHT_ELBOW_Y" pos="0 0 0" axis="0 1 0" range="-2.35619 0.174533" actuatorfrcrange="-1000 1000" damping="0.05"/> -->
-                    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_ELBOW_PITCH_LINK_413mm_LENGTH"/>
-                  </body>
-                </body>
-              </body>
-            </body>
+          <inertial pos="0.0414879 -0.000814429 0.178732" quat="0.699984 0.698888 -0.103979 0.103759" mass="27.9379" diaginertia="2.79539 2.12532 1.27837"/>
+          <joint name="SPINE_Y" pos="0 0 0" axis="0 1 0" range="-1.0472 1.0472" actuatorfrcrange="-1000 1000" damping="0.05"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="torso_cycloidmounts"/>
+          <geom pos="0.001 0.185 0.173" quat="0.809463 0.414942 0.0204203 -0.414942" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_PITCH_LINK"/>
+          <geom pos="0.113008 0.242752 0.267136" quat="0.890015 0.187829 0.128661 -0.395019" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_ROLL_LINK"/>
+          <geom pos="0.13931 0.264359 0.27528" quat="0.890015 0.187829 0.128661 -0.395019" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_SHOULDER_YAW_LINK"/>
+          <geom pos="0.116881 0.428932 -0.0889143" quat="0.764555 -0.109972 -0.47343 -0.423351" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="LEFT_ELBOW_PITCH_LINK_413mm_LENGTH"/>
+          <geom pos="0.001 -0.185 0.173" quat="0.809463 -0.414942 0.0204203 0.414942" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_PITCH_LINK"/>
+          <geom pos="0.113008 -0.242752 0.267136" quat="0.890015 -0.187829 0.128661 0.395019" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_ROLL_LINK"/>
+          <geom pos="0.13931 -0.264359 0.27528" quat="0.890015 -0.187829 0.128661 0.395019" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_SHOULDER_YAW_LINK"/>
+          <geom pos="0.116881 -0.428932 -0.0889143" quat="0.764555 0.109972 -0.47343 0.423351" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="RIGHT_ELBOW_PITCH_LINK_413mm_LENGTH"/>
           </body>
         </body>
       </body>
