@@ -144,6 +144,8 @@ class SymbolicGenerator:
         dtau_dx = cs.densify(cs.jacobian(tau_out, self.x))
         dtau_dv_dot = cs.densify(cs.jacobian(tau_out, self.v_dot))
 
+        x_dot_out = cs.vertcat(self.E@self.v, v_dot_out)
+
         # Create CasADI functions
         self.m_func = cs.Function("M_func", [self.x], [M])
         self.c_func = cs.Function("C_func", [self.x], [C])
