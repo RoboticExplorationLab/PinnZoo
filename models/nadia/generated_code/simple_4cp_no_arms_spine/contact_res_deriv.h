@@ -37,7 +37,7 @@ int contact_res_deriv_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_
 #define contact_res_deriv_SZ_ARG 5
 #define contact_res_deriv_SZ_RES 1
 #define contact_res_deriv_SZ_IW 0
-#define contact_res_deriv_SZ_W 1277
+#define contact_res_deriv_SZ_W 1245
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -4,8 +4,9 @@
     foot_width::Float64
     foot_depth::Float64
     fixed_arms::Bool
+    fixed_spine::Bool
     function Nadia(; simple = true, nc_per_foot = 1, μ::Float64 = 1.0, kinematics_ori::Symbol = :None, 
-                fixed_arms::Bool = false, foot_width::Float64 = 0.0295, foot_depth::Float64 = 0.125)
+                fixed_arms::Bool = false, fixed_spine::Bool = false, foot_width::Float64 = 0.0295, foot_depth::Float64 = 0.125)
         lib = let 
             if simple && nc_per_foot == 1 && kinematics_ori == :Quaternion && !fixed_arms
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_quat.so"))
@@ -21,13 +22,15 @@
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms.so"))
+            elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms && fixed_spine
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms_spine.so"))
             else
                 throw(error("specified configuration is either not found or not supported. Did you compile?"))
             end
             lib
         end
 
-        return new(kinematics_ori, μ, foot_width, foot_depth, fixed_arms)
+        return new(kinematics_ori, μ, foot_width, foot_depth, fixed_arms, fixed_spine)
     end
 end
 

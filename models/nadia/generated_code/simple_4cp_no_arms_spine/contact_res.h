@@ -37,7 +37,7 @@ int contact_res_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *s
 #define contact_res_SZ_ARG 5
 #define contact_res_SZ_RES 1
 #define contact_res_SZ_IW 0
-#define contact_res_SZ_W 449
+#define contact_res_SZ_W 432
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

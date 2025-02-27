@@ -197,9 +197,9 @@ function change_orders!(model::PinnZooModel, inputs::Vector{<:AbstractArray}, fr
 
     for (input, dim) in zip(inputs, dims)
         if typeof(input) <: AbstractVector || typeof(input) <: Adjoint
-            change_order!(model::Biped, input, from, to)
+            change_order!(model, input, from, to)
         else
-            change_order!(model::Biped, input, from, to, dims = dim)
+            change_order!(model, input, from, to, dims = dim)
         end
     end
 end
@@ -211,7 +211,7 @@ Changes ordering according to the appropriate convention for each object in inpu
 """
 function change_orders(model::PinnZooModel, inputs::Vector{<:AbstractArray}, from, to; dims = (1, 2))
     outputs = deepcopy(inputs)
-    change_orders!(model::Biped, outputs, from, to, dims = dims)
+    change_orders!(model, outputs, from, to, dims = dims)
     return outputs
 end
 
