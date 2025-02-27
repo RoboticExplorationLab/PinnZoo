@@ -20,7 +20,7 @@
                 throw(error("specified configuration is not supported"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && !fixed_arms
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
-            elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms
+            elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms && !fixed_spine
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms.so"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms && fixed_spine
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms_spine.so"))
