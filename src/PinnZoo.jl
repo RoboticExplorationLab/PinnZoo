@@ -1,6 +1,7 @@
 module PinnZoo
     using Libdl
     using LinearAlgebra
+    using ForwardDiff
 
     abstract type PinnZooModel end
     abstract type PinnZooFloatingBaseModel <: PinnZooModel end
@@ -13,9 +14,11 @@ module PinnZoo
 
     # Dynamics functions (from codegen)
     include(joinpath(@__DIR__, "dynamics.jl"))
+    include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
     
     # Kinematics functions (from codegen)
     include(joinpath(@__DIR__, "kinematics.jl"))
+    include(joinpath(@__DIR__, "forward_diff/kinematics.jl"))
 
     # Quaternion helpers
     include(joinpath(@__DIR__, "quaternions.jl"))

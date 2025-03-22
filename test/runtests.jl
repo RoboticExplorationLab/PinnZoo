@@ -6,6 +6,7 @@ using LinearAlgebra
 using Random
 
 include(joinpath(@__DIR__, "default_func_tests.jl"))
+include(joinpath(@__DIR__, "forward_diff_tests.jl"))
 
 @testset "PinnZoo" begin
     # Pendulum
@@ -53,5 +54,10 @@ include(joinpath(@__DIR__, "default_func_tests.jl"))
         test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true))
         test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true, fixed_spine = true))
         @test_throws "specified configuration is not supported" Nadia(nc_per_foot = 4, kinematics_ori = :Quaternion)
+    end
+
+    # ForwardDiff compatability
+    @testset "ForwardDiff" begin
+        test_forward_diff();
     end
 end
