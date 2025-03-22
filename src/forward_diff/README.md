@@ -1,0 +1,1 @@
+These files add wrappers to the Pinocchio/c-gen functions so that they can be used with ForwardDiff when applicable
