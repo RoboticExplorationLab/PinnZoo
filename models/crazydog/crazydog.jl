@@ -11,3 +11,10 @@
         return new(μ)#, torque_limits, joint_limits)
     end
 end
+
+function init_state(model::CrazyDog)
+    x = zero_state(model)
+    x[3] = 0.37
+    x[8:15] = [0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0]
+    return x
+end
