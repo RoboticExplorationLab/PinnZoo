@@ -56,6 +56,11 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         @test_throws "specified configuration is not supported" Nadia(nc_per_foot = 4, kinematics_ori = :Quaternion)
     end
 
+    # CrazyDog
+    @testset "CrazyDog" begin
+        test_default_functions(CrazyDog())
+    end
+
     # ForwardDiff compatability
     @testset "ForwardDiff" begin
         test_forward_diff();
