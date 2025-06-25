@@ -3,7 +3,7 @@
     torque_limits::Vector{Float64}
     joint_limits::Matrix{Float64}
     function Go2(; μ = 0.3)
-        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go2.so"))
+        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libunitree_go2.dylib"))
         # Limits
         torque_limits = 23.7*ones(12)
         joint_limits = [repeat([-Inf Inf], 7);
