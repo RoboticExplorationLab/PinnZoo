@@ -30,9 +30,16 @@ function B_func(model::Pineapple)
     return [zeros(6, model.nu); I(model.nu)]
 end
 
-function init_state(model::Pineapple)
+function init_state(model::Pineapple, num_dofs = 6)
     x = zero_state(model)
-    x[3] = 0.37
-    x[8:15] = [0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0]
+    if num_dofs == 6
+        x[3] = 0.275
+        x[8:13] = [pi/4; -pi/2; 0; pi/4; -pi/2; 0];
+    elseif num_dofs == 8
+        x[3] = 0.37;
+        x[8:15] = [0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
+    else
+        throw(ArgumentError("Unsupported number of DOFs"))
+    end
     return x
 end
