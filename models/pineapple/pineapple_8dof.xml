@@ -1,5 +1,5 @@
-<mujoco model="crazydog">
-  <compiler angle="radian" meshdir="meshes/"/>
+<mujoco model="pineapple">
+  <compiler angle="radian" meshdir="meshes_8dof"/>
 
   <asset>
     <mesh name="base_link" file="base_link.STL"/>
