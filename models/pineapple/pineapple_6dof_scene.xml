@@ -1,5 +1,5 @@
-<mujoco model="pineapple_8dof_scene">
-  <include file="pineapple_8dof.xml"/>
+<mujoco model="pineapple_6dof_scene">
+  <include file="pineapple_6dof.xml"/>
 
   <statistic center="0 0 0.1" extent="0.8"/>
 
