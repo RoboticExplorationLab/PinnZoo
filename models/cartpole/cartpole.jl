@@ -1,6 +1,6 @@
 @create_pinnzoo_model struct Cartpole <: PinnZooModel
     function Cartpole()
-        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libcartpole.so"))
+        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libcartpole"))
         return new()
     end
 end

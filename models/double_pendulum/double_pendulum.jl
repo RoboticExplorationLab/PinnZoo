@@ -1,6 +1,6 @@
 @create_pinnzoo_model struct DoublePendulum <: PinnZooModel
     function DoublePendulum()
-        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libdouble_pendulum.so"))
+        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libdouble_pendulum"))
         return new()
     end
 end
