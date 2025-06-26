@@ -9,21 +9,21 @@
                 fixed_arms::Bool = false, fixed_spine::Bool = false, foot_width::Float64 = 0.0295, foot_depth::Float64 = 0.125)
         lib = let 
             if simple && nc_per_foot == 1 && kinematics_ori == :Quaternion && !fixed_arms
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_quat.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_quat"))
             elseif simple && nc_per_foot == 1 && kinematics_ori == :AxisAngle && !fixed_arms
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_aa.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_aa"))
             elseif simple && nc_per_foot == 1 && kinematics_ori == :AxisAngle && fixed_arms
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_aa_no_arms.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp_aa_no_arms"))
             elseif simple && nc_per_foot == 1 && kinematics_ori == :None && !fixed_arms
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_1cp"))
             elseif simple && nc_per_foot == 4 && kinematics_ori != :None
                 throw(error("specified configuration is not supported"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && !fixed_arms
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms && !fixed_spine
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms"))
             elseif simple && nc_per_foot == 4 && kinematics_ori == :None && fixed_arms && fixed_spine
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms_spine.so"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libnadia_simple_4cp_no_arms_spine"))
             else
                 throw(error("specified configuration is either not found or not supported. Did you compile?"))
             end

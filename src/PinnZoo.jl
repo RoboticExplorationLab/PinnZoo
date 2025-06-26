@@ -25,7 +25,6 @@ module PinnZoo
 
     # Quadruped specific functions (TODO: some of this can be more general)
     include(joinpath(@__DIR__, "quadruped.jl"))
-    include(joinpath(@__DIR__, "biped.jl"))
 
     # Include model files here
     include(joinpath(@__DIR__, "model_macro.jl"))
@@ -37,8 +36,7 @@ module PinnZoo
     include(joinpath(MODEL_DIR, "unitree_go1/go1.jl"))
     include(joinpath(MODEL_DIR, "unitree_go2/go2.jl"))
     include(joinpath(MODEL_DIR, "nadia/nadia.jl"))
-    include(joinpath(MODEL_DIR, "crazydog/crazydog.jl"))
-    include(joinpath(MODEL_DIR, "pineapple1/pineapple1.jl"))
+    include(joinpath(MODEL_DIR, "pineapple/pineapple.jl"))
 
     # Defaults for models
     """
@@ -75,7 +73,7 @@ module PinnZoo
     
     ## Exports
     # Types
-    export PinnZooModel, PinnZooFloatingBaseModel, Quadruped, Biped
+    export PinnZooModel, PinnZooFloatingBaseModel, Quadruped
 
     # Conversions
     export StateOrder, ConversionIndices, generate_conversions
@@ -95,8 +93,8 @@ module PinnZoo
         R_mult, attitude_jacobian, quat_to_rot
 
     # Quadruped specific functions
-    export Quadruped, Biped4
+    export Quadruped
     export B_func, fix_joint_limits, inverse_kinematics, nearest_ik
 
-    export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, Quadrotor, Go1, Go2, Nadia, CrazyDog, Pineapple1
+    export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, Quadrotor, Go1, Go2, Nadia, Pineapple
 end

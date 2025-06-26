@@ -154,10 +154,10 @@ file(GLOB SOURCES "${DIR}*.c")
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
 
-### ----- Generate dynamics for CrazyDog ----- ###
-project(crazydog) # Change this for each model
+### ----- Generate dynamics for Pineapple 8DoF ----- ###
+project(pineapple_8dof) # Change this for each model
 
-set(DIR models/${PROJECT_NAME}/generated_code/) # Change if not the default
+set(DIR models/pineapple/generated_code/pineapple_8dof/) # Change if not the default
 
 include_directories(${DIR})
 
@@ -165,11 +165,10 @@ file(GLOB SOURCES "${DIR}*.c")
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
 
+### ----- Generate dynamics for Pineapple 6DoF ----- ###
+project(pineapple_6dof) # Change this for each model
 
-### ----- Generate dynamics for Pineapple1 ----- ###
-project(pineapple1) # Change this for each model
-
-set(DIR models/${PROJECT_NAME}/generated_code/) # Change if not the default
+set(DIR models/pineapple/generated_code/pineapple_6dof/) # Change if not the default
 
 include_directories(${DIR})
 

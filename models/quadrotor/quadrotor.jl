@@ -4,7 +4,7 @@
     L::Float64 # Arn lengths
     kinematics_ori::Symbol
     function Quadrotor(; L = 0.175, kf = 1.0, km = 0.0245)
-        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libquadrotor.so"))
+        lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libquadrotor"))
         return new(kf, km, L, :AxisAngle)
     end
 end

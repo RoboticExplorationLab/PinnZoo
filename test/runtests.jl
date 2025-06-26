@@ -57,8 +57,9 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
     end
 
     # CrazyDog
-    @testset "CrazyDog" begin
-        test_default_functions(CrazyDog())
+    @testset "Pineapple" begin
+        test_default_functions(Pineapple())
+        test_default_functions(Pineapple(num_dofs = 8))
     end
 
     # ForwardDiff compatability
