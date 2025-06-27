@@ -85,6 +85,7 @@ module PinnZoo
     export velocity_kinematics, velocity_kinematics_T, velocity_kinematics_jvp_deriv, velocity_kinematics_T_jvp_deriv
     export kinematics_size
     export kinematics, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian, kinematics_force_jacobian
+    export kinematics_jacobianTvp
     export error_jacobian, error_jacobian_T, apply_Δx, state_error
     export error_jacobian_jvp_deriv, error_jacobian_T_jvp_deriv
 

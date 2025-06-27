@@ -31,6 +31,16 @@ function kinematics_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
+    kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+
+Returns the nv-dim jacobian-transpose vector product J(x)'*λ, where J(x) maps joint velocities into kinematics velocities
+"""
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+    J = kinematics_velocity_jacobian(model, x)
+    return J[:, model.nq + 1:end]'*λ
+end
+
+@doc raw"""
     kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return a list of the instantaneous linear velocities of each body in model.kinematics_bodies in the world frame.
