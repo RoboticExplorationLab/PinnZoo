@@ -4,3 +4,99 @@ build
 .vscode
 __pycache__
 test/Manifest.toml
+
+# ========================
+# macOS
+# ========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+__MACOSX/
+
+# ========================
+# Python
+# ========================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# ========================
+# Julia
+# ========================
+# Julia package artifacts and compiled cache
+.julia/compiled/
+.julia/packages/
+.julia/artifacts/
+.julia/environments/*/Manifest.toml
+.julia/environments/*/Manifest.toml.backup
+
+# Julia project build output (optional)
+*.jl.cov
+*.jl.*.cov
+*.ji
+*.o
+*.dSYM/
+
+# VSCode Julia extension settings
+.vscode/
+
+# ========================
+# General
+# ========================
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+*.tmp
+
+# Archives
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# OS Crash reports
+*.crash

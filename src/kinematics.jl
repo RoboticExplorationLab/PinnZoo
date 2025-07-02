@@ -20,6 +20,28 @@ function kinematics(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
+    kinematics_axis(model::PinnZooModel, x::AbstractVector{Float64})
+
+Return a list of rotation axis in the world frame.
+"""
+function kinematics_axis(model::PinnZooModel, x::AbstractVector{Float64})
+    axis = zeros(kinematics_size(model))
+    ccall(model.kinematics_axis_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, axis)
+    return axis
+end
+
+@doc raw"""
+    kinematics_rotation(model::PinnZooModel, x::AbstractVector{Float64})    
+
+Return a list of rotation matrices in the world frame.
+"""
+function kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}) where T <: Real
+    rotation = zeros(kinematics_size(model), 3)
+    ccall(model.kinematics_rotation_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, rotation)
+    return rotation
+end
+
+@doc raw"""
     kinematics_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return the jacobian of the kinematics function with respect to x (not projected into the tangent space).

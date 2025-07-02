@@ -35,6 +35,8 @@ macro create_pinnzoo_model(expr)
             velocity_kinematics_T_jvp_deriv_ptr::Ptr{Nothing}
             kinematics_bodies::Vector{Symbol}
             kinematics_ptr::Ptr{Nothing}
+            kinematics_axis_ptr::Ptr{Nothing}
+            kinematics_rotation_ptr::Ptr{Nothing}
             kinematics_jacobian_ptr::Ptr{Nothing}
             kinematics_velocity_ptr::Ptr{Nothing}
             kinematics_velocity_jacobian_ptr::Ptr{Nothing}
@@ -86,6 +88,8 @@ macro create_pinnzoo_model(expr)
                 kinematics_bodies = get_order(dlsym(lib, :get_kinematics_bodies))
                 nc = length(kinematics_bodies)
                 kinematics_ptr = dlsym(lib, :kinematics_wrapper)
+                kinematics_axis_ptr = dlsym(lib, :kinematics_axis_wrapper)
+                kinematics_rotation_ptr = dlsym(lib, :kinematics_rotation_wrapper)
                 kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
                 kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
                 kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
@@ -99,8 +103,8 @@ macro create_pinnzoo_model(expr)
                     dynamics_ptr, dynamics_deriv_ptr, inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
                     velocity_kinematics_ptr, velocity_kinematics_T_ptr,
                     velocity_kinematics_jvp_deriv_ptr, velocity_kinematics_T_jvp_deriv_ptr,
-                    kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr,
-                    kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr,
+                    kinematics_bodies, kinematics_ptr, kinematics_axis_ptr, kinematics_rotation_ptr, 
+                    kinematics_jacobian_ptr, kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr,
                     kinematics_force_jacobian_ptr,
                     $(constructor_return...))
             end
