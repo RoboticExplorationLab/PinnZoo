@@ -11,6 +11,8 @@
 #include "velocity_kinematics_jvp_deriv.h"
 #include "velocity_kinematics_T_jvp_deriv.h"
 #include "kinematics.h"
+#include "kinematics_axis.h"
+#include "kinematics_rotation.h"
 #include "kinematics_jacobian.h"
 #include "kinematics_velocity.h"
 #include "kinematics_velocity_jacobian.h"
@@ -118,6 +120,22 @@ void kinematics_wrapper(double* x_in, double* locs_out) {
     long long int iw[0];
     double w[0];
     kinematics(args, res, iw, w, 0);
+}
+
+void kinematics_axis_wrapper(double* x_in, double* axis_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {axis_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_axis(args, res, iw, w, 0);
+}
+
+void kinematics_rotation_wrapper(double* x_in, double* rotation_out) {
+    const double* args[1] = {x_in};
+    double* res[1] = {rotation_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_rotation(args, res, iw, w, 0);
 }
 
 void kinematics_jacobian_wrapper(double* x_in, double* J_out) {

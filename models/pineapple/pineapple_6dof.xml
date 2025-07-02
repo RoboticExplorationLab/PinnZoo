@@ -1,6 +1,8 @@
 <mujoco model="pineapple">
   <compiler angle="radian" meshdir="meshes_6dof"/>
-
+  <option cone="elliptic" impratio="100"/>
+  <option gravity='0 0 -9.81' iterations='50' solver='Newton' timestep='0.002'/>
+  
   <asset>
     <mesh name="base_link" file="base_link.STL"/>
     <mesh name="R_thigh_link" file="R_thigh_link.STL"/>
@@ -64,18 +66,26 @@
       </body>
   </worldbody>
 
- <actuator>
+  <actuator>
+    <!-- Leg Joints -->
+    <motor name="R_thigh" joint="R_thigh_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+    <motor name="R_calf" joint="R_calf_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+    <motor name="L_thigh" joint="L_thigh_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+    <motor name="L_calf" joint="L_calf_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+
+    <!-- Wheel Joints -->
+    <motor name="R_wheel" joint="R_wheel_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+    <motor name="L_wheel" joint="L_wheel_joint" ctrllimited="true" ctrlrange="-1000 1000"  gear="1"/>
+  </actuator>
+
+ <!-- <actuator>
     <position name="R_thigh" joint="R_thigh_joint" kp="15" kv="0.5" ctrlrange="0 2.1" forcerange="-20 20"/> 
     <position name="R_calf" joint="R_calf_joint" kp="15" kv="0.5" ctrlrange="-3 0" forcerange="-20 20"/>
     <position name="L_thigh" joint="L_thigh_joint" kp="15" kv="0.5" ctrlrange="0 2.1" forcerange="-20 20"/>
     <position name="L_calf" joint="L_calf_joint" kp="15" kv="0.5" ctrlrange="-3 0" forcerange="-20 20"/> 
-    
-    <!-- <intvelocity name="L_wheel" joint="L_wheel_joint" kp="15" kv="0.3" forcerange="-500 500" actrange="-300 300"/>
-    <intvelocity name="R_wheel" joint="R_wheel_joint" kp="15" kv="0.3" forcerange="-500 500" actrange="-300 300"/>  -->
     <velocity name="R_wheel" joint="R_wheel_joint" kv="0.3" forcerange="-4 4" ctrlrange="-60 60"/>
     <velocity name="L_wheel" joint="L_wheel_joint" kv="0.3" forcerange="-4 4" ctrlrange="-60 60"/>
-   
-  </actuator>
+  </actuator> -->
 
   <sensor>
 
