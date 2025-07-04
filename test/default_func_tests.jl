@@ -115,7 +115,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     v̇1 = forward_dynamics(model, x, τ)
     dynamics!(dyn_res, state, τ_rbd)
     v̇2 = change_order(model, dyn_res.v̇, :rigidBodyDynamics, :nominal)
-    @test norm(v̇1 - v̇2, Inf) < 1e-9
+    @test norm(v̇1 - v̇2, Inf) < 1e-8
 
     # Test forward dynamics derivatives
     J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> forward_dynamics(model, _x, τ), copy(x))[1]

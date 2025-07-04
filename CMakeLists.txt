@@ -175,3 +175,25 @@ include_directories(${DIR})
 file(GLOB SOURCES "${DIR}*.c") 
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Pineapple 8DoF Quaternion Kinematics ----- ###
+project(pineapple_8dof_quat) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_8dof_quat/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Pineapple 6DoF Quaternion Kinematics ----- ###
+project(pineapple_6dof_quat) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_6dof_quat/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
