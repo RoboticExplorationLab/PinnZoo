@@ -1,13 +1,22 @@
 @create_pinnzoo_model struct Pineapple <: PinnZooFloatingBaseModel
+    kinematics_ori::Symbol
     μ::Float64
     # torque_limits::Vector{Float64}
     # joint_limits::Matrix{Float64}
-    function Pineapple(; num_dofs = 6, μ = 0.3)
+    function Pineapple(; num_dofs = 6, μ = 0.3, kinematics_ori::Symbol = :None)
         lib = let
             if num_dofs == 6
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_6dof"))
+                if kinematics_ori == :None
+                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_6dof"))
+                elseif kinematics_ori == :Quaternion
+                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_6dof_quat"))
+                end
             elseif num_dofs == 8
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))
+                if kinematics_ori == :None
+                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))
+                elseif kinematics_ori == :Quaternion
+                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof_quat"))
+                end
             else
                 throw(error("specified configuration is either not found or not supported. Did you compile?"))
             end
@@ -17,7 +26,7 @@
         # Limits
         # torque_limits = 23.7*ones(12)
         # joint_limits = [repeat([-Inf Inf], 7); repeat([-0.802851 0.802851; -1.0472 4.18879; -2.69653 -0.916298], 4)]
-        return new(μ)#, torque_limits, joint_limits)
+        return new(kinematics_ori, μ)#, torque_limits, joint_limits)
     end
 end
 

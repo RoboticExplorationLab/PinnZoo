@@ -65,6 +65,8 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
     @testset "Pineapple" begin
         test_default_functions(Pineapple())
         test_default_functions(Pineapple(num_dofs = 8))
+        test_default_functions(Pineapple(kinematics_ori=:Quaternion))
+        test_default_functions(Pineapple(num_dofs = 8, kinematics_ori=:Quaternion))
     end
 
     # ForwardDiff compatability
