@@ -12,6 +12,12 @@
 #   Note: We assume that the errorConfig vector order is the same as the velocity vector order.
 #         This is necessary for the conversion function, which uses size to determine the type of the input.
 
+# Nominal order for floating base joints in this library (which must be unique and come first) are
+#   Config vector (quaternion is body to world):
+#       [x, y, z, quat_w, quat_x, quat_y, quat_z]
+#   Velocity vector (body velocities in body frame):
+#       [v_x, v_y, v_z, ω_x, ω_y, ω_z]
+
 @doc raw"""
     StateOrder(config_names, vel_names, torque_names = vel_names)
 
