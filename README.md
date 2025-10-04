@@ -1,6 +1,6 @@
-# PinnZoo (WIP)
+# PinnZoo
 
-PinnZoo contains fast dependency-free C code for dynamics and kinematics functions for various robots (defined by URDFs) generated using Pinocchio and CasADI, along with a wrapper to generate a shared library and call the code from Julia. 
+PinnZoo contains fast dependency-free C code for dynamics and kinematics functions for various robots (defined by URDFs) generated using Pinocchio and CasADI, along with a wrapper to generate a shared library and call the code from Julia. This was developed for internal RExLab use, both for speed and for making Pinocchio compatible with our in-lab conventions and other libraries like RigidBodyDynamics.jl (i.e. for configuration order) used by the RExLab that differ from Pinocchio, details can be found in the docs.
 
 *Note: You do not need to install Pinocchio or CasADI to use the models, the models are dependency free. You only need them to generate a new model.*
 
@@ -12,9 +12,12 @@ Models can be found in the models directory. Each model folder should include th
 - a README that provides basic model details, such as state vector order, bodies that kinematics were generated for, and anything else that may need clarification.
 - any additional C or Julia files for model specific functions/behaviors (should be documented in README)
 
-Refer to the docs (currently under docs/build/index.html) for detials on the generated functions. While we wrap them in Julia, there are many ways you can use these functions, such as linking them into your own C or C++ project, or calling them from Python. An example of using the Julia wrapper is in the Get Started section below.
+Refer to the docs (currently under docs/build/index.html) for details on the generated functions. While we wrap them in Julia, there are many ways you can use these functions, such as linking them into your own C or C++ project, or calling them from Python. An example of using the Julia wrapper is in the Get Started section below.
 
-# Get Started (Julia)
+# Python
+We don't currently provide Python bindings to the codegen C code. Reference `src/symbolic_generator.py` for all of the dynamics and kinematics function generation (if you don't want to parse the Pinocchio docs this can be a quick reference for basic dynamics and kinematics calls). 
+
+# Julia
 First, clone the repository, and run the following commands in the terminal. You will need CMake and C compiler to be installed.
 ```
 cd PinnZoo
