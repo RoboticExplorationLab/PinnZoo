@@ -11,7 +11,8 @@ KinematicsOrientation = Enum('KinematicsOrientation', ['NONE', 'Quaternion', 'Ax
 
 class SymbolicGenerator:
     def __init__(self, urdf_path, gen_dir = "./generated_code", 
-                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = KinematicsOrientation.NONE):
+                 kinematics_bodies = [], floating = False, mesh_dir=".", actuated_dofs = None, kinematics_ori = KinematicsOrientation.NONE,
+                 write_files = True):
         # Load the URDF model
         self.urdf_path = urdf_path
         if floating:
@@ -63,9 +64,11 @@ class SymbolicGenerator:
             self.torque_order = self.state_order[self.nq:][actuated_dofs]
 
         # Create directory to save files to if it doesn't exist
-        self.gen_dir = os.path.abspath(gen_dir)
-        if not os.path.exists(self.gen_dir):
-            os.makedirs(self.gen_dir)
+        self.write_files = write_files
+        if self.write_files:
+            self.gen_dir = os.path.abspath(gen_dir)
+            if not os.path.exists(self.gen_dir):
+                os.makedirs(self.gen_dir)
 
         # Print model parameters
         print("Loaded robot model from:", urdf_path)
@@ -106,10 +109,12 @@ class SymbolicGenerator:
         self.gen_opts = dict(with_header = True)
 
         # Change directory for output
-        self.orig_dir = os.getcwd()
-        os.chdir(self.gen_dir)
+        if self.write_files:
+            self.orig_dir = os.getcwd()
+            os.chdir(self.gen_dir)
 
-        self.generate_order_functions()
+        if self.write_files:
+            self.generate_order_functions()
 
         self.generate_dynamics()
 
@@ -158,14 +163,15 @@ class SymbolicGenerator:
                                                   [dtau_dx, dtau_dv_dot])
 
         # Generate files
-        m_func.generate("M_func.c", self.gen_opts)
-        c_func.generate("C_func.c", self.gen_opts)
-        forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
-        forward_dynamics_deriv_func.generate("forward_dynamics_deriv.c", self.gen_opts)
-        dynamics_func.generate("dynamics.c", self.gen_opts)
-        dynamics_deriv_func.generate("dynamics_deriv.c", self.gen_opts)
-        inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
-        inverse_dynamics_deriv_func.generate("inverse_dynamics_deriv.c", self.gen_opts)
+        if self.write_files:
+            m_func.generate("M_func.c", self.gen_opts)
+            c_func.generate("C_func.c", self.gen_opts)
+            forward_dynamics_func.generate("forward_dynamics.c", self.gen_opts)
+            forward_dynamics_deriv_func.generate("forward_dynamics_deriv.c", self.gen_opts)
+            dynamics_func.generate("dynamics.c", self.gen_opts)
+            dynamics_deriv_func.generate("dynamics_deriv.c", self.gen_opts)
+            inverse_dynamics_func.generate("inverse_dynamics.c", self.gen_opts)
+            inverse_dynamics_deriv_func.generate("inverse_dynamics_deriv.c", self.gen_opts)
 
         print("Generated dynamics")
 
@@ -209,11 +215,12 @@ class SymbolicGenerator:
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [J_f])
 
         # Generate files
-        kinematics.generate("kinematics.c", self.gen_opts)
-        kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
-        kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
-        kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
-        kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
+        if self.write_files:
+            kinematics.generate("kinematics.c", self.gen_opts)
+            kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
+            kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
+            kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+            kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
 
         print("Generated kinematics")
 
@@ -317,10 +324,11 @@ class SymbolicGenerator:
         velocity_kinematics_jvp_deriv = cs.Function("velocity_kinematics_jvp_deriv", [self.x, v_in], [E_jvp_dx])
         velocity_kinematics_T_jvp_deriv = cs.Function("velocity_kinematics_T_jvp_deriv", [self.x, q_in], [E_T_jvp_dx])
 
-        velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
-        velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
-        velocity_kinematics_jvp_deriv.generate("velocity_kinematics_jvp_deriv.c", self.gen_opts)
-        velocity_kinematics_T_jvp_deriv.generate("velocity_kinematics_T_jvp_deriv.c", self.gen_opts)
+        if self.write_files:
+            velocity_kinematics.generate("velocity_kinematics.c", self.gen_opts)
+            velocity_kinematics_T.generate("velocity_kinematics_T.c", self.gen_opts)
+            velocity_kinematics_jvp_deriv.generate("velocity_kinematics_jvp_deriv.c", self.gen_opts)
+            velocity_kinematics_T_jvp_deriv.generate("velocity_kinematics_T_jvp_deriv.c", self.gen_opts)
 
     def build_velocity_kinematics(self, x):
         E = cs.SX.zeros(self.nq, self.nv)
