@@ -121,8 +121,9 @@ class SymbolicGenerator:
         if len(self.kinematics_bodies) > 0:
             self.generate_kinematics()
 
-        print("Finished generating to", self.gen_dir)
-        os.chdir(self.orig_dir)
+        if self.write_files:
+            print("Finished generating to", self.gen_dir)
+            os.chdir(self.orig_dir)
 
     def generate_dynamics(self):
         # Mass matrix
