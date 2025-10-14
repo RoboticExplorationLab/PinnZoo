@@ -8,7 +8,7 @@ using Random
 include(joinpath(@__DIR__, "default_func_tests.jl"))
 include(joinpath(@__DIR__, "forward_diff_tests.jl"))
 
-@testset "PinnZoo" begin
+@testset verbose=true "PinnZoo" begin
     # Pendulum
     @testset "Pendulum" begin
         test_default_functions(Pendulum())
@@ -27,6 +27,11 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
      # Double Cartpole
      @testset "Double Cartpole" begin
         test_default_functions(DoubleCartpole())
+    end
+
+    # Rigidbody
+    @testset "RigidBody" begin
+        test_default_functions(PinnZoo.RigidBody())
     end
 
     # Quadrotor

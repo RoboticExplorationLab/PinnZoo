@@ -129,6 +129,16 @@ DoublePendulum
 Cartpole
 ```
 
+### Double Cartpole
+```@docs
+DoubleCartpole
+```
+
+### RigidBody
+```@docs
+RigidBody
+```
+
 ### Quadrotor
 ```@docs
 Quadrotor
