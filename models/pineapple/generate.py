@@ -10,12 +10,30 @@ symb_gen = SymbolicGenerator('pineapple_8dof.urdf',
                              gen_dir="./generated_code/pineapple_8dof")
 symb_gen.generate()
 
-symb_gen = SymbolicGenerator('pineapple_6dof.urdf', 
-                             floating = True,
-                             kinematics_bodies=['L_wheel_link', 'R_wheel_link'],
-                             actuated_dofs = slice(6,12),
-                             gen_dir="./generated_code/pineapple_6dof")
-symb_gen.generate()
+# symb_gen = SymbolicGenerator('pineapple_6dof.urdf', 
+#                              floating = True,
+#                              kinematics_bodies=['L_wheel_link', 'R_wheel_link'],
+#                              actuated_dofs = slice(6,12),
+#                              gen_dir="./generated_code/pineapple_6dof")
+# symb_gen.wheels = True
+# symb_gen.generate()
+
+# symb_gen = SymbolicGenerator('pineapple_v1.urdf', 
+#                              floating = True,
+#                              kinematics_bodies=['L_wheel', 'R_wheel'],
+#                              actuated_dofs = slice(6,14),
+#                              gen_dir="./generated_code/pineapple_v1")
+# symb_gen.generate()
+
+
+# symb_gen = SymbolicGenerator('pineapple_v1.urdf', 
+#                              floating = True,
+#                              kinematics_bodies=['L_wheel', 'R_wheel'],
+#                              actuated_dofs = slice(6,14),
+#                              kinematics_ori = KinematicsOrientation.Quaternion,
+#                              gen_dir="./generated_code/pineapple_v1_quat")
+# symb_gen.generate()
+
 
 symb_gen = SymbolicGenerator('pineapple_8dof.urdf', 
                              floating = True,
@@ -25,10 +43,10 @@ symb_gen = SymbolicGenerator('pineapple_8dof.urdf',
                              gen_dir="./generated_code/pineapple_8dof_quat")
 symb_gen.generate()
 
-symb_gen = SymbolicGenerator('pineapple_6dof.urdf', 
-                             floating = True,
-                             kinematics_bodies=['L_wheel_link', 'R_wheel_link'],
-                             actuated_dofs = slice(6,12),
-                             kinematics_ori = KinematicsOrientation.Quaternion,
-                             gen_dir="./generated_code/pineapple_6dof_quat")
-symb_gen.generate()
+# symb_gen = SymbolicGenerator('pineapple_6dof.urdf', 
+#                              floating = True,
+#                              kinematics_bodies=['L_wheel_link', 'R_wheel_link'],
+#                              actuated_dofs = slice(6,12),
+#                              kinematics_ori = KinematicsOrientation.Quaternion,
+#                              gen_dir="./generated_code/pineapple_6dof_quat")
+# symb_gen.generate()
