@@ -9,7 +9,7 @@ function quat_to_axis_angle(q; tol = 1e-12)
     qs = q[1]
     qv = q[2:4]
     norm_qv = norm(qv)
-    
+
     if norm_qv >= tol
         θ = 2*atan(norm_qv, qs)
         return θ*qv/norm_qv
@@ -88,3 +88,64 @@ function quat_to_rot(q)
     skew_qv = skew(q[2:4])
     return 1.0I + 2*q[1]*skew_qv + 2*skew_qv^2
 end
+
+@doc raw"""
+    rotmat_to_quat(R) -> q
+
+Convert a 3×3 rotation matrix `R` ∈ SO(3) to a unit quaternion `q = (w,x,y,z)`
+(scalar-first). Uses a trace-based, numerically stable branch; output is
+normalized and sign-canonicalized (`w ≥ 0`).
+
+**Conventions:** column-vector math (R maps basis vectors as columns).  
+**Args:** `R::AbstractMatrix{<:Real}` of size (3,3).  
+**Returns:** `Vector{Float64}` length 4, `(w,x,y,z)`.
+
+**Example**
+```julia
+q = rotmat_to_quat(Matrix(I,3,3))  # -> [1.0, 0.0, 0.0, 0.0]
+
+"""
+
+function rotmat_to_quat(R::AbstractMatrix{<:Real})
+    @assert size(R) == (3,3)
+    R00, R01, R02 = R[1,1], R[1,2], R[1,3]
+    R10, R11, R12 = R[2,1], R[2,2], R[2,3]
+    R20, R21, R22 = R[3,1], R[3,2], R[3,3]
+
+    t = R00 + R11 + R22
+    if t > 0
+        S = 2 * sqrt(t + 1)
+        w = 0.25 * S
+        x = (R21 - R12) / S
+        y = (R02 - R20) / S
+        z = (R10 - R01) / S
+    elseif (R00 > R11) && (R00 > R22)
+        S = 2 * sqrt(1 + R00 - R11 - R22)
+        w = (R21 - R12) / S
+        x = 0.25 * S
+        y = (R01 + R10) / S
+        z = (R02 + R20) / S
+    elseif R11 > R22
+        S = 2 * sqrt(1 + R11 - R00 - R22)
+        w = (R02 - R20) / S
+        x = (R01 + R10) / S
+        y = 0.25 * S
+        z = (R12 + R21) / S
+    else
+        S = 2 * sqrt(1 + R22 - R00 - R11)
+        w = (R10 - R01) / S
+        x = (R02 + R20) / S
+        y = (R12 + R21) / S
+        z = 0.25 * S
+    end
+
+    q = [w, x, y, z]
+    q ./= sqrt(sum(abs2, q))  # normalize
+    if q[1] < 0
+        q .*= -1
+    end
+    return q  # (w, x, y, z)
+end
+
+
+

@@ -92,7 +92,7 @@ module PinnZoo
 
     # Quaternion helpers
     export quat_to_axis_angle, axis_angle_to_quat, quat_conjugate, skew, L_mult,
-        R_mult, attitude_jacobian, quat_to_rot
+        R_mult, attitude_jacobian, quat_to_rot, rotmat_to_quat
 
     # Quadruped specific functions
     export Quadruped
