@@ -121,8 +121,8 @@ function inverse_kinematics(model::Pineapple, x, wheel_locs)
     # Hip positions in the body frame (extracted from URDF joint origins)
     # CORRECTED ORDER: Left leg first (leg_ind=1), Right leg second (leg_ind=2)
     hip_local_pos = [
-        [0.0000, 0.06125, 0.000],   # Left hip (positive y) - leg_ind=1
-        [0.0000, -0.06125, 0.000]   # Right hip (negative y) - leg_ind=2
+        [0.0000, 0.061249999999998, 0.0610009280869146],   # Left hip (positive y) - leg_ind=1
+        [0.0000, -0.061249999999998, 0.0610009280869146]   # Right hip (negative y) - leg_ind=2
     ]
 
     # Base transformations
