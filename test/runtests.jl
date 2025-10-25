@@ -50,23 +50,21 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
     end
 
     # Nadia
-    @testset "IHMC Nadia" begin
-        test_default_functions(Nadia())
-        test_default_functions(Nadia(nc_per_foot = 4))
-        test_default_functions(Nadia(nc_per_foot = 4, fixed_arms = true))
-        test_default_functions(Nadia(kinematics_ori = :Quaternion))
-        test_default_functions(Nadia(kinematics_ori = :AxisAngle))
-        test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true))
-        test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true, fixed_spine = true))
+    @testset verbose=true "IHMC Nadia" begin
+        @testset "default" test_default_functions(Nadia())
+        @testset "nc=4" test_default_functions(Nadia(nc_per_foot = 4))
+        @testset "nc=4 fixed_arms" test_default_functions(Nadia(nc_per_foot = 4, fixed_arms = true))
+        @testset "nc=4 quat" test_default_functions(Nadia(kinematics_ori = :Quaternion))
+        @testset "aa" test_default_functions(Nadia(kinematics_ori = :AxisAngle))
+        @testset "aa fixed_arms" test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true))
+        @testset "aa fixed_arms fixed_spine" test_default_functions(Nadia(kinematics_ori = :AxisAngle, fixed_arms = true, fixed_spine = true))
         @test_throws "specified configuration is not supported" Nadia(nc_per_foot = 4, kinematics_ori = :Quaternion)
     end
 
     # CrazyDog
-    @testset "Pineapple" begin
-        test_default_functions(Pineapple())
-        test_default_functions(Pineapple(num_dofs = 8))
-        test_default_functions(Pineapple(kinematics_ori=:Quaternion))
-        test_default_functions(Pineapple(num_dofs = 8, kinematics_ori=:Quaternion))
+    @testset verbose=true "Pineapple" begin
+        @testset "default" test_default_functions(Pineapple())
+        @testset "quat" test_default_functions(Pineapple(kinematics_ori=:Quaternion))
     end
 
     # ForwardDiff compatability

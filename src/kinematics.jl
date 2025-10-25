@@ -25,9 +25,21 @@ end
 Return a list of rotation matrices in the world frame.
 """
 function kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}) where T <: Real
-    rotation = zeros(kinematics_size(model), 3)
-    ccall(model.kinematics_rotation_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, rotation)
-    return rotation
+    if !hasproperty(model, :kinematics_ori) || model.kinematics_ori == :None
+        @error "kinematics_rotation is only supported for kinematics functions with rotations"
+    end
+
+    locs = kinematics(model, x)
+    return _kinematics_rotation(model, x, locs)
+end
+function _kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}, locs::AbstractVector{T}) where T <: Real
+    if model.kinematics_ori == :Quaternion
+        quats = [locs[(k - 1)*7 .+ (4:7)] for k in 1:length(model.kinematics_bodies)]
+        return vcat([quat_to_rot(quat) for quat in quats]...)
+    elseif model.kinematics_ori == :AxisAngle
+        aas = [locs[(k - 1)*6 .+ (4:6)] for k in 1:length(model.kinematics_bodies)]
+        return vcat([quat_to_rot(axis_angle_to_quat(aa)) for aa in aas]...)
+    end
 end
 
 @doc raw"""

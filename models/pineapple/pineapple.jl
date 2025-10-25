@@ -3,25 +3,12 @@
     μ::Float64
     # torque_limits::Vector{Float64}
     # joint_limits::Matrix{Float64}
-    function Pineapple(; num_dofs = 6, μ = 0.3, kinematics_ori::Symbol = :None)
+    function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :None)
         lib = let
-            if num_dofs == 6
-                if kinematics_ori == :None
-                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_6dof"))
-                elseif kinematics_ori == :Quaternion
-                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_6dof_quat"))
-                end
-            elseif num_dofs == 8
-                if kinematics_ori == :None
-                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))
-                    # torque_limits = 23.7*ones(8)
-                    # joint_limits = [repeat([-Inf Inf], 7);
-                    #                 -0.52358 0.17444; 0 1.571; -2.8 -0.95; -Inf Inf;
-                    #                 -0.52358 0.17444; 0 1.571; -2.8 -0.95; -Inf Inf;]
-                    
-                elseif kinematics_ori == :Quaternion
-                    lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof_quat"))
-                end
+            if kinematics_ori == :None
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))                
+            elseif kinematics_ori == :Quaternion
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof_quat"))
             else
                 throw(error("specified configuration is either not found or not supported. Did you compile?"))
             end

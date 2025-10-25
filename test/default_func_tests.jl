@@ -45,6 +45,9 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
             kinematics_velocity(model, x)
             kinematics_velocity_jacobian(model, x)
             kinematics_force_jacobian(model, x, λ)
+            if hasproperty(model, :kinematics_ori) && !isnothing(model.kinematics_ori) && model.kinematics_ori != :None
+                PinnZoo.kinematics_rotation(model, x)
+            end
         end
     end
 
@@ -71,28 +74,6 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     x_rbd = change_order(model, x, :nominal, :rigidBodyDynamics)
     v̇_rbd = change_order(model, v̇, :nominal, :rigidBodyDynamics)
     τ_rbd = change_order(model, τ, :nominal, :rigidBodyDynamics)
-
-    # Helper function to get kinematics (only position supported right now)
-    function kinematics(x)
-        set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))
-        if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
-            return vcat([
-                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
-                 q = RigidBodyDynamics.QuatRotation(rotation(frame));
-                 [translation(frame); q.w; q.x; q.y; q.z])
-                 for body in model.kinematics_bodies]...)
-        elseif hasproperty(model, :kinematics_ori) && model.kinematics_ori == :AxisAngle
-            return vcat([
-                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
-                 q = RigidBodyDynamics.QuatRotation(rotation(frame));
-                 [translation(frame); quat_to_axis_angle([q.w; q.x; q.y; q.z])])
-                 for body in model.kinematics_bodies]...)
-        else
-            return vcat([
-                translation(relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot))) 
-                for body in model.kinematics_bodies]...)
-        end
-    end
 
     # Set configuration and velocity
     set_configuration!(state, x_rbd[1:model.nq])
@@ -181,6 +162,40 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         return
     end
 
+    # Helper function to get kinematics
+    function kinematics(x)
+        set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))     
+
+        if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
+            return vcat([
+                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
+                 q = RigidBodyDynamics.QuatRotation(rotation(frame));
+                 [translation(frame); q.w; q.x; q.y; q.z])
+                 for body in model.kinematics_bodies]...)
+        elseif hasproperty(model, :kinematics_ori) && model.kinematics_ori == :AxisAngle
+            return vcat([
+                (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
+                 q = RigidBodyDynamics.QuatRotation(rotation(frame));
+                 [translation(frame); quat_to_axis_angle([q.w; q.x; q.y; q.z])])
+                 for body in model.kinematics_bodies]...)
+        else
+            return vcat([
+                translation(relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot))) 
+                for body in model.kinematics_bodies]...)
+        end
+    end
+
+    # Helper function to get kinematics rotations
+    function kinematics_rotation(x)
+        set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))  
+
+        return vcat([
+            (frame = relative_transform(state, default_frame(findbody(robot, string(body))), root_frame(robot));
+             q = RigidBodyDynamics.QuatRotation(rotation(frame));
+             quat_to_rot([q.w; q.x; q.y; q.z]))
+             for body in model.kinematics_bodies]...)  # For all bodies
+    end
+
     # Test kinematics
     locs1 = PinnZoo.kinematics(model, x)
     locs2 = kinematics(x)
@@ -206,6 +221,13 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     J_dot1 = kinematics_force_jacobian(model, x, λ)
     J_dot2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1),  _x -> kinematics_velocity_jacobian(model, _x)[:, model.nq + 1:end]'*λ, copy(x))[1]
     @test norm(J_dot1 - J_dot2) < 5e-5 
+
+    # Test kinematics rotation
+    if hasproperty(model, :kinematics_ori) && !isnothing(model.kinematics_ori) && model.kinematics_ori != :None
+        rots1 = PinnZoo.kinematics_rotation(model, x)
+        rots2 = kinematics_rotation(x)
+        @test norm(rots1 - rots2, Inf) < 1e-12
+    end
 
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
     if typeof(model) <: PinnZooFloatingBaseModel
