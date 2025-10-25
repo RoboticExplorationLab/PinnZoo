@@ -1,5 +1,5 @@
 # Wrap derivatives from Pinocchio so they can be used with ForwardDiff
-import ForwardDiff: Dual, value, partials
+import ForwardDiff: jacobian, Dual, value, partials
 
 # kinematics
 function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {T,N,V}
@@ -7,6 +7,17 @@ function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {
 
     f = kinematics(model, x_value)
     df_dx = kinematics_jacobian(model, x_value)*x_partials
+    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+end
+
+function kinematics_rotation(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {T,N,V}
+    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
+
+    locs = kinematics(model, x_value)
+    f = _kinematics_rotation(model, x_value, locs)
+    df_dlocs = jacobian(_locs -> _kinematics_rotation(model, x_value, _locs), locs)
+    dlocs_dx = kinematics_jacobian(model, x_value)
+    df_dx = df_dlocs*dlocs_dx*x_partials
     return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
 end
 

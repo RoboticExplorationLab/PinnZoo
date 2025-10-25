@@ -32,7 +32,7 @@ function kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}) where T 
     locs = kinematics(model, x)
     return _kinematics_rotation(model, x, locs)
 end
-function _kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}, locs::AbstractVector{T}) where T <: Real
+function _kinematics_rotation(model::PinnZooModel, x::AbstractVector{T}, locs::AbstractVector) where T <: Real
     if model.kinematics_ori == :Quaternion
         quats = [locs[(k - 1)*7 .+ (4:7)] for k in 1:length(model.kinematics_bodies)]
         return vcat([quat_to_rot(quat) for quat in quats]...)
