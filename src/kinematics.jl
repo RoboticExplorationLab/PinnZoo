@@ -20,17 +20,6 @@ function kinematics(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
-    kinematics_axis(model::PinnZooModel, x::AbstractVector{Float64})
-
-Return a list of rotation axis in the world frame.
-"""
-function kinematics_axis(model::PinnZooModel, x::AbstractVector{Float64})
-    axis = zeros(kinematics_size(model))
-    ccall(model.kinematics_axis_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, axis)
-    return axis
-end
-
-@doc raw"""
     kinematics_rotation(model::PinnZooModel, x::AbstractVector{Float64})    
 
 Return a list of rotation matrices in the world frame.

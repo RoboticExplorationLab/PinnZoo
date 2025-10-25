@@ -183,7 +183,6 @@ class SymbolicGenerator:
 
         # Forward kinematics (world frame by default)
         kinematics = []
-        axes_world = []  # Store Z-axis in world frame
         rotation_world = []  # Store rotation matrices in world frame
         for body in self.kinematics_bodies:
             frame_id = self.cmodel.getFrameId(body)
@@ -196,12 +195,9 @@ class SymbolicGenerator:
                 aa = cpin.log3(placement.rotation)
                 kinematics.append(aa)
 
-            z_axis_world = placement.rotation @ cs.SX([0, 0, 1])
             rotation_world.append(placement.rotation)
-            axes_world.append(z_axis_world)
 
         self.kinematics = cs.vertcat(*kinematics)
-        self.axes_world = cs.vertcat(*axes_world)
         self.rotation_world = cs.vertcat(*rotation_world)
 
         # Forward kinematics jacobian
@@ -224,7 +220,6 @@ class SymbolicGenerator:
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [J_f])
-        kinematics_axis = cs.Function("kinematics_axis", [self.x], [self.axes_world])
         kinematics_rotation = cs.Function("kinematics_rotation", [self.x], [self.rotation_world])
 
         # Generate files
@@ -233,7 +228,6 @@ class SymbolicGenerator:
         kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
         kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
         kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
-        kinematics_axis.generate("kinematics_axis.c", self.gen_opts)
         kinematics_rotation.generate("kinematics_rotation.c", self.gen_opts)
 
         print("Generated kinematics")

@@ -122,14 +122,6 @@ void kinematics_wrapper(double* x_in, double* locs_out) {
     kinematics(args, res, iw, w, 0);
 }
 
-void kinematics_axis_wrapper(double* x_in, double* axis_out) {
-    const double* args[1] = {x_in};
-    double* res[1] = {axis_out};
-    long long int iw[0];
-    double w[0];
-    kinematics_axis(args, res, iw, w, 0);
-}
-
 void kinematics_rotation_wrapper(double* x_in, double* rotation_out) {
     const double* args[1] = {x_in};
     double* res[1] = {rotation_out};
