@@ -3,7 +3,7 @@
     μ::Float64
     # torque_limits::Vector{Float64}
     # joint_limits::Matrix{Float64}
-    function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :None)
+    function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion)
         lib = let
             if kinematics_ori == :None
                 lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))                

@@ -64,7 +64,7 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
     # CrazyDog
     @testset verbose=true "Pineapple" begin
         @testset "default" test_default_functions(Pineapple())
-        @testset "quat" test_default_functions(Pineapple(kinematics_ori=:Quaternion))
+        @testset "kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None))
     end
 
     # ForwardDiff compatability
