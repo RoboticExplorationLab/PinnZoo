@@ -1,12 +1,22 @@
 @doc raw"""
     kinematics_size(model::PinnZooModel)
 Returns the size of the kinematics vector usually 3*model.nc, but is 7*model.nc if 
-model.kinematics_ori exists and is true
+model.kinematics_ori exists and is Quaternion, and 6*model.nc if it is AxisAngle
 """
 kinematics_size(model::PinnZooModel) = hasproperty(model, :kinematics_ori) ? kinematics_size(model, Val(model.kinematics_ori)) : 3*length(model.kinematics_bodies)
 kinematics_size(model::PinnZooModel, ::Val{:None}) = 3*length(model.kinematics_bodies)
 kinematics_size(model::PinnZooModel, ::Val{:Quaternion}) = 7*length(model.kinematics_bodies)
 kinematics_size(model::PinnZooModel, ::Val{:AxisAngle}) = 6*length(model.kinematics_bodies)
+
+@doc raw"""
+    kinematics_dim(model::PinnZooModel)
+Returns the dim of the kinematics vector for each element in model.kinematics_bodies. Usually 3 (pos x, y, z) but 7 if
+model.kinematics_ori = :Quaternion and 6 if model.kinematics_ori = :AxisAngle
+"""
+kinematics_dim(model::PinnZooModel) = hasproperty(model, :kinematics_ori) ? kinematics_dim(model, Val(model.kinematics_ori)) : 3
+kinematics_dim(model::PinnZooModel, ::Val{:None}) = 3
+kinematics_dim(model::PinnZooModel, ::Val{:Quaternion}) = 7
+kinematics_dim(model::PinnZooModel, ::Val{:AxisAngle}) = 6
 
 @doc raw"""
     kinematics(model::PinnZooModel, x::AbstractVector{Float64})
