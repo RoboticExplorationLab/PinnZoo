@@ -124,7 +124,7 @@ function inverse_kinematics(model::Pineapple, x, wheel_locs)
         hip_trans = -hip_local_pos[wheel_ind] - base_pos;
 
         # Remove offsets
-        wheel_pos = base_rot'*wheel_locs[(wheel_ind - 1)*3 .+ (1:3)] + hip_trans
+        wheel_pos = base_rot'*wheel_locs[(wheel_ind - 1)*kinematics_dim(model) .+ (1:3)] + hip_trans
 
         # Reflect right wheels to use same IK for all two wheels
         if wheel_ind % 2 == 0
