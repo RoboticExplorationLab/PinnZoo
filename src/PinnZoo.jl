@@ -98,5 +98,5 @@ module PinnZoo
     export Quadruped
     export B_func, fix_joint_limits, inverse_kinematics, nearest_ik
 
-    export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, Rigidbody, Quadrotor, Go1, Go2, Nadia, Pineapple
+    export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, RigidBody, Quadrotor, Go1, Go2, Nadia, Pineapple
 end
