@@ -5,26 +5,26 @@
 <robot
   name="pineapple">
   <mujoco>
-  <compiler
-    meshdir="package://v1/meshes"
-    balanceinertia="true"
-    discardvisual="false" />
+    <compiler
+      meshdir="package://v1/meshes"
+      balanceinertia="true"
+      discardvisual="false" />
   </mujoco>
   <link
     name="base_link">
     <inertial>
       <origin
-        xyz="-0.02228595 0.00164283 0.04544062"
+        xyz="-0.01551464 0.00128628 0.04323478"
         rpy="0 0 0" />
       <mass
-        value="2.85000000" />
+        value="3.64" />
       <inertia
-        ixx="0.01102779"
-        ixy="0.00037426"
-        ixz="0.00754430"
-        iyy="0.01804185"
-        iyz="-0.00052496"
-        izz="0.00752637" />
+        ixx="0.01183585"
+        ixy="0.00039823"
+        ixz="0.00802516"
+        iyy="0.01979765"
+        iyz="-0.00055870"
+        izz="0.00863159" />
     </inertial>
     <visual>
       <origin
@@ -51,19 +51,93 @@
     </collision>
   </link>
   <link
+    name="imu_link">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.1" />
+      <inertia 
+        ixx="0.0001"
+        ixy="0.0000"
+        ixz="0.0000"
+        iyy="0.0001"
+        iyz="0.0000"
+        izz="0.0001" />   
+    </inertial>
+  </link>
+  <joint
+    name="imu_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="imu_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="cam">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.3" />
+      <inertia
+        ixx="0.00018085"
+        ixy="0.00000269"
+        ixz="0.00000005"
+        iyy="0.00002720"
+        iyz="-0.0000001"
+        izz="0.00018280" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://v1/meshes/cam.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 1 0 1" />
+      </material>
+    </visual>
+  </link>
+  <joint
+    name="cam_joint"
+    type="fixed">
+    <origin
+      xyz="0.136663127592924 0 0.125539913353642"
+      rpy="0 0.698131700797732 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="cam" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
     name="L_hip">
     <inertial>
       <origin
-        xyz="0.00055295 -0.00275734 0.0000001"
+        xyz="0.00220657 -0.00275734 0.00000000"
         rpy="0 0 0" />
       <mass
-        value="0.57300000" />
+        value="0.573" />
       <inertia
         ixx="0.00058596"
         ixy="-0.00000308"
-        ixz="0.00000088"
+        ixz="0.00000087"
         iyy="0.00092932"
-        iyz="0.000000001"
+        iyz="-0.0000001"
         izz="0.00066651" />
     </inertial>
     <visual>
@@ -85,7 +159,7 @@
     name="L_hip_joint"
     type="revolute">
     <origin
-      xyz="0 0.061249999999998 0.0610009280869146"
+      xyz="0 0.06125 0.065999999287065"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -103,17 +177,17 @@
     name="L_thigh">
     <inertial>
       <origin
-        xyz="-0.01168842 0.03735700 -0.11773770"
+        xyz="-0.00003518 0.02442297 -0.11773718"
         rpy="0 0 0" />
       <mass
-        value="0.75000000" />
+        value="0.75" />
       <inertia
-        ixx="0.00538335"
+        ixx="0.00538265"
         ixy="0.00000040"
-        ixz="-0.00000252"
-        iyy="0.00561841"
-        iyz="0.00033397"
-        izz="0.00058483" />
+        ixz="-0.00000270"
+        iyy="0.00561736"
+        iyz="0.00033393"
+        izz="0.00058450" />
     </inertial>
     <visual>
       <origin
@@ -143,7 +217,7 @@
     name="L_thigh_joint"
     type="revolute">
     <origin
-      xyz="0 0.01 0"
+      xyz="0 0.0129353215081658 0"
       rpy="0 0 0" />
     <parent
       link="L_hip" />
@@ -160,18 +234,18 @@
   <link
     name="L_calf">
     <inertial>
-      <origin 
-        xyz="0.00008556 0.03238223 -0.04718516"
+      <origin
+        xyz="-0.00006785 0.03201549 -0.12089196"
         rpy="0 0 0" />
       <mass
-        value="0.50000000" />
+        value="0.5" />
       <inertia
-        ixx="0.00341630"
+        ixx="0.00341614"
         ixy="-0.00000025"
         ixz="0.00000147"
-        iyy="0.00347570"
-        iyz="-0.00000900"
-        izz="0.00019864" />
+        iyy="0.00347554"
+        iyz="-0.00000899"
+        izz="0.00019863" />
     </inertial>
     <visual>
       <origin
@@ -201,7 +275,7 @@
     name="L_calf_joint"
     type="revolute">
     <origin
-      xyz="0 0.0388671106492234 -0.190000930017623"
+      xyz="0 0.035931787557176 -0.190000001217773"
       rpy="0 0 0" />
     <parent
       link="L_thigh" />
@@ -219,17 +293,17 @@
     name="L_wheel">
     <inertial>
       <origin
-        xyz="0 0.01250278 0"
+        xyz="0.00000000 0.01250277 0.00000000"
         rpy="0 0 0" />
       <mass
-        value="0.30500000" />
+        value="0.305" />
       <inertia
         ixx="0.00053977"
         ixy="-0.0000001"
         ixz="-0.0000001"
-        iyy="0.00105427"
+        iyy="0.00105426"
         iyz="-0.0000001"
-        izz="0.00053980" />
+        izz="0.00053978" />
     </inertial>
     <visual>
       <origin
@@ -256,7 +330,7 @@
     name="L_wheel_joint"
     type="revolute">
     <origin
-      xyz="0 0.0421817545313912 -0.190000000000001"
+      xyz="0 0.0421817504179199 -0.190000000000001"
       rpy="0 0 0" />
     <parent
       link="L_calf" />
@@ -272,10 +346,10 @@
     name="R_hip">
     <inertial>
       <origin
-        xyz="0.00055295 0.00275734 0.0000001"
+        xyz="0.00220657 0.00275734 0.00000000"
         rpy="0 0 0" />
       <mass
-        value="0.57300000" />
+        value="0.573" />
       <inertia
         ixx="0.00058596"
         ixy="0.00000308"
@@ -303,7 +377,7 @@
     name="R_hip_joint"
     type="revolute">
     <origin
-      xyz="0 -0.0612499999999985 0.0610009280869152"
+      xyz="0 -0.06125 0.065999999287065"
       rpy="0 0 0" />
     <parent
       link="base_link" />
@@ -321,16 +395,16 @@
     name="R_thigh">
     <inertial>
       <origin
-        xyz="-0.01168842 -0.03735700 -0.11773770"
+        xyz="-0.00003518 -0.02442297 -0.11773718"
         rpy="0 0 0" />
       <mass
-        value="0.75000000" />
+        value="0.75" />
       <inertia
-        ixx="0.00538327"
-        ixy="-0.00000039"
-        ixz="-0.00000269"
-        iyy="0.00561798"
-        iyz="-0.00033396"
+        ixx="0.00538265"
+        ixy="-0.00000040"
+        ixz="-0.00000270"
+        iyy="0.00561736"
+        iyz="-0.00033393"
         izz="0.00058450" />
     </inertial>
     <visual>
@@ -344,7 +418,7 @@
       <material
         name="">
         <color
-          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+          rgba="0.27843137254902 0.27843137254902 0.27843137254902 1" />
       </material>
     </visual>
     <collision>
@@ -361,7 +435,7 @@
     name="R_thigh_joint"
     type="revolute">
     <origin
-      xyz="0 -0.01 0"
+      xyz="0 -0.0129353215081658 0"
       rpy="0 0 0" />
     <parent
       link="R_hip" />
@@ -379,17 +453,17 @@
     name="R_calf">
     <inertial>
       <origin
-        xyz="0.00008556 -0.03238223 -0.04718516"
+        xyz="-0.00006785 -0.03201549 -0.12089196"
         rpy="0 0 0" />
       <mass
-        value="0.50000000" />
+        value="0.5" />
       <inertia
-        ixx="0.00362217"
-        ixy="-0.00000004"
-        ixz="0.00000547"
-        iyy="0.00368544"
-        iyz="-0.00000047"
-        izz="0.00007514" />
+        ixx="0.00341614"
+        ixy="0.00000025"
+        ixz="0.00000147"
+        iyy="0.00347554"
+        iyz="0.00000899"
+        izz="0.00019863" />
     </inertial>
     <visual>
       <origin
@@ -402,7 +476,7 @@
       <material
         name="">
         <color
-          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+          rgba="0.27843137254902 0.27843137254902 0.27843137254902 1" />
       </material>
     </visual>
     <collision>
@@ -419,7 +493,7 @@
     name="R_calf_joint"
     type="revolute">
     <origin
-      xyz="0 -0.0388671106492234 -0.190000930017624"
+      xyz="0 -0.035931787557176 -0.190000001217773"
       rpy="0 0 0" />
     <parent
       link="R_thigh" />
@@ -437,14 +511,14 @@
     name="R_wheel">
     <inertial>
       <origin
-        xyz="0.00000000 -0.01250278 0.00000000"
+        xyz="0.00000000 -0.01250277 0.00000000"
         rpy="0 0 0" />
       <mass
-        value="0.30500000" />
+        value="0.305" />
       <inertia
         ixx="0.00053977"
         ixy="-0.0000001"
-        ixz="0.00000003"
+        ixz="-0.0000001"
         iyy="0.00105426"
         iyz="-0.0000001"
         izz="0.00053978" />
@@ -474,7 +548,7 @@
     name="R_wheel_joint"
     type="revolute">
     <origin
-      xyz="0 -0.0421817545313912 -0.190000000000001"
+      xyz="0 -0.0421817504179163 -0.190000000000001"
       rpy="0 0 0" />
     <parent
       link="R_calf" />
@@ -485,49 +559,5 @@
     <limit
       effort="3.69"
       velocity="60.0" />
-  </joint>
-    <link
-    name="depth_cam">
-    <inertial>
-      <origin
-        xyz="0.00000000 0.00000000 0.00000000"
-        rpy="0 0 0" />
-      <mass
-        value="0.30000000" />
-      <inertia
-        ixx="0.00018085"
-        ixy="0.00000269"
-        ixz="0.00000005"
-        iyy="0.00002720"
-        iyz="-0.0000001"
-        izz="0.00018280" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://v1/meshes/depth_cam.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0 1 0 1" />
-      </material>
-    </visual>
-  </link>
-  <joint
-    name="depth_cam_joint"
-    type="fixed">
-    <origin
-      xyz="0.134942648598871 0 0.120596007530399"
-      rpy="0 0.698131700797732 0" />
-    <parent
-      link="base_link" />
-    <child
-      link="depth_cam" />
-    <axis
-      xyz="0 0 0" />
   </joint>
 </robot>
