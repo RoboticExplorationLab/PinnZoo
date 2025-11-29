@@ -3,6 +3,8 @@
     μ::Float64
     # torque_limits::Vector{Float64}
     # joint_limits::Matrix{Float64}
+    hwd_x_inds::Vector{Int64}
+    hwd_u_inds::Vector{Int64}
     function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion)
         lib = let
             if kinematics_ori == :None
@@ -18,7 +20,13 @@
         # Limits
         # torque_limits = 23.7*ones(12)
         # joint_limits = [repeat([-Inf Inf], 7); repeat([-0.802851 0.802851; -1.0472 4.18879; -2.69653 -0.916298], 4)]
-        return new(kinematics_ori, μ)#, torque_limits, joint_limits)
+
+        # Pineapple uses the same communication interface as the unitree robots, which have 37 states and 12 controls
+        # The Pineapple has 29 states and 8 controls
+        hwd_x_inds = [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)]
+        hwd_u_inds = [1:8;]
+
+        return new(kinematics_ori, μ, hwd_x_inds, hwd_u_inds)#, torque_limits, joint_limits)
     end
 end
 
