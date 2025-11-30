@@ -6,6 +6,7 @@
 #include "dynamics_deriv.h"
 #include "inverse_dynamics.h"
 #include "inverse_dynamics_deriv.h"
+#include "inverse_dynamics_hTvp.h"
 #include "velocity_kinematics.h"
 #include "velocity_kinematics_T.h"
 #include "velocity_kinematics_jvp_deriv.h"
@@ -78,6 +79,14 @@ void inverse_dynamics_deriv_wrapper(double* x_in, double* vdot_in, double* dtau_
     long long int iw[0];
     double w[0];
     inverse_dynamics_deriv(args, res, iw, w, 0);
+}
+
+void inverse_dynamics_hTvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dx_out, double* dtau_dv_dot_out, double* dtau_dx_dv_dot_out) {
+    const double* args[3] = {x_in, vdot_in, mult_in};
+    double* res[3] = {dtau_dx_out, dtau_dv_dot_out, dtau_dx_dv_dot_out};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics_hTvp(args, res, iw, w, 0);
 }
 
 void velocity_kinematics_wrapper(double* x_in, double* E_out) {

@@ -138,6 +138,14 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     @test norm(J1 - J3, Inf) < 1e-4
     @test norm(J2 - J4, Inf) < 1e-4
 
+    # Test derivatives of inverse dynamics derivative jacobian product
+    mult = randn(model.nv)
+    J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> inverse_dynamics_deriv(model, _x, v̇)[1]'*mult, copy(x))[1]
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> inverse_dynamics_deriv(model, _x, v̇)[2]'*mult, copy(x))[1]
+    J3, J4 = inverse_dynamics_hTvp(model, x, v̇, mult)
+    @test norm(J1 - J3, Inf) < 1e-4
+    @test norm(J2 - J4, Inf) < 1e-4
+
     # Test velocity kinematics
     if typeof(model) <: PinnZooFloatingBaseModel
         E = zeros(model.nq, model.nv);

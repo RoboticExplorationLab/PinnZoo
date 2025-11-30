@@ -94,6 +94,18 @@ function inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64},
 end
 
 @doc raw"""
+    inverse_dynamics_hTvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+
+Return a tuple of derivatives of (dτ_dx)'*lam wrt x and (dτ_dv̇)'*lam wrt x. (dτ_dv̇)'*lam (τ) with respect to v̇ is 0 since dτ_dv̇ = M(q)
+"""
+function inverse_dynamics_hTvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+    dτ_dxTλ_dx, dτ_dv̇Tλ_dx = zeros(model.nx, model.nx), zeros(model.nv, model.nx)
+    ccall(model.inverse_dynamics_hTvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, 
+            Ref{Cdouble}, Ref{Cdouble}), x, v̇, lam, dτ_dxTλ_dx, dτ_dv̇Tλ_dx)
+    return dτ_dxTλ_dx, dτ_dv̇Tλ_dx
+end
+
+@doc raw"""
     velocity_kinematics(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return the matrix E mapping v to q̇, i.e. q̇ = E(q)v, where q = x[1:model.nq]. This mapping is exact,

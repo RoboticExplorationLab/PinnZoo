@@ -150,6 +150,11 @@ class SymbolicGenerator:
         self.dtau_dx = cs.densify(cs.jacobian(self.tau_out, self.x))
         self.dtau_dv_dot = cs.densify(cs.jacobian(self.tau_out, self.v_dot))
 
+        # Inverse dynamics hessian-vector product
+        self.tau_mult_out = cs.SX.sym('tau_mult', self.nv)
+        self.dtau_dxTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out, True), self.x))
+        self.dtau_dv_dotTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.v_dot, self.tau_mult_out, True), self.x))
+
         # Create CasADI functions
         self.m_func = cs.Function("M_func", [self.x], [self.M])
         self.c_func = cs.Function("C_func", [self.x], [self.C])
@@ -162,6 +167,8 @@ class SymbolicGenerator:
         self.inverse_dynamics = cs.Function("inverse_dynamics", [self.x, self.v_dot], [self.tau_out])
         self.inverse_dynamics_deriv = cs.Function("inverse_dynamics_deriv", [self.x, self.v_dot],
                                                   [self.dtau_dx, self.dtau_dv_dot])
+        self.inverse_dynamics_hTvp = cs.Function("inverse_dynamics_hTvp", [self.x, self.v_dot, self.tau_mult_out],
+                                                  [self.dtau_dxTlam_dx, self.dtau_dv_dotTlam_dx])
 
         # Generate files
         if self.write_files:
@@ -173,6 +180,7 @@ class SymbolicGenerator:
             self.dynamics_deriv.generate("dynamics_deriv.c", self.gen_opts)
             self.inverse_dynamics.generate("inverse_dynamics.c", self.gen_opts)
             self.inverse_dynamics_deriv.generate("inverse_dynamics_deriv.c", self.gen_opts)
+            self.inverse_dynamics_hTvp.generate("inverse_dynamics_hTvp.c", self.gen_opts)
 
         print("Generated dynamics")
 

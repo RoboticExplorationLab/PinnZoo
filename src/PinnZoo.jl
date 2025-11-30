@@ -83,6 +83,7 @@ module PinnZoo
     # Helpers, dynamics, kinematics
     export is_floating, zero_state, init_state, randn_state
     export M_func, C_func, dynamics, dynamics_deriv, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
+    export inverse_dynamics_hTvp
     export velocity_kinematics, velocity_kinematics_T, velocity_kinematics_jvp_deriv, velocity_kinematics_T_jvp_deriv
     export kinematics_size, kinematics_dim
     export kinematics, kinematics_rotation, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian, kinematics_force_jacobian
