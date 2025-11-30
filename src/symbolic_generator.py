@@ -127,41 +127,41 @@ class SymbolicGenerator:
 
     def generate_dynamics(self):
         # Mass matrix
-        M = cs.densify(cpin.crba(self.cmodel, self.cdata, self.q))
+        self.M = cs.densify(cpin.crba(self.cmodel, self.cdata, self.q))
 
         # Coriolis matrix
-        C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
+        self.C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
 
         # Generate velocity kinematics, E(q) such that q_dot = E(q)v
         self.generate_velocity_kinematics()
 
         # Forward dynamics
-        v_dot_out = cs.densify(cpin.aba(self.cmodel, self.cdata, self.q, self.v, self.tau))
-        dv_dot_out_dx = cs.densify(cs.jacobian(v_dot_out, self.x))
-        dv_dot_out_dtau = cs.densify(cs.jacobian(v_dot_out, self.tau))
+        self.v_dot_out = cs.densify(cpin.aba(self.cmodel, self.cdata, self.q, self.v, self.tau))
+        self.dv_dot_out_dx = cs.densify(cs.jacobian(self.v_dot_out, self.x))
+        self.dv_dot_out_dtau = cs.densify(cs.jacobian(self.v_dot_out, self.tau))
 
         # Dynamics (x_dot = f(x, u))
-        x_dot_out = cs.vertcat(self.v, v_dot_out)
-        dx_dot_out_dx = cs.densify(cs.jacobian(x_dot_out, self.x))
-        dx_dot_out_dtau = cs.densify(cs.jacobian(x_dot_out, self.tau))
+        self.x_dot_out = cs.vertcat(self.v, self.v_dot_out)
+        self.dx_dot_out_dx = cs.densify(cs.jacobian(self.x_dot_out, self.x))
+        self.dx_dot_out_dtau = cs.densify(cs.jacobian(self.x_dot_out, self.tau))
 
         # Inverse dynamics
-        tau_out = cs.densify(cpin.rnea(self.cmodel, self.cdata, self.q, self.v, self.v_dot))
-        dtau_dx = cs.densify(cs.jacobian(tau_out, self.x))
-        dtau_dv_dot = cs.densify(cs.jacobian(tau_out, self.v_dot))
+        self.tau_out = cs.densify(cpin.rnea(self.cmodel, self.cdata, self.q, self.v, self.v_dot))
+        self.dtau_dx = cs.densify(cs.jacobian(self.tau_out, self.x))
+        self.dtau_dv_dot = cs.densify(cs.jacobian(self.tau_out, self.v_dot))
 
         # Create CasADI functions
-        self.m_func = cs.Function("M_func", [self.x], [M])
-        self.c_func = cs.Function("C_func", [self.x], [C])
-        self.forward_dynamics = cs.Function("forward_dynamics", [self.x, self.tau], [v_dot_out])
+        self.m_func = cs.Function("M_func", [self.x], [self.M])
+        self.c_func = cs.Function("C_func", [self.x], [self.C])
+        self.forward_dynamics = cs.Function("forward_dynamics", [self.x, self.tau], [self.v_dot_out])
         self.forward_dynamics_deriv = cs.Function("forward_dynamics_deriv", [self.x, self.tau], 
-                                                  [dv_dot_out_dx, dv_dot_out_dtau])
-        self.dynamics = cs.Function("dynamics", [self.x, self.tau], [x_dot_out])
+                                                  [self.dv_dot_out_dx, self.dv_dot_out_dtau])
+        self.dynamics = cs.Function("dynamics", [self.x, self.tau], [self.x_dot_out])
         self.dynamics_deriv = cs.Function("dynamics_deriv", [self.x, self.tau], 
-                                                  [dx_dot_out_dx, dx_dot_out_dtau])
-        self.inverse_dynamics = cs.Function("inverse_dynamics", [self.x, self.v_dot], [tau_out])
+                                                  [self.dx_dot_out_dx, self.dx_dot_out_dtau])
+        self.inverse_dynamics = cs.Function("inverse_dynamics", [self.x, self.v_dot], [self.tau_out])
         self.inverse_dynamics_deriv = cs.Function("inverse_dynamics_deriv", [self.x, self.v_dot],
-                                                  [dtau_dx, dtau_dv_dot])
+                                                  [self.dtau_dx, self.dtau_dv_dot])
 
         # Generate files
         if self.write_files:
@@ -200,29 +200,32 @@ class SymbolicGenerator:
         self.J = cs.densify(cs.jacobian(self.kinematics, self.x)) # v block is zero
 
         # Kinematics velocity (world frame by default)
-        self.kinematics_dot = self.J[:, :self.nq]@self.E@self.v
+        self.kinematics_dot = cs.densify(cs.jtimes(self.kinematics, self.x[:self.nq], self.E@self.v))
+        # self.kinematics_dot = self.J[:, :self.nq]@self.E@self.v
 
         # Kinematics velocity jacobian
         self.J_dot = cs.densify(cs.jacobian(self.kinematics_dot, self.x))
 
         # Kinematics force jacobian
         self.force = cs.SX.sym('force', self.kinematics.numel())
-        q_f = self.E.T@self.J[:, :self.nq].T@self.force
-        J_f = cs.densify(cs.jacobian(q_f, self.x))
+        self.q_f = cs.densify(self.E.T@cs.jtimes(self.kinematics, self.x[:self.nq], self.force, True))
+        # self.q_f = self.E.T@self.J[:, :self.nq].T@self.force
+        self.J_f = cs.densify(cs.jacobian(self.q_f, self.x))
 
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [self.kinematics])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [self.J])
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
-        kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [J_f])
+        kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [self.J_f])
 
         # Generate files
-        kinematics.generate("kinematics.c", self.gen_opts)
-        kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
-        kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
-        kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
-        kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
+        if self.write_files:
+            kinematics.generate("kinematics.c", self.gen_opts)
+            kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
+            kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
+            kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
+            kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
 
         print("Generated kinematics")
 

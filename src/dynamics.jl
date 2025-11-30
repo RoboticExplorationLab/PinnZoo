@@ -82,7 +82,7 @@ function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, v̇::
 end
 
 @doc raw"""
-    inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}
+    inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
 
 Return a tuple of derivatives of the inverse dynamics (τ) with respect to x and v̇ 
 """

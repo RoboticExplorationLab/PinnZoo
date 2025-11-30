@@ -70,6 +70,14 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     model.orders[:rigidBodyDynamics] = StateOrder(config_names, vel_names, torque_names)
     generate_conversions(model.orders, model.conversions)
 
+    function rbd_state(model, x)
+        state = MechanismState{eltype(x)}(robot)
+        x_rbd = change_order(model, x, :nominal, :rigidBodyDynamics)
+        set_configuration!(state, x_rbd[1:model.nq])
+        set_velocity!(state, x_rbd[model.nq + 1:end])
+        return state
+    end
+
     # Make rbd versions of random states
     x_rbd = change_order(model, x, :nominal, :rigidBodyDynamics)
     v̇_rbd = change_order(model, v̇, :nominal, :rigidBodyDynamics)
@@ -164,7 +172,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
 
     # Helper function to get kinematics
     function kinematics(x)
-        set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))     
+        state = rbd_state(model, x)
 
         if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
             return vcat([
@@ -187,6 +195,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
 
     # Helper function to get kinematics rotations
     function kinematics_rotation(x)
+        state = rbd_state(model, x)
         set_configuration!(state, change_order(model, x[1:model.nq], :nominal, :rigidBodyDynamics))  
 
         return vcat([

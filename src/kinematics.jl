@@ -77,6 +77,7 @@ end
     kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return a list of the instantaneous linear velocities of each body in model.kinematics_bodies in the world frame.
+This is J(q)*E(q)*v
 """
 function kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
     locs_dot = zeros(kinematics_size(model))
