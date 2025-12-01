@@ -14,10 +14,13 @@ module PinnZoo
 
     # Dynamics functions (from codegen)
     include(joinpath(@__DIR__, "dynamics.jl"))
-    include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
     
     # Kinematics functions (from codegen)
     include(joinpath(@__DIR__, "kinematics.jl"))
+
+    # Support for ForwardDiff.jl
+    include(joinpath(@__DIR__, "forward_diff/utils.jl"))
+    include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
     include(joinpath(@__DIR__, "forward_diff/kinematics.jl"))
 
     # Quaternion helpers
