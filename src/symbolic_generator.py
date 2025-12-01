@@ -220,12 +220,22 @@ class SymbolicGenerator:
         # self.q_f = self.E.T@self.J[:, :self.nq].T@self.force
         self.J_f = cs.densify(cs.jacobian(self.q_f, self.x))
 
+        # Kinematics force jacobian hessian-vector product
+        # d/dx and d/df of (d/dx (J(x)'*f))'*mult
+        self.J_f_mult = cs.SX.sym('J_f_mult_out', self.nv)
+        if self.kinematics_ori == KinematicsOrientation.AxisAngle: # jtimes has NaNs
+            self.J_fT_dx = cs.densify(cs.jacobian(self.J_f.T@self.J_f_mult, self.x))
+        else:
+            self.J_fT_dx = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult, True), self.x)) # has NaNs for axis angles
+        self.J_fT_df = cs.densify(cs.jacobian(cs.jtimes(self.kinematics, self.x[:self.nq],self.E@self.J_f_mult), self.x)).T
+
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [self.kinematics])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [self.J])
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [self.J_f])
+        self.kinematics_force_hTvp = cs.Function("kinematics_force_hTvp", [self.x, self.force, self.J_f_mult], [self.J_fT_dx, self.J_fT_df])
 
         # Generate files
         if self.write_files:
@@ -234,6 +244,7 @@ class SymbolicGenerator:
             kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
             kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
             kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
+            self.kinematics_force_hTvp.generate("kinematics_force_hTvp.c", self.gen_opts)
 
         print("Generated kinematics")
 
@@ -393,14 +404,39 @@ class SymbolicGenerator:
         return E, E_T
 
     def rotation_matrix_to_quaternion(self, R):
+        # return cs.vertcat(qw, qx, qy, qz)
+        # Compute candidate values
+        a = 1 + R[0,0] + R[1,1] + R[2,2]
+        b = 1 + R[0,0] - R[1,1] - R[2,2]
+        c = 1 - R[0,0] + R[1,1] - R[2,2]
+        d = 1 - R[0,0] - R[1,1] + R[2,2]
+        
+        # Symbolic max of four values
+        max_abcd = cs.fmax(cs.fmax(a,b), cs.fmax(c,d))
+        
+        a_new = cs.if_else(a == max_abcd, a,
+                cs.if_else(b == max_abcd, R[2,1] - R[1,2],
+                cs.if_else(c == max_abcd, R[0,2] - R[2,0],
+                                          R[1,0] - R[0,1])))
+        
+        b_new = cs.if_else(a == max_abcd, R[2,1] - R[1,2],
+                cs.if_else(b == max_abcd, b,
+                cs.if_else(c == max_abcd, R[1,0] + R[0,1],
+                                          R[0,2] + R[2,0])))
 
-        epsilon = 1e-12
-        trace = R[0,0] + R[1,1] + R[2,2]
+        c_new = cs.if_else(a == max_abcd, R[0,2] - R[2,0],
+                cs.if_else(b == max_abcd, R[1,0] + R[0,1],
+                cs.if_else(c == max_abcd, c,
+                                          R[2,1] + R[1,2])))
 
-        # Compute qw, qx, qy, qz with additional checks
-        qw = cs.if_else(1 + trace > epsilon, cs.sqrt(1 + trace) / 2, 0)
-        qx = cs.if_else(cs.fabs(qw) > epsilon, (R[2,1] - R[1,2]) / (4 * qw), cs.sqrt(1 + R[0,0] - R[1,1] - R[2,2]) / 2)
-        qy = cs.if_else(cs.fabs(qw) > epsilon, (R[0,2] - R[2,0]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,1] + R[1,0]) / (4 * qx), cs.sqrt(1 + R[1,1] - R[0,0] - R[2,2]) / 2))
-        qz = cs.if_else(cs.fabs(qw) > epsilon, (R[1,0] - R[0,1]) / (4 * qw), cs.if_else(cs.fabs(qx) > epsilon, (R[0,2] + R[2,0]) / (4 * qx), cs.if_else(cs.fabs(qy) > epsilon, (R[1,2] + R[2,1]) / (4 * qy), cs.sqrt(1 + R[2,2] - R[0,0] - R[1,1]) / 2)))
-
-        return cs.vertcat(qw, qx, qy, qz)
+        d_new = cs.if_else(a == max_abcd, R[1,0] - R[0,1],
+                cs.if_else(b == max_abcd, R[0,2] + R[2,0],
+                cs.if_else(c == max_abcd, R[2,1] + R[1,2],
+                                          d)))
+        
+        q = cs.vertcat(a_new, b_new, c_new, d_new)
+        
+        # Normalize
+        q = q / cs.norm_2(q)
+        
+        return q * cs.sign(q[0])

@@ -92,37 +92,35 @@ end
 @doc raw"""
     rot_to_quat(R)
 
-Convert a 3x3 rotation matrix `R` ∈ SO(3) to a unit quaternion.
-Returns a 4-element vector [qw, qx, qy, qz].
+This method comes from Rotations.jl, and solves the system of equations in Section 3.1
+of https://arxiv.org/pdf/math/0701759.pdf. This cheap method
+only works for matrices that are already orthonormal (orthogonal
+and unit length columns), but avoids some of the issues of other methods (division by zero,
+sqrt of negative number) when evaluated on non-orthonormal matrices.
 """
 function rot_to_quat(R)
-    tr = R[1,1] + R[2,2] + R[3,3]
-
-    if tr > 0
-        S = sqrt(tr + 1.0) * 2  # S = 4 * qw
-        qw = 0.25 * S
-        qx = (R[3,2] - R[2,3]) / S
-        qy = (R[1,3] - R[3,1]) / S
-        qz = (R[2,1] - R[1,2]) / S
-    elseif R[1,1] > R[2,2] && R[1,1] > R[3,3]
-        S = sqrt(1.0 + R[1,1] - R[2,2] - R[3,3]) * 2
-        qw = (R[3,2] - R[2,3]) / S
-        qx = 0.25 * S
-        qy = (R[1,2] + R[2,1]) / S
-        qz = (R[1,3] + R[3,1]) / S
-    elseif R[2,2] > R[3,3]
-        S = sqrt(1.0 + R[2,2] - R[1,1] - R[3,3]) * 2
-        qw = (R[1,3] - R[3,1]) / S
-        qx = (R[1,2] + R[2,1]) / S
-        qy = 0.25 * S
-        qz = (R[2,3] + R[3,2]) / S
+    a = 1 + R[1,1] + R[2,2] + R[3,3]
+    b = 1 + R[1,1] - R[2,2] - R[3,3]
+    c = 1 - R[1,1] + R[2,2] - R[3,3]
+    d = 1 - R[1,1] - R[2,2] + R[3,3]
+    println([a, b, c, d])
+    max_abcd = max(a, b, c, d)
+    if a == max_abcd
+        b = R[3,2] - R[2,3]
+        c = R[1,3] - R[3,1]
+        d = R[2,1] - R[1,2]
+    elseif b == max_abcd
+        a = R[3,2] - R[2,3]
+        c = R[2,1] + R[1,2]
+        d = R[1,3] + R[3,1]
+    elseif c == max_abcd
+        a = R[1,3] - R[3,1]
+        b = R[2,1] + R[1,2]
+        d = R[3,2] + R[2,3]
     else
-        S = sqrt(1.0 + R[3,3] - R[1,1] - R[2,2]) * 2
-        qw = (R[2,1] - R[1,2]) / S
-        qx = (R[1,3] + R[3,1]) / S
-        qy = (R[2,3] + R[3,2]) / S
-        qz = 0.25 * S
+        a = R[2,1] - R[1,2]
+        b = R[1,3] + R[3,1]
+        c = R[3,2] + R[2,3]
     end
-
-    return normalize([qw, qx, qy, qz])
+    return [a, b, c, d]*sign(a)
 end

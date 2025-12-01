@@ -40,6 +40,7 @@ macro create_pinnzoo_model(expr)
             kinematics_velocity_ptr::Ptr{Nothing}
             kinematics_velocity_jacobian_ptr::Ptr{Nothing}
             kinematics_force_jacobian_ptr::Ptr{Nothing}
+            kinematics_force_hTvp_ptr::Ptr{Nothing}
             $(new_fields...)
             function $constructor_name($(constructor_args...))
                 # Load the library
@@ -92,6 +93,7 @@ macro create_pinnzoo_model(expr)
                 kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
                 kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
                 kinematics_force_jacobian_ptr = dlsym(lib, :kinematics_force_jacobian_wrapper)
+                kinematics_force_hTvp_ptr = dlsym(lib, :kinematics_force_hTvp_wrapper)
 
                 $(constructor_internals...)
                 return new(
@@ -104,7 +106,7 @@ macro create_pinnzoo_model(expr)
                     velocity_kinematics_jvp_deriv_ptr, velocity_kinematics_T_jvp_deriv_ptr,
                     kinematics_bodies, kinematics_ptr, 
                     kinematics_jacobian_ptr, kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr,
-                    kinematics_force_jacobian_ptr,
+                    kinematics_force_jacobian_ptr, kinematics_force_hTvp_ptr,
                     $(constructor_return...))
             end
         end
