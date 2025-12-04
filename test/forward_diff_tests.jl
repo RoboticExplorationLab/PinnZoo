@@ -81,4 +81,16 @@ function test_forward_diff()
     J = FD.jacobian(_z -> PinnZoo.inverse_dynamics(model, _z[1:model.nx], _z[model.nx + 1:end]), [x; τ])
     @test J == [J_x J_τ] # This should be exact
 
+    # Test inverse dynamics hessian, i.e. hessian of μ'*inverse_dynamics(x, v̇)
+    μ = randn(model.nv)
+    J1 = FD.hessian(_x -> μ'*PinnZoo.inverse_dynamics(model, _x, τ), x)
+    J2 = inverse_dynamics_hTvp(model, x, τ, μ)[1]
+    @test norm(J1 - J2, Inf) < 1e-10
+    J1 = FD.hessian(_τ -> μ'*PinnZoo.inverse_dynamics(model, x, _τ), τ)
+    J2 = zeros(model.nv, model.nv)
+    @test norm(J1 - J2, Inf) < 1e-10
+    J1 = FD.hessian(_z -> μ'*PinnZoo.inverse_dynamics(model, _z[1:model.nx], _z[model.nx + 1:end]), [x; τ])
+    J2 = [inverse_dynamics_hTvp(model, x, τ, μ)[1] inverse_dynamics_hTvp(model, x, τ, μ)[2]'
+          inverse_dynamics_hTvp(model, x, τ, μ)[2] zeros(model.nv, model.nv)]
+    @test norm(J1 - J2, Inf) < 1e-10
 end
