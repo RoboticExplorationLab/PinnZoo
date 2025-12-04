@@ -174,13 +174,13 @@ function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::
     return f
 end
 function c_func2(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
-    dc_func(x) = ForwardDiff.jacobian(_x -> c_func(_x), x)
-    ddc_func(x, c) = ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, x)
+    dc_func(x) = sum(x)*I(nx) + x * ones(nx)'
+    ddc_func(x, c) = c*ones(nx)' + sum(c)*I(nx)
     terms(x) = c_func(x), dc_func(x), c -> ddc_func(x, c)
     return hess_wrapper(x, terms)
 end
 nx = 5
-idx = rand(1:nx, 5)
+idx = 1:nx
 x, λ = randn(nx), randn(length(idx))
 test1, test2 = _x -> λ'*c_func(_x, true), _x -> λ'*c_func2(_x)
 vals_int = []; H1 = ForwardDiff.hessian(test1, x)
@@ -188,14 +188,15 @@ H2 = ForwardDiff.hessian(test2, x)
 norm(H1 - H2, Inf)
 
 # Try with different sizes
-nx = 30
-idx = rand(1:nx, 100)
+nx = 100
+idx = 1:nx
 x, λ = randn(nx), randn(length(idx))
 vals_int = []; H1 = ForwardDiff.hessian(test1, x)
 H2 = ForwardDiff.hessian(test2, x)
 norm(H1 - H2, Inf)
 
-# k = 3
-# b_ij = hcat([[partials(value(vals_int[k][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[k])]...)
-# c_ij = hcat([[value(partials(vals_int[k][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[k])]...)
-# norm(b_ij - c_ij, Inf)
+@profview H2 = ForwardDiff.hessian(test2, x)
+
+using BenchmarkTools
+@benchmark ForwardDiff.hessian(test1, x)
+@benchmark ForwardDiff.hessian(test2, x)
