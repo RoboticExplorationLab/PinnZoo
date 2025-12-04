@@ -221,13 +221,25 @@ class SymbolicGenerator:
         self.J_f = cs.densify(cs.jacobian(self.q_f, self.x))
 
         # Kinematics force jacobian hessian-vector product
-        # d/dx and d/df of (d/dx (J(x)'*f))'*mult
-        self.J_f_mult = cs.SX.sym('J_f_mult_out', self.nv)
+        # Expansion is f(x + dx) = f(x) + df_dx * dx + 0.5*d_dx(df_dx * dx) * dx
+        # f(x) = J(x)'f -> df_dx = d/dx (J(x)'f)
+        # Compute d/dx and d/df of (d/dx (J(x)'*f) * mult) where mult = dx
+        # d/df (d/dx (J(x)'*f) * mult)
+        self.J_f_mult = cs.SX.sym("J_f_mult_out", self.nx)
+        self.J_f_dx = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult), self.x))
+        self.J_f_df = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult), self.force))
+
+        # Kinematics force jacobian hessian-transpose-vector product
+        # Scalar term is mult'(J(x)'*f) = mult'*J(x)'*f
+        # Jacobian is d/dx (J(x)'*f)'*mult
+        # d/dx and d/df of (d/dx (J(x)'*f)'*mult)
+        # d/df (d/dx (J(x)'*f)'*mult) = d/dx (d/df (J(x)'*f)'*mult) = d/dx (mult'*J(x)') = d/dx (J(x)*mult)'
+        self.J_fT_mult = cs.SX.sym('J_fT_mult_out', self.nv)
         if self.kinematics_ori == KinematicsOrientation.AxisAngle: # jtimes has NaNs
-            self.J_fT_dx = cs.densify(cs.jacobian(self.J_f.T@self.J_f_mult, self.x))
+            self.J_fT_dx = cs.densify(cs.jacobian(self.J_f.T@self.J_fT_mult, self.x))
         else:
-            self.J_fT_dx = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult, True), self.x)) # has NaNs for axis angles
-        self.J_fT_df = cs.densify(cs.jacobian(cs.jtimes(self.kinematics, self.x[:self.nq],self.E@self.J_f_mult), self.x)).T
+            self.J_fT_dx = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_fT_mult, True), self.x)) # has NaNs for axis angles
+        self.J_fT_df = cs.densify(cs.jacobian(cs.jtimes(self.kinematics, self.x[:self.nq],self.E@self.J_fT_mult), self.x)).T
 
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [self.kinematics])
@@ -235,7 +247,8 @@ class SymbolicGenerator:
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [self.J_f])
-        self.kinematics_force_hTvp = cs.Function("kinematics_force_hTvp", [self.x, self.force, self.J_f_mult], [self.J_fT_dx, self.J_fT_df])
+        self.kinematics_force_hvp = cs.Function("kinematics_force_hvp", [self.x, self.force, self.J_f_mult], [self.J_f_dx, self.J_f_df])
+        self.kinematics_force_hTvp = cs.Function("kinematics_force_hTvp", [self.x, self.force, self.J_fT_mult], [self.J_fT_dx, self.J_fT_df])
 
         # Generate files
         if self.write_files:
@@ -244,6 +257,7 @@ class SymbolicGenerator:
             kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
             kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
             kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
+            self.kinematics_force_hvp.generate("kinematics_force_hvp.c", self.gen_opts)
             self.kinematics_force_hTvp.generate("kinematics_force_hTvp.c", self.gen_opts)
 
         print("Generated kinematics")

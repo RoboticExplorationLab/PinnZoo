@@ -16,6 +16,7 @@
 #include "kinematics_velocity.h"
 #include "kinematics_velocity_jacobian.h"
 #include "kinematics_force_jacobian.h"
+#include "kinematics_force_hvp.h"
 #include "kinematics_force_hTvp.h"
 
 void M_func_wrapper(double* x_in, double* M_out) {
@@ -160,6 +161,14 @@ void kinematics_force_jacobian_wrapper(double* x_in, double* f_in, double* J_out
     long long int iw[0];
     double w[0];
     kinematics_force_jacobian(args, res, iw, w, 0);
+}
+
+void kinematics_force_hvp_wrapper(double* x_in, double* f_in, double* mult_in, double* J_x_out, double* J_f_out) {
+    const double* args[3] = {x_in, f_in, mult_in};
+    double* res[2] = {J_x_out, J_f_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_force_hvp(args, res, iw, w, 0);
 }
 
 void kinematics_force_hTvp_wrapper(double* x_in, double* f_in, double* mult_in, double* J_x_out, double* J_f_out) {

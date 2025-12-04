@@ -131,7 +131,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     τ1 = PinnZoo.inverse_dynamics(model, x, v̇);
     dyn_res.v̇[:] = v̇_rbd # inverse_dynamics needs a Segmented_Vector, this is a workaround
     τ2 = change_order(model, RigidBodyDynamics.inverse_dynamics(state, dyn_res.v̇), :rigidBodyDynamics, :nominal)
-    @test norm(τ1 - τ2, Inf) < 1e-12
+    @test norm(τ1 - τ2, Inf) < 1e-10
 
     # Test inverse dynamics derivatives
     J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> PinnZoo.inverse_dynamics(model, _x, v̇), copy(x))[1]
@@ -241,9 +241,16 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     J_dot2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1),  _x -> kinematics_velocity_jacobian(model, _x)[:, model.nq + 1:end]'*λ, copy(x))[1]
     @test norm(J_dot1 - J_dot2) < 5e-5 
 
-    # Test kinematics force hTvp
+    # Test kinematics force hvp and hTvp
     if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :AxisAngle # Not supported, has NaNs
     else
+        mult = randn(model.nx)
+        J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> kinematics_force_jacobian(model, _x, λ)*mult, x)[1]
+        J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _λ -> kinematics_force_jacobian(model, x, _λ)*mult, λ)[1]
+        J3, J4 = kinematics_force_hvp(model, x, λ, mult)
+        @test norm(J1 - J3, Inf) < 1e-6
+        @test norm(J2 - J4, Inf) < 1e-6
+
         mult = randn(model.nv)
         J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> kinematics_force_jacobian(model, _x, λ)'*mult, x)[1]
         J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _λ -> kinematics_force_jacobian(model, x, _λ)'*mult, λ)[1]

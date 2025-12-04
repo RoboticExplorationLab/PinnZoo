@@ -111,6 +111,19 @@ function kinematics_force_jacobian(model::PinnZooModel, x::AbstractVector{Float6
 end
 
 @doc raw"""
+    kinematics_force_hvp_ptr(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+
+Return the jacobian of (d/dx J(x, λ))*mult w.r.t x and λ where J(x, λ) is kinematics_force_jacobian(model, x, λ)
+"""
+function kinematics_force_hvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64}, mult::AbstractVector{Float64})
+    @assert !hasproperty(model, :kinematics_ori) || model.kinematics_ori != :AxisAngle "hvp is currently not supported for axis angles"
+    J_x, J_λ = zeros(model.nv, model.nx), zeros(model.nv, kinematics_size(model))
+    ccall(model.kinematics_force_hvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), x, λ, 
+                                                        mult, J_x, J_λ)
+    return J_x, J_λ
+end
+
+@doc raw"""
     kinematics_force_hTvp_ptr(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
 
 Return the jacobian of J(x, λ)'*mult w.r.t x and λ where J(x, λ) is kinematics_force_jacobian(model, x, λ)
