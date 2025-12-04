@@ -1,5 +1,5 @@
 using LinearAlgebra
-using ForwardDiff
+import ForwardDiff as FD
 import ForwardDiff: jacobian, Dual, value, partials, Partials
 
 nx = 3
@@ -65,14 +65,14 @@ end
 
 x, λ = randn(nx), randn(length(idx))
 function lag(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, λ) where {T1, T2, V2, N2, N1}
-    terms(x) = l(x, λ), ForwardDiff.gradient(_x -> l(_x, λ), x)', c -> ForwardDiff.hessian(_x ->  l(_x, λ), x)'*c
+    terms(x) = l(x, λ), FD.gradient(_x -> l(_x, λ), x)', c -> FD.hessian(_x ->  l(_x, λ), x)'*c
     return hess_wrapper_scalar(x, terms)
 end
 test_func(x) = lag(x, λ)
-norm(ForwardDiff.hessian(test_func, x) - ForwardDiff.hessian(_x -> lag3(_x, λ), x), Inf)
+norm(FD.hessian(test_func, x) - FD.hessian(_x -> lag3(_x, λ), x), Inf)
 
 # Test lagrangian hessian
-vals = []; ForwardDiff.hessian(_x -> lag3(_x, λ), x)
+vals = []; FD.hessian(_x -> lag3(_x, λ), x)
 
 x_in = vals[1]
 a = [value(value(x_elem)) for x_elem in x_in]
@@ -82,8 +82,8 @@ d = hcat([partials.(partials(x_elem)) for x_elem in x_in]...)
 
 T1, T2 = typeof(vals[2]).parameters[1], typeof(vals[2]).parameters[2].parameters[1]
 f_a = l(a, λ)
-df = ForwardDiff.gradient(_x -> l(_x, λ), a)
-ddf(c) = ForwardDiff.gradient(_x -> ForwardDiff.gradient(_x -> l(_x, λ), _x)'*c, a)
+df = FD.gradient(_x -> l(_x, λ), a)
+ddf(c) = FD.gradient(_x -> FD.gradient(_x -> l(_x, λ), _x)'*c, a)
 b_df_a = b*df
 c_df_a = c*df
 b_ddf_a_c = d*df + [b*ddf(c_elem) for c_elem in eachrow(c)]
@@ -95,7 +95,7 @@ res = Dual{T1}(val, partial...)
 nx = 13
 idx = [1; 10;]#rand(1:12, 100)
 x, λ = randn(nx), randn(length(idx))
-vals_int = []; ForwardDiff.hessian(_x -> lag2(_x, λ), x)
+vals_int = []; FD.hessian(_x -> lag2(_x, λ), x)
 x_in = vals_int[3]
 num_p = length(partials(x_in[1]))
 a = [value(value(x_elem)) for x_elem in x_in]
@@ -110,8 +110,8 @@ norm(b_ij - c_ij, Inf)
 
 T1_int, T2_int = eltype(vals_int[1]).parameters[1], eltype(vals_int[1]).parameters[2].parameters[1]
 f_a_int = c_func(a)
-df_int = ForwardDiff.jacobian(_x -> c_func(_x), a)
-ddf_int(c) = ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, a)
+df_int = FD.jacobian(_x -> c_func(_x), a)
+ddf_int(c) = FD.jacobian(_x -> FD.jacobian(_x -> c_func(_x), _x)*c, a)
 df_b_int = df_int*b' # don't need?
 df_c_int = df_int*hcat(c...) # iterate rows when building value(partials(...)) and partials(value(...))
 df_d_int = [hcat(df_int*d...)' for d in d_T]
@@ -125,8 +125,8 @@ partial_int = [Partials(Tuple(Dual{T2_int}.(df_c_int[k, :], eachrow(test[k, :, :
 res_int = [Dual{T1_int}(v, p...) for (v, p) in zip(val_int, partial_int)]
 
 # Quick test to see if it works for 1-D
-f_a_int, df_int = f_a, ForwardDiff.gradient(_x -> l(_x, λ), a)'
-ddf_int(c) = ForwardDiff.gradient(_x -> ForwardDiff.gradient(_x -> l(_x, λ), _x)'*c, a)'
+f_a_int, df_int = f_a, FD.gradient(_x -> l(_x, λ), a)'
+ddf_int(c) = FD.gradient(_x -> FD.gradient(_x -> l(_x, λ), _x)'*c, a)'
 
 df_b_int = df_int*b' # don't need?
 df_c_int = df_int*hcat(c...) # iterate rows when building value(partials(...)) and partials(value(...))
@@ -171,7 +171,7 @@ function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::
     val = [Dual{T2}(a_new[k], b_new[k, :]...) for k in 1:nf]
     partial = [Partials(Tuple(Dual{T2}.(c_new[k, :], eachrow(d_new[k, :, :])...))) for k in 1:nf]
     f = [Dual{T1}(v, p...) for (v, p) in zip(val, partial)]
-    return f
+    return isa(a_new, Vector) ? f : f[1] # Handle hessians of scalars
 end
 function c_func2(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
     dc_func(x) = sum(x)*I(nx) + x * ones(nx)'
@@ -183,20 +183,29 @@ nx = 5
 idx = 1:nx
 x, λ = randn(nx), randn(length(idx))
 test1, test2 = _x -> λ'*c_func(_x, true), _x -> λ'*c_func2(_x)
-vals_int = []; H1 = ForwardDiff.hessian(test1, x)
-H2 = ForwardDiff.hessian(test2, x)
+vals_int = []; H1 = FD.hessian(test1, x)
+H2 = FD.hessian(test2, x)
+norm(H1 - H2, Inf)
+
+# Check if wrapper works for scalar functions
+function lag4(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, λ) where {T1, T2, V2, N2, N1}
+    terms(x) = l(x, λ), FD.gradient(_x -> l(_x, λ), x)', c -> FD.gradient(_x -> FD.gradient(_x -> l(_x, λ), _x)'*c, x)'
+    return hess_wrapper(x, terms)
+end
+H1 = FD.hessian(_x -> lag4(_x, λ), x)
+H2 = FD.hessian(_x -> l(_x, λ), x)
 norm(H1 - H2, Inf)
 
 # Try with different sizes
 nx = 100
 idx = 1:nx
 x, λ = randn(nx), randn(length(idx))
-vals_int = []; H1 = ForwardDiff.hessian(test1, x)
-H2 = ForwardDiff.hessian(test2, x)
+vals_int = []; H1 = FD.hessian(test1, x)
+H2 = FD.hessian(test2, x)
 norm(H1 - H2, Inf)
 
-@profview H2 = ForwardDiff.hessian(test2, x)
+@profview H2 = FD.hessian(test2, x)
 
 using BenchmarkTools
-@benchmark ForwardDiff.hessian(test1, x)
-@benchmark ForwardDiff.hessian(test2, x)
+@benchmark FD.hessian(test1, x)
+@benchmark FD.hessian(test2, x)
