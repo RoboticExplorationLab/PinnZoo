@@ -2,9 +2,8 @@ using LinearAlgebra
 using ForwardDiff
 import ForwardDiff: jacobian, Dual, value, partials, Partials
 
-
-nx = 13
-idx = 1:2
+nx = 3
+idx = [3; 3; 2:3]
 function c_func(x, record = false)
     global vals_int
     res = x[idx]*x[idx]'*ones(length(idx))
@@ -28,7 +27,7 @@ end
 l(x, λ) = c_func(x, false)'*λ
 vals, vals_int = [], []
 
-function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::Function) where {T1, T2, V2, N2, N1}
+function hess_wrapper_scalar(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::Function) where {T1, T2, V2, N2, N1}
     # A 2nd derivative dual number is x = (a + bϵ₁) + (c + dϵ₁)ϵ₂. 
     # with ϵ₁² = ϵ₂² = 0
     # The expension of f(x) is f(a) + (df'b)ϵ₁ + (df'c)ϵ₂ + (df'd + c'ddf*b)ϵ₁ϵ₂
@@ -67,8 +66,8 @@ end
 x, λ = randn(nx), randn(length(idx))
 function lag(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, λ) where {T1, T2, V2, N2, N1}
     terms(x) = l(x, λ), ForwardDiff.gradient(_x -> l(_x, λ), x)', c -> ForwardDiff.hessian(_x ->  l(_x, λ), x)'*c
-    return hess_wrapper(x, terms)
-end; ForwardDiff.hessian(_x -> lag(_x, λ), x)
+    return hess_wrapper_scalar(x, terms)
+end
 test_func(x) = lag(x, λ)
 norm(ForwardDiff.hessian(test_func, x) - ForwardDiff.hessian(_x -> lag3(_x, λ), x), Inf)
 
@@ -169,7 +168,20 @@ function c_func2(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T
     terms(x) = c_func(x), ForwardDiff.jacobian(_x -> c_func(_x), x), c -> ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, x)
     return hess_wrapper(x, terms)
 end
-test1, test2 = _x -> λ'*c_func(_x), _x -> λ'*c_func2(_x)
-H1 = ForwardDiff.hessian(test1, x)
+test1, test2 = _x -> λ'*c_func(_x, true), _x -> λ'*c_func2(_x)
+vals_int = []; H1 = ForwardDiff.hessian(test1, x)
 H2 = ForwardDiff.hessian(test2, x)
 norm(H1 - H2, Inf)
+
+# Try with different sizes
+nx = 12
+idx = rand(1:12, 100)
+x, λ = randn(nx), randn(length(idx))
+vals_int = []; H1 = ForwardDiff.hessian(test1, x)
+H2 = ForwardDiff.hessian(test2, x)
+norm(H1 - H2, Inf)
+
+k = 3
+b_ij = hcat([[partials(value(vals_int[k][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[k])]...)
+c_ij = hcat([[value(partials(vals_int[k][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[k])]...)
+norm(b_ij - c_ij, Inf)
