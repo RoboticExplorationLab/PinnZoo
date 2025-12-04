@@ -1,4 +1,5 @@
 #include "M_func.h"
+#include "M_jvp.h"
 #include "C_func.h"
 #include "forward_dynamics.h"
 #include "forward_dynamics_deriv.h"
@@ -26,6 +27,14 @@ void M_func_wrapper(double* x_in, double* M_out) {
     long long int iw[0];
     double w[0];
     M_func(args, res, iw, w, 0);
+}
+
+void M_jvp_wrapper(double* x_in, double* dv_dot_in, double* M_out) {
+    const double* args[2] = {x_in, dv_dot_in};
+    double* res[1] = {M_out};
+    long long int iw[0];
+    double w[0];
+    M_jvp(args, res, iw, w, 0);
 }
 
 void C_func_wrapper(double* x_in, double* C_out) {

@@ -97,6 +97,11 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Make sure mass matrix is positive definite
     @test isposdef(M1)
 
+    # Test mass matrix jacobian-vector product d/dx(Mv̇)
+    M1 = M_jvp(model, x, v̇)
+    M2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> M_func(model, _x)*v̇, copy(x))[1]
+    @test norm(M1 - M2, Inf) < 1e-10
+
     # Test coriolis matrix
     C1 = C_func(model, x)
     C2 = change_order(model, dynamics_bias(state), :rigidBodyDynamics, :nominal)

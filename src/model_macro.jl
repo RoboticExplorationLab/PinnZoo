@@ -22,6 +22,7 @@ macro create_pinnzoo_model(expr)
             orders::Dict{Symbol, StateOrder}
             conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
             M_func_ptr::Ptr{Nothing}
+            M_jvp_ptr::Ptr{Nothing}
             C_func_ptr::Ptr{Nothing}
             forward_dynamics_ptr::Ptr{Nothing}
             forward_dynamics_deriv_ptr::Ptr{Nothing}
@@ -74,6 +75,7 @@ macro create_pinnzoo_model(expr)
 
                 # Dynamics
                 M_func_ptr = dlsym(lib, :M_func_wrapper)
+                M_jvp_ptr = dlsym(lib, :M_jvp_wrapper)
                 C_func_ptr = dlsym(lib, :C_func_wrapper)
                 forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
                 forward_dynamics_deriv_ptr = dlsym(lib, :forward_dynamics_deriv_wrapper)
@@ -103,7 +105,7 @@ macro create_pinnzoo_model(expr)
                 return new(
                     lib, urdf_path,
                     nq, nv, nx, nẋ, nu, nc, orders, conversions,
-                    M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
+                    M_func_ptr, M_jvp_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
                     dynamics_ptr, dynamics_deriv_ptr, inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
                     inverse_dynamics_hvp_ptr, inverse_dynamics_hTvp_ptr,
                     velocity_kinematics_ptr, velocity_kinematics_T_ptr,

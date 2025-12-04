@@ -129,6 +129,10 @@ class SymbolicGenerator:
         # Mass matrix
         self.M = cs.densify(cpin.crba(self.cmodel, self.cdata, self.q))
 
+        # Mass matrix jacobian-vector product with respect to x
+        self.dv_dot = cs.SX.sym('dv_dot', self.nv)
+        self.dx_M_dv = cs.densify(cs.jacobian(self.M@self.dv_dot, self.x))
+
         # Coriolis matrix
         self.C = cs.densify(cpin.nonLinearEffects(self.cmodel, self.cdata, self.q, self.v))
 
@@ -162,6 +166,7 @@ class SymbolicGenerator:
 
         # Create CasADI functions
         self.m_func = cs.Function("M_func", [self.x], [self.M])
+        self.m_jvp = cs.Function("M_jvp", [self.x, self.dv_dot], [self.dx_M_dv])
         self.c_func = cs.Function("C_func", [self.x], [self.C])
         self.forward_dynamics = cs.Function("forward_dynamics", [self.x, self.tau], [self.v_dot_out])
         self.forward_dynamics_deriv = cs.Function("forward_dynamics_deriv", [self.x, self.tau], 
@@ -180,6 +185,7 @@ class SymbolicGenerator:
         # Generate files
         if self.write_files:
             self.m_func.generate("M_func.c", self.gen_opts)
+            self.m_jvp.generate("M_jvp.c", self.gen_opts)
             self.c_func.generate("C_func.c", self.gen_opts)
             self.forward_dynamics.generate("forward_dynamics.c", self.gen_opts)
             self.forward_dynamics_deriv.generate("forward_dynamics_deriv.c", self.gen_opts)

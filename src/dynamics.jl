@@ -9,6 +9,17 @@ function M_func(model::PinnZooModel, x::AbstractVector{Float64})
     return M
 end
 
+@doc raw""" 
+    M_jvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
+
+Return d/dx (M(x)*dv)
+"""
+function M_jvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
+    dMv̇_dx = zeros(model.nv, model.nx)
+    ccall(model.M_jvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, v̇, dMv̇_dx)
+    return dMv̇_dx
+end
+
 @doc raw"""
     C_func(model::PinnZooModel, x::AbstractVector{Float64})
 
