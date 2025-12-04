@@ -238,6 +238,12 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> PinnZoo.kinematics(model, _x), x)[1]
     @test norm(J1 - J2, Inf) < 1e-6
 
+    # Test kinematics hessian-vector product
+    dx = randn(model.nx)
+    J1 = kinematics_hvp(model, x, dx)
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> kinematics_jacobian(model, _x)*dx, x)[1] 
+    @test norm(J1 - J2, Inf) < 1e-6
+
     # Test kinematics velocity
     locs_dot1 = kinematics_velocity(model, x)
     locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*velocity_kinematics(model, x)*x[model.nq + 1:end]

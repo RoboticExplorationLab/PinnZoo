@@ -222,6 +222,10 @@ class SymbolicGenerator:
         # Forward kinematics jacobian
         self.J = cs.densify(cs.jacobian(self.kinematics, self.x)) # v block is zero
 
+        # Kinematics hessian-vector product
+        self.dx = cs.SX.sym('dx', self.nx)
+        self.J_dx = cs.densify(cs.jacobian(cs.jtimes(self.kinematics, self.x, self.dx), self.x))
+
         # Kinematics velocity (world frame by default)
         self.kinematics_dot = cs.densify(cs.jtimes(self.kinematics, self.x[:self.nq], self.E@self.v))
         # self.kinematics_dot = self.J[:, :self.nq]@self.E@self.v
@@ -260,6 +264,7 @@ class SymbolicGenerator:
         # Create CasADI functions
         kinematics = cs.Function("kinematics", [self.x], [self.kinematics])
         kinematics_jacobian = cs.Function("kinematics_jacobian", [self.x], [self.J])
+        kinematics_hvp = cs.Function("kinematics_hvp", [self.x, self.dx], [self.J_dx])
         kinematics_velocity = cs.Function("kinematics_velocity", [self.x], [self.kinematics_dot])
         kinematics_velocity_jacobian = cs.Function("kinematics_velocity_jacobian", [self.x], [self.J_dot])
         kinematics_force_jacobian = cs.Function("kinematics_force_jacobian", [self.x, self.force], [self.J_f])
@@ -270,6 +275,7 @@ class SymbolicGenerator:
         if self.write_files:
             kinematics.generate("kinematics.c", self.gen_opts)
             kinematics_jacobian.generate("kinematics_jacobian.c", self.gen_opts)
+            kinematics_hvp.generate("kinematics_hvp.c", self.gen_opts)
             kinematics_velocity.generate("kinematics_velocity.c", self.gen_opts)
             kinematics_velocity_jacobian.generate("kinematics_velocity_jacobian.c", self.gen_opts)
             kinematics_force_jacobian.generate("kinematics_force_jacobian.c", self.gen_opts)
