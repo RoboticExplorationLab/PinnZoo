@@ -7,7 +7,7 @@ using Test
 function test_forward_diff()
     model = Nadia(kinematics_ori = :Quaternion);
     x = randn_state(model);
-    u = randn(model.nv);
+    τ = randn(model.nv); 
     λ = randn(kinematics_size(model))
     
     # Test kinematics
@@ -46,7 +46,6 @@ function test_forward_diff()
     J1 = FD.hessian(_x -> μ'*kinematics_jacobianTvp(model, _x, λ), x)
     J2 = kinematics_force_hTvp(model, x, λ, μ)[1]
     @test norm(J1 - J2, Inf) < 1e-10
-    μ = randn(model.nv)
     J1 = FD.hessian(_λ -> μ'*kinematics_jacobianTvp(model, x, _λ), λ)
     J2 = zeros(kinematics_size(model), kinematics_size(model))
     @test norm(J1 - J2, Inf) < 1e-10
@@ -55,31 +54,31 @@ function test_forward_diff()
           kinematics_force_hTvp(model, x, λ, μ)[2]' zeros(kinematics_size(model), kinematics_size(model))]
     @test norm(J1 - J2, Inf) < 1e-10
 
-
     # Test forward_dynamics
-    J_x, J_u = forward_dynamics_deriv(model, x, u)
-    J = FD.jacobian(_x -> forward_dynamics(model, _x, u), x)
+    J_x, J_τ = forward_dynamics_deriv(model, x, τ)
+    J = FD.jacobian(_x -> forward_dynamics(model, _x, τ), x)
     @test J == J_x # This should be exact
-    J = FD.jacobian(_u -> forward_dynamics(model, x, _u), u)
-    @test J == J_u # This should be exact
-    J = FD.jacobian(_y -> forward_dynamics(model, _y[1:model.nx], _y[model.nx + 1:end]), [x; u])
-    @test J == [J_x J_u] # This should be exact
+    J = FD.jacobian(_τ -> forward_dynamics(model, x, _τ), τ)
+    @test J == J_τ # This should be exact
+    J = FD.jacobian(_z -> forward_dynamics(model, _z[1:model.nx], _z[model.nx + 1:end]), [x; τ])
+    @test J == [J_x J_τ] # This should be exact
 
     # Test dynamics
-    J_x, J_u = dynamics_deriv(model, x, u)
-    J = FD.jacobian(_x -> dynamics(model, _x, u), x)
+    J_x, J_τ = dynamics_deriv(model, x, τ)
+    J = FD.jacobian(_x -> dynamics(model, _x, τ), x)
     @test J == J_x # This should be exact
-    J = FD.jacobian(_u -> dynamics(model, x, _u), u)
-    @test J == J_u # This should be exact
-    J = FD.jacobian(_y -> dynamics(model, _y[1:model.nx], _y[model.nx + 1:end]), [x; u])
-    @test J == [J_x J_u] # This should be exact
+    J = FD.jacobian(_τ -> dynamics(model, x, _τ), τ)
+    @test J == J_τ # This should be exact
+    J = FD.jacobian(_z -> dynamics(model, _z[1:model.nx], _z[model.nx + 1:end]), [x; τ])
+    @test J == [J_x J_τ] # This should be exact
 
     # Test inverse_dynamics
-    J_x, J_u = inverse_dynamics_deriv(model, x, u)
-    J = FD.jacobian(_x -> PinnZoo.inverse_dynamics(model, _x, u), x)
+    J_x, J_τ = inverse_dynamics_deriv(model, x, τ)
+    J = FD.jacobian(_x -> PinnZoo.inverse_dynamics(model, _x, τ), x)
     @test J == J_x # This should be exact
-    J = FD.jacobian(_u -> PinnZoo.inverse_dynamics(model, x, _u), u)
-    @test J == J_u # This should be exact
-    J = FD.jacobian(_y -> PinnZoo.inverse_dynamics(model, _y[1:model.nx], _y[model.nx + 1:end]), [x; u])
-    @test J == [J_x J_u] # This should be exact
+    J = FD.jacobian(_τ -> PinnZoo.inverse_dynamics(model, x, _τ), τ)
+    @test J == J_τ # This should be exact
+    J = FD.jacobian(_z -> PinnZoo.inverse_dynamics(model, _z[1:model.nx], _z[model.nx + 1:end]), [x; τ])
+    @test J == [J_x J_τ] # This should be exact
+
 end

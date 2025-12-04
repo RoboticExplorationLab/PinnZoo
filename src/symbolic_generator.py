@@ -150,7 +150,7 @@ class SymbolicGenerator:
         self.dtau_dx = cs.densify(cs.jacobian(self.tau_out, self.x))
         self.dtau_dv_dot = cs.densify(cs.jacobian(self.tau_out, self.v_dot))
 
-        # Inverse dynamics hessian-transpose-vector product
+        # Inverse dynamics hessian-vector product
         self.tau_mult_out = cs.SX.sym('tau_mult', self.nx)
         self.dtau_dxlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out), self.x))
         self.dtau_dxlam_dv_dot = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out), self.v_dot))
