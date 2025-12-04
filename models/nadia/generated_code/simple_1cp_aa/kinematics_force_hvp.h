@@ -37,7 +37,7 @@ int kinematics_force_hvp_work_bytes(casadi_int *sz_arg, casadi_int* sz_res, casa
 #define kinematics_force_hvp_SZ_ARG 3
 #define kinematics_force_hvp_SZ_RES 2
 #define kinematics_force_hvp_SZ_IW 0
-#define kinematics_force_hvp_SZ_W 2723
+#define kinematics_force_hvp_SZ_W 1247
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

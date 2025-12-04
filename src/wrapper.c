@@ -6,6 +6,7 @@
 #include "dynamics_deriv.h"
 #include "inverse_dynamics.h"
 #include "inverse_dynamics_deriv.h"
+#include "inverse_dynamics_hvp.h"
 #include "inverse_dynamics_hTvp.h"
 #include "velocity_kinematics.h"
 #include "velocity_kinematics_T.h"
@@ -83,9 +84,17 @@ void inverse_dynamics_deriv_wrapper(double* x_in, double* vdot_in, double* dtau_
     inverse_dynamics_deriv(args, res, iw, w, 0);
 }
 
-void inverse_dynamics_hTvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dx_out, double* dtau_dv_dot_out, double* dtau_dx_dv_dot_out) {
+void inverse_dynamics_hvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dxlam_dx, double* dtau_dxlam_dv_dot) {
     const double* args[3] = {x_in, vdot_in, mult_in};
-    double* res[3] = {dtau_dx_out, dtau_dv_dot_out, dtau_dx_dv_dot_out};
+    double* res[2] = {dtau_dxlam_dx, dtau_dxlam_dv_dot};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics_hvp(args, res, iw, w, 0);
+}
+
+void inverse_dynamics_hTvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dxTlam_dx, double* dtau_dv_dotTlam_dx) {
+    const double* args[3] = {x_in, vdot_in, mult_in};
+    double* res[2] = {dtau_dxTlam_dx, dtau_dv_dotTlam_dx};
     long long int iw[0];
     double w[0];
     inverse_dynamics_hTvp(args, res, iw, w, 0);

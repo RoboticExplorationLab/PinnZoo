@@ -3,19 +3,15 @@
 @doc raw"""
     quat_to_axis_angle(q; tol = 1e-12)
 
-Return the axis angle corresponding to the provided quaternion
+Return the axis angle corresponding to the provided quaternion, using a regularized norm to avoid the singularity
 """
 function quat_to_axis_angle(q; tol = 1e-12)
     qs = q[1]
     qv = q[2:4]
-    norm_qv = norm(qv)
+    norm_qv = sqrt(qv'*qv + tol^2)
 
-    if norm_qv >= tol
-        θ = 2*atan(norm_qv, qs)
-        return θ*qv/norm_qv
-    else
-        return 2*qv # Makes sure ForwardDiff works when q is close to/at [1; 0; 0; 0]
-    end
+    θ = 2*atan(norm_qv, qs)
+    return θ*qv/norm_qv
 end
 
 @doc raw"""

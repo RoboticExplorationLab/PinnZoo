@@ -150,10 +150,15 @@ class SymbolicGenerator:
         self.dtau_dx = cs.densify(cs.jacobian(self.tau_out, self.x))
         self.dtau_dv_dot = cs.densify(cs.jacobian(self.tau_out, self.v_dot))
 
-        # Inverse dynamics hessian-vector product
-        self.tau_mult_out = cs.SX.sym('tau_mult', self.nv)
-        self.dtau_dxTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out, True), self.x))
-        self.dtau_dv_dotTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.v_dot, self.tau_mult_out, True), self.x))
+        # Inverse dynamics hessian-transpose-vector product
+        self.tau_mult_out = cs.SX.sym('tau_mult', self.nx)
+        self.dtau_dxlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out), self.x))
+        self.dtau_dxlam_dv_dot = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tau_mult_out), self.v_dot))
+
+        # Inverse dynamics hessian-transpose-vector product
+        self.tauT_mult_out = cs.SX.sym('tau_mult', self.nv)
+        self.dtau_dxTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.x, self.tauT_mult_out, True), self.x))
+        self.dtau_dv_dotTlam_dx = cs.densify(cs.jacobian(cs.jtimes(self.tau_out, self.v_dot, self.tauT_mult_out, True), self.x))
 
         # Create CasADI functions
         self.m_func = cs.Function("M_func", [self.x], [self.M])
@@ -167,7 +172,9 @@ class SymbolicGenerator:
         self.inverse_dynamics = cs.Function("inverse_dynamics", [self.x, self.v_dot], [self.tau_out])
         self.inverse_dynamics_deriv = cs.Function("inverse_dynamics_deriv", [self.x, self.v_dot],
                                                   [self.dtau_dx, self.dtau_dv_dot])
-        self.inverse_dynamics_hTvp = cs.Function("inverse_dynamics_hTvp", [self.x, self.v_dot, self.tau_mult_out],
+        self.inverse_dynamics_hvp = cs.Function("inverse_dynamics_hvp", [self.x, self.v_dot, self.tau_mult_out],
+                                                  [self.dtau_dxlam_dx, self.dtau_dxlam_dv_dot])
+        self.inverse_dynamics_hTvp = cs.Function("inverse_dynamics_hTvp", [self.x, self.v_dot, self.tauT_mult_out],
                                                   [self.dtau_dxTlam_dx, self.dtau_dv_dotTlam_dx])
 
         # Generate files
@@ -180,6 +187,7 @@ class SymbolicGenerator:
             self.dynamics_deriv.generate("dynamics_deriv.c", self.gen_opts)
             self.inverse_dynamics.generate("inverse_dynamics.c", self.gen_opts)
             self.inverse_dynamics_deriv.generate("inverse_dynamics_deriv.c", self.gen_opts)
+            self.inverse_dynamics_hvp.generate("inverse_dynamics_hvp.c", self.gen_opts)
             self.inverse_dynamics_hTvp.generate("inverse_dynamics_hTvp.c", self.gen_opts)
 
         print("Generated dynamics")
@@ -199,7 +207,8 @@ class SymbolicGenerator:
                 quat = self.rotation_matrix_to_quaternion(placement.rotation)
                 kinematics.append(quat)
             elif self.kinematics_ori == KinematicsOrientation.AxisAngle:
-                aa = cpin.log3(placement.rotation)
+                quat = self.rotation_matrix_to_quaternion(placement.rotation)
+                aa = self.quaternion_to_axis_angle(quat)
                 kinematics.append(aa)
 
         self.kinematics = cs.vertcat(*kinematics)
@@ -225,6 +234,7 @@ class SymbolicGenerator:
         # f(x) = J(x)'f -> df_dx = d/dx (J(x)'f)
         # Compute d/dx and d/df of (d/dx (J(x)'*f) * mult) where mult = dx
         # d/df (d/dx (J(x)'*f) * mult)
+        # TODO: if we do d/dx (d/df J(x)'*f * f_mult) = d/dx (J(x)'*f_mult) this will be cheaper but require two multipliers
         self.J_f_mult = cs.SX.sym("J_f_mult_out", self.nx)
         self.J_f_dx = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult), self.x))
         self.J_f_df = cs.densify(cs.jacobian(cs.jtimes(self.q_f, self.x, self.J_f_mult), self.force))
@@ -454,3 +464,18 @@ class SymbolicGenerator:
         q = q / cs.norm_2(q)
         
         return q * cs.sign(q[0])
+
+    def quaternion_to_axis_angle(self, q):
+        """
+        Return the axis angle corresponding to the provided quaternion, using a regularized norm to avoid the singularity
+        """
+        tol = 1e-12
+        qs = q[0]
+        qv = q[1:4]
+
+        # Regularized norm to avoid singularity
+        norm_qv = cs.sqrt(cs.sumsqr(qv) + tol**2)
+        theta = 2 * cs.atan2(norm_qv, qs)
+
+        return theta * qv / norm_qv
+            

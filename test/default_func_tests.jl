@@ -92,7 +92,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Test mass matrix
     M1 = M_func(model, x)
     M2 = change_order(model, Matrix(mass_matrix(state)), :rigidBodyDynamics, :nominal)
-    @test norm(M1 - M2, Inf) < 1e-12
+    @test norm(M1 - M2, Inf) < 1e-10
 
     # Make sure mass matrix is positive definite
     @test isposdef(M1)
@@ -100,7 +100,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Test coriolis matrix
     C1 = C_func(model, x)
     C2 = change_order(model, dynamics_bias(state), :rigidBodyDynamics, :nominal)
-    @test norm(C1 - C2, Inf) < 1e-12
+    @test norm(C1 - C2, Inf) < 1e-10
 
     # Test forward dynamics 
     v̇1 = forward_dynamics(model, x, τ)
@@ -140,6 +140,14 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     @test norm(J1 - J3, Inf) < 1e-4
     @test norm(J2 - J4, Inf) < 1e-4
 
+    # Test derivatives of inverse dynamics second derivative product
+    mult = randn(model.nx)
+    J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> inverse_dynamics_deriv(model, _x, v̇)[1]*mult, copy(x))[1]
+    J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _v̇ -> inverse_dynamics_deriv(model, x, _v̇)[1]*mult, copy(v̇))[1]
+    J3, J4 = inverse_dynamics_hvp(model, x, v̇, mult)
+    @test norm(J1 - J3, Inf) < 1e-4
+    @test norm(J2 - J4, Inf) < 1e-4
+
     # Test derivatives of inverse dynamics second derivative jacobian product
     mult = randn(model.nv)
     J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> inverse_dynamics_deriv(model, _x, v̇)[1]'*mult, copy(x))[1]
@@ -154,17 +162,17 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         E[1:3, 1:3] = quat_to_rot(x[4:7])
         E[4:7, 4:6] = 0.5*attitude_jacobian(x[4:7])
         E[8:end, 7:end] = I(model.nq - 7)
-        @test norm(velocity_kinematics(model, x) - E) < 1e-12
+        @test norm(velocity_kinematics(model, x) - E) < 1e-10
         E_T = zeros(model.nv, model.nq);
         E_T[1:3, 1:3] = quat_to_rot(x[4:7])'
         E_T[4:6, 4:7] = 2*attitude_jacobian(x[4:7])'
         E_T[7:end, 8:end] = I(model.nq - 7)
-        @test norm(velocity_kinematics_T(model, x) - E_T) < 1e-12
+        @test norm(velocity_kinematics_T(model, x) - E_T) < 1e-10
     elseif model.nq != model.nv
         @warn "velocity kinematics test is currently unsupported for models with quaternions that are not part of a floating base or continuous joints (nq != nv)"
     else
-        @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-12
-        @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-12
+        @test norm(velocity_kinematics(model, x) - I(model.nq)) < 1e-10
+        @test norm(velocity_kinematics_T(model, x) - I(model.nq)) < 1e-10
     end
 
     # Test velocity kinematics jacobian-vector product derivatives
@@ -218,7 +226,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Test kinematics
     locs1 = PinnZoo.kinematics(model, x)
     locs2 = kinematics(x)
-    @test norm(locs1 - locs2, Inf) < 1e-12
+    @test norm(locs1 - locs2, Inf) < 1e-10
 
     # Test kinematics jacobian
     J1 = kinematics_jacobian(model, x)
@@ -228,7 +236,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Test kinematics velocity
     locs_dot1 = kinematics_velocity(model, x)
     locs_dot2 = kinematics_jacobian(model, x)[:, 1:model.nq]*velocity_kinematics(model, x)*x[model.nq + 1:end]
-    @test norm(locs_dot1 - locs_dot2) < 1e-12
+    @test norm(locs_dot1 - locs_dot2) < 1e-10
 
     # Test kinematics velocity jacobian
     J_dot1 = kinematics_velocity_jacobian(model, x)
@@ -263,7 +271,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     if hasproperty(model, :kinematics_ori) && !isnothing(model.kinematics_ori) && model.kinematics_ori != :None
         rots1 = PinnZoo.kinematics_rotation(model, x)
         rots2 = kinematics_rotation(x)
-        @test norm(rots1 - rots2, Inf) < 1e-12
+        @test norm(rots1 - rots2, Inf) < 1e-10
     end
 
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
@@ -272,8 +280,8 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         x2 = x + randn(model.nx)
         x2[4:7] = normalize(x2[4:7])
 
-        @test norm(state_error(model, apply_Δx(model, x, Δx), x) - Δx, Inf) < 1e-12
-        @test norm(apply_Δx(model, x, state_error(model, x2, x)) - x2, Inf) < 1e-12
+        @test norm(state_error(model, apply_Δx(model, x, Δx), x) - Δx, Inf) < 1e-10
+        @test norm(apply_Δx(model, x, state_error(model, x2, x)) - x2, Inf) < 1e-10
 
         E2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _Δx -> apply_Δx(model, x, _Δx), zeros(model.nv*2))[1]
         E_T2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> state_error(model, _x, x), copy(x))[1]

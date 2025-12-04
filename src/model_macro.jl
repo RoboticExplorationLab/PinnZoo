@@ -29,6 +29,7 @@ macro create_pinnzoo_model(expr)
             dynamics_deriv_ptr::Ptr{Nothing}
             inverse_dynamics_ptr::Ptr{Nothing}
             inverse_dynamics_deriv_ptr::Ptr{Nothing}
+            inverse_dynamics_hvp_ptr::Ptr{Nothing}
             inverse_dynamics_hTvp_ptr::Ptr{Nothing}
             velocity_kinematics_ptr::Ptr{Nothing}
             velocity_kinematics_T_ptr::Ptr{Nothing}
@@ -80,6 +81,7 @@ macro create_pinnzoo_model(expr)
                 dynamics_deriv_ptr = dlsym(lib, :dynamics_deriv_wrapper)
                 inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
                 inverse_dynamics_deriv_ptr = dlsym(lib, :inverse_dynamics_deriv_wrapper)
+                inverse_dynamics_hvp_ptr = dlsym(lib, :inverse_dynamics_hvp_wrapper)
                 inverse_dynamics_hTvp_ptr = dlsym(lib, :inverse_dynamics_hTvp_wrapper)
                 velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
                 velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
@@ -103,7 +105,7 @@ macro create_pinnzoo_model(expr)
                     nq, nv, nx, nẋ, nu, nc, orders, conversions,
                     M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
                     dynamics_ptr, dynamics_deriv_ptr, inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
-                    inverse_dynamics_hTvp_ptr,
+                    inverse_dynamics_hvp_ptr, inverse_dynamics_hTvp_ptr,
                     velocity_kinematics_ptr, velocity_kinematics_T_ptr,
                     velocity_kinematics_jvp_deriv_ptr, velocity_kinematics_T_jvp_deriv_ptr,
                     kinematics_bodies, kinematics_ptr, 
