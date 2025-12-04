@@ -92,48 +92,52 @@ partial = [Dual{T2}(f1, f2...) for (f1, f2) in zip(c_df_a, b_ddf_a_c)]
 res = Dual{T1}(val, partial...)
 
 # Test internal constraint derivative
+nx = 13
+idx = [1; 10;]#rand(1:12, 100)
+x, λ = randn(nx), randn(length(idx))
 vals_int = []; ForwardDiff.hessian(_x -> lag2(_x, λ), x)
-x_in = vals[1]
+x_in = vals_int[3]
 num_p = length(partials(x_in[1]))
 a = [value(value(x_elem)) for x_elem in x_in]
-b_T = hcat([partials(value(x_elem)) for x_elem in x_in])
+b = hcat([partials(value(x_elem)) for x_elem in x_in]...)
 c = [[value(partials(x_elem)[j]) for x_elem in x_in] for j in 1:num_p]
 d_T = [hcat([partials.(partials(x_elem)[j]) for x_elem in x_in]) for j in 1:num_p]
 
 # Comparing b_ij to c_ij
-b_ij = hcat([[partials(value(vals_int[2][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[2])]...)
-c_ij = hcat([[value(partials(vals_int[2][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[2])]...)
+b_ij = hcat([[partials(value(vals_int[3][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[3])]...)
+c_ij = hcat([[value(partials(vals_int[3][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[3])]...)
 norm(b_ij - c_ij, Inf)
 
 T1_int, T2_int = eltype(vals_int[1]).parameters[1], eltype(vals_int[1]).parameters[2].parameters[1]
-@assert vals[1] == vals_int[1]
 f_a_int = c_func(a)
 df_int = ForwardDiff.jacobian(_x -> c_func(_x), a)
 ddf_int(c) = ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, a)
-df_b_int = df_int*b_T # don't need?
+df_b_int = df_int*b' # don't need?
 df_c_int = df_int*hcat(c...) # iterate rows when building value(partials(...)) and partials(value(...))
-df_d_int = [df_int*d for d in d_T]
-dx_df_c_b_int = [ddf_int(c[j])*b_T for j in 1:num_p]
-ddf_total_int = df_d_int + dx_df_c_b_int
+df_d_int = [hcat(df_int*d...)' for d in d_T]
+dx_df_b_c_int = [hcat([ddf_int(b[i, :])*c[j] for i in 1:num_p]...) for j in 1:num_p]
+dx_df_c_b_int = [ddf_int(c[j])*b' for j in 1:num_p]
+ddf_total_int = df_d_int + 0.5*(dx_df_b_c_int + dx_df_c_b_int)
 
-val_int = [Dual{T2_int}(f_a_int[k], df_b_int[k]...) for k in 1:2]
+val_int = [Dual{T2_int}(f_a_int[k], df_b_int[k, :]...) for k in 1:2]
 test = cat(ddf_total_int..., dims=3)
-partial_int = [Dual{T2_int}.(df_b_int[k], test[k, :, :]...) for k in 1:2]
+partial_int = [Partials(Tuple(Dual{T2_int}.(df_c_int[k, :], eachrow(test[k, :, :])...))) for k in 1:2]
 res_int = [Dual{T1_int}(v, p...) for (v, p) in zip(val_int, partial_int)]
 
 # Quick test to see if it works for 1-D
 f_a_int, df_int = f_a, ForwardDiff.gradient(_x -> l(_x, λ), a)'
 ddf_int(c) = ForwardDiff.gradient(_x -> ForwardDiff.gradient(_x -> l(_x, λ), _x)'*c, a)'
 
-df_b_int = df_int*b_T # don't need?
+df_b_int = df_int*b' # don't need?
 df_c_int = df_int*hcat(c...) # iterate rows when building value(partials(...)) and partials(value(...))
-df_d_int = [df_int*d for d in d_T]
-dx_df_c_b_int = [ddf_int(c[j])*b_T for j in 1:num_p]
-ddf_total_int = df_d_int + dx_df_c_b_int
+df_d_int = [hcat(df_int*d...)' for d in d_T]
+dx_df_b_c_int = [hcat([ddf_int(b[i, :])*c[j] for i in 1:num_p]...) for j in 1:num_p]
+dx_df_c_b_int = [ddf_int(c[j])*b' for j in 1:num_p]
+ddf_total_int = df_d_int + 0.5*(dx_df_b_c_int + dx_df_c_b_int)
 
-val_int = [Dual{T2_int}(f_a_int[k], df_c_int[k, :]...) for k in 1:1]
+val_int = [Dual{T2_int}(f_a_int[k], df_b_int[k, :]...) for k in 1:1]
 test = cat(ddf_total_int..., dims=3)
-partial_int = [Dual{T2_int}.(df_c_int[k, :], test[k, :, :]...) for k in 1:1]
+partial_int = [Partials(Tuple(Dual{T2_int}.(df_c_int[k, :], eachrow(test[k, :, :])...))) for k in 1:1]
 res_int = [Dual{T1_int}(v, p...) for (v, p) in zip(val_int, partial_int)]
 
 function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::Function) where {T1, T2, V2, N2, N1}
@@ -145,7 +149,7 @@ function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::
     # Extract initial dual number coefficients
     num_p = length(partials(x[1]))
     a = [value(value(x_elem)) for x_elem in x]
-    b_T = hcat([partials(value(x_elem)) for x_elem in x])
+    b = hcat([partials(value(x_elem)) for x_elem in x]...)
     c = [[value(partials(x_elem)[j]) for x_elem in x] for j in 1:num_p]
     d_T = [hcat([partials.(partials(x_elem)[j]) for x_elem in x]) for j in 1:num_p]
 
@@ -154,34 +158,44 @@ function hess_wrapper(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, terms::
     
     # Compute new dual number coefficients
     a_new = f
-    b_new = df*b_T # from symmetry this is equal to c_new, so we don't need to compute that
-    d_new = cat(([df*d for d in d_T] + [ddf_func(c[j])*b_T for j in 1:num_p])..., dims=3)
+    b_new = df*b' 
+    c_new = df*hcat(c...) # we shouldn't need to compute this because of symmetry, but forward diff chunks up partials which breaks
+
+    # d is a bit more complicated since it consists of d/dx(df/dx b)*c + d/dx(df/dx c)*b
+    dx_df_b_c = [hcat([ddf_func(b[i, :])*c[j] for i in 1:num_p]...) for j in 1:num_p]
+    dx_df_c_b = [ddf_func(c[j])*b' for j in 1:num_p]
+    d_new = cat(([hcat(df*d...)' for d in d_T] + 0.5*(dx_df_b_c + dx_df_c_b))..., dims=3)
 
     # Build vector
     nf = length(a_new)
-    val = [Dual{T2}(a_new[k], b_new[k]...) for k in 1:nf]
-    partial = [Dual{T2}.(b_new[k], d_new[k, :, :]...) for k in 1:nf]
+    val = [Dual{T2}(a_new[k], b_new[k, :]...) for k in 1:nf]
+    partial = [Partials(Tuple(Dual{T2}.(c_new[k, :], eachrow(d_new[k, :, :])...))) for k in 1:nf]
     f = [Dual{T1}(v, p...) for (v, p) in zip(val, partial)]
     return f
 end
 function c_func2(x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
-    terms(x) = c_func(x), ForwardDiff.jacobian(_x -> c_func(_x), x), c -> ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, x)
+    dc_func(x) = ForwardDiff.jacobian(_x -> c_func(_x), x)
+    ddc_func(x, c) = ForwardDiff.jacobian(_x -> ForwardDiff.jacobian(_x -> c_func(_x), _x)*c, x)
+    terms(x) = c_func(x), dc_func(x), c -> ddc_func(x, c)
     return hess_wrapper(x, terms)
 end
+nx = 5
+idx = rand(1:nx, 5)
+x, λ = randn(nx), randn(length(idx))
 test1, test2 = _x -> λ'*c_func(_x, true), _x -> λ'*c_func2(_x)
 vals_int = []; H1 = ForwardDiff.hessian(test1, x)
 H2 = ForwardDiff.hessian(test2, x)
 norm(H1 - H2, Inf)
 
 # Try with different sizes
-nx = 12
-idx = rand(1:12, 100)
+nx = 30
+idx = rand(1:nx, 100)
 x, λ = randn(nx), randn(length(idx))
 vals_int = []; H1 = ForwardDiff.hessian(test1, x)
 H2 = ForwardDiff.hessian(test2, x)
 norm(H1 - H2, Inf)
 
-k = 3
-b_ij = hcat([[partials(value(vals_int[k][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[k])]...)
-c_ij = hcat([[value(partials(vals_int[k][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[k])]...)
-norm(b_ij - c_ij, Inf)
+# k = 3
+# b_ij = hcat([[partials(value(vals_int[k][i]))[j] for j in 1:num_p] for i in 1:length(vals_int[k])]...)
+# c_ij = hcat([[value(partials(vals_int[k][i])[j]) for j in 1:num_p] for i in 1:length(vals_int[k])]...)
+# norm(b_ij - c_ij, Inf)
