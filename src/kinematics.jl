@@ -64,6 +64,17 @@ function kinematics_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
+    kinematics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, dx::AbstractVector{Float64})
+
+Return the hessian-vector product of the kinematics function or d/dx kinematics_jacobian * dx
+"""
+function kinematics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, dx::AbstractVector{Float64})
+    J_dx = zeros(kinematics_size(model), model.nx)
+    ccall(model.kinematics_hvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, dx, J_dx)
+    return J_dx
+end
+
+@doc raw"""
     kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
 
 Returns the nv-dim jacobian-transpose vector product J(x)'*λ, where J(x) maps joint velocities into kinematics velocities

@@ -22,10 +22,14 @@
     end
 end
 
+@doc raw"""
+    Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion) <: PinnZooFloatingBaseModel
 
+Return the Pineapple wheeled biped dynamics and kinematics model
+""" Pineapple
 
 @doc raw"""
-    B_func(quad::Quadruped)
+    B_func(quad::Pineapple)
 
 Return the input jacobian mapping motor torques into joint torques
 """
@@ -48,7 +52,7 @@ function init_state(model::Pineapple)
 end
 
 @doc raw"""
-    fix_joint_limits(model::Quadruped, x; supress_error = false)
+    fix_joint_limits(model::Pineapple, x; supress_error = false)
 
 Return x with joint angles wrapped to 2pi to fit within joint limits if possible. If not
 and supress_error is false, this will error. Otherwise, this will return a clamped version.

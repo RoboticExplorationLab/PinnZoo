@@ -15,6 +15,7 @@
 #include "velocity_kinematics_T_jvp_deriv.h"
 #include "kinematics.h"
 #include "kinematics_jacobian.h"
+#include "kinematics_hvp.h"
 #include "kinematics_velocity.h"
 #include "kinematics_velocity_jacobian.h"
 #include "kinematics_force_jacobian.h"
@@ -155,6 +156,14 @@ void kinematics_jacobian_wrapper(double* x_in, double* J_out) {
     long long int iw[0];
     double w[0];
     kinematics_jacobian(args, res, iw, w, 0);
+}
+
+void kinematics_hvp_wrapper(double* x_in, double* dx_in, double* J_dx_out) {
+    const double* args[2] = {x_in, dx_in};
+    double* res[1] = {J_dx_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_hvp(args, res, iw, w, 0);
 }
 
 void kinematics_velocity_wrapper(double* x_in, double* locs_dot_out) {
