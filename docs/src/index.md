@@ -4,11 +4,13 @@
 ```
 
 ### Conventions
+
 - Quaternions use \[$$q_w$$ $$q_x$$ $$q_y$$ $$q_z$$\] order and represent body to world rotations, using Hamilton's convention $$i^2 = j^2 = k^2 = -1$$
 - Floating base joints use \[$$x$$ $$y$$ $$z$$ $$q_w$$ $$q_x$$ $$q_y$$ $$q_z$$\]$ order where the position is in the world frame
 - Linear and angular velocities corresponding to a floating base joint are in the body frame
 
 ### Inputs/Variables
+
 - nq $\rightarrow$ # of configuration variables (1 per revolute/prismatic joint, 7 for floating joint)
 - nv $\rightarrow$ # of velocity variables. Also the number of degrees of freedom (1 per revolute/prismatic joint, 6 for floating joint)
 - nx $\rightarrow$ # of states, nq + nv
@@ -24,6 +26,7 @@ $$M(x)\dot{v} + C(x) = \tau$$
 $$\dot{q} = E(q)v$$
 
 ### Velocity Kinematics
+
 E(q) is typically the identity except in the following cases (not an exhaustive list):
 
 When the configuration includes a quaternion, E(q) includes the mapping from angular velocity into a quaternion time derivative, respecting $$\dot{q}q = 0$$, the unit norm
@@ -38,6 +41,7 @@ When the translation velocity of a floating is in the body frame, but the positi
 ```
 
 ## Order Conversion Functions
+
 The functions below can be used as helpers to convert between different vector orders to help interfacing with different dynamics packages.
 For example, to use a configuration vector from this package in mujoco, you can do
 ```
@@ -55,6 +59,7 @@ generate_conversions
 ```
 
 ## Dynamics Functions
+
 ```@docs
 M_func
 C_func
@@ -64,6 +69,8 @@ forward_dynamics
 forward_dynamics_deriv
 inverse_dynamics
 inverse_dynamics_deriv
+inverse_dynamics_hvp
+inverse_dynamics_hTvp
 velocity_kinematics
 velocity_kinematics_T
 velocity_kinematics_jvp_deriv
@@ -77,15 +84,22 @@ error_jacobian_T_jvp_deriv
 ```
 
 ## Kinematics Functions
+
 ```@docs
 kinematics
+kinematics_rotation
 kinematics_jacobian
+kinematics_hvp
 kinematics_velocity
 kinematics_velocity_jacobian
 kinematics_force_jacobian
+kinematics_jacobianTvp
+kinematics_force_hvp
+kinematics_force_hTvp
 ```
 
 ## Utility Functions
+
 ```@docs
 is_floating
 zero_state
@@ -94,6 +108,7 @@ init_state
 ```
 
 ## Quaternion functions
+
 ```@docs
 quat_to_axis_angle
 axis_angle_to_quat
@@ -103,48 +118,59 @@ L_mult
 R_mult
 attitude_jacobian
 quat_to_rot
+rot_to_quat
 ```
 
-## Quadruped functions
+## Model specific functions
+
 TODO: Generalize state error and related functions to all models
 ```@docs
 B_func
 fix_joint_limits
+inverse_kinematics
 nearest_ik
 ```
 
 # Models
+
 ### Pendulum
+
 ```@docs
 Pendulum
 ```
 
 ### Double Pendulum
+
 ```@docs
 DoublePendulum
 ```
 
 ### Cartpole
+
 ```@docs
 Cartpole
 ```
 
 ### Double Cartpole
+
 ```@docs
 DoubleCartpole
 ```
 
 ### RigidBody
+
 ```@docs
 RigidBody
 ```
 
 ### Quadrotor
+
 ```@docs
 Quadrotor
 ```
 
 ### Unitree Go1
+
 ```@docs
 Go1
 init_state(model::Go1)
@@ -152,6 +178,7 @@ inverse_kinematics(model::Go1, x, foot_locs)
 ```
 
 ### Unitree Go2
+
 ```@docs
 Go2
 init_state(model::Go2)
@@ -159,6 +186,39 @@ inverse_kinematics(model::Go2, x, foot_locs)
 ```
 
 ### IHMC Nadia
+
 ```@docs
 Nadia
 ```
+
+### Pineapple
+
+```@docs
+Pineapple
+```
+
+# ForwardDiff.jl Compatability
+
+We have made many of the PinnZoo functions compatible with ForwardDiff.jl to enable building more complex constraints and objectives in Julia on
+top of Pinocchio/PinnZoo without having to derive custom derivatives or using slow finite differences. To support this, sometimes certain calls
+need to be used to trigger the appropriate derivatives. 
+
+### Functions that support ForwardDiff.jacobian
+
+- [`kinematics`](@ref)  
+- [`kinematics_rotation`](@ref)  
+- [`kinematics_velocity`](@ref)  
+- [`kinematics_jacobianTvp`](@ref) - use this for J(x)'λ (mapping kinematics forces into generalized forces)  
+- [`forward_dynamics`](@ref)  
+- [`dynamics`](@ref)  
+- [`inverse_dynamics`](@ref)  
+
+### Functions that support ForwardDiff.hessian
+
+You can use ForwardDiff.hessian on scalar functions (for example, Lagrangians in optimization) that use any of the following internally.
+
+- [`kinematics`](@ref)  
+- [`kinematics_rotation`](@ref)  
+- [`kinematics_jacobianTvp`](@ref) - use this for J(x)'λ (mapping kinematics forces into generalized forces)  
+- [`inverse_dynamics`](@ref)  
+
