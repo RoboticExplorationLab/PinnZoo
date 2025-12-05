@@ -10,10 +10,17 @@ function test_forward_diff()
     τ = randn(model.nv); 
     λ = randn(kinematics_size(model))
     
-    # Test kinematics
+    # Test kinematics jacobian
     J1 = FD.jacobian(_x -> kinematics(model, _x), x)
     J2 = kinematics_jacobian(model, x)
     @test J1 == J2 # This should be exact
+
+    # Test kinematics hessian-vector product
+    μ = randn(kinematics_size(model))
+    J1 = FD.hessian(_x -> μ'*kinematics(model, _x), x)
+    fdm = FiniteDifferences.central_fdm(5, 1)
+    J2 = FiniteDifferences.jacobian(fdm, _x -> FiniteDifferences.grad(fdm, _x -> μ'*kinematics(model, _x), _x)[1], x)[1]
+    @test norm(J1 - J2, Inf) < 1e-7
 
     # Test kinematics rotation if applicable
     if hasproperty(model, :kinematics_ori) && !isnothing(model.kinematics_ori) && model.kinematics_ori != :None

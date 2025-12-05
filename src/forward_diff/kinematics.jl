@@ -1,17 +1,18 @@
-# kinematics
+# kinematics jacobian
 function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}) where {T,V,N}
     terms(_x) = kinematics(model, _x), kinematics_jacobian(model, _x)
     return jac_wrapper(x, terms)
 end
 
+# kinematics hessian
+function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    terms(_x) = kinematics(model, _x), kinematics_jacobian(model, _x), dx -> kinematics_hvp(model, _x, dx)
+    return hess_wrapper(x, terms)
+end
+
+# kinematics rotation jacobian
 function kinematics_rotation(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}) where {T,V,N}
-    function terms(_x)
-        locs = kinematics(model, _x)
-        f = _kinematics_rotation(model, _x, locs)
-        df = jacobian(_locs -> _kinematics_rotation(model, _x, _locs), locs)*kinematics_jacobian(model, _x)
-        return f, df
-    end
-    return jac_wrapper(x, terms)
+    return _kinematics_rotation(model, x, kinematics(model, x))
 end
 
 # kinematics_velocity
