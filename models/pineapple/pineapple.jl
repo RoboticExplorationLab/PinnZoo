@@ -30,8 +30,6 @@
     end
 end
 
-
-
 @doc raw"""
     B_func(quad::Quadruped)
 
@@ -105,25 +103,25 @@ function inverse_kinematics(model::Pineapple, x, wheel_locs)
     
     # leg parameters - OPTIMIZED FOR ACCURACY
     # These parameters achieve sub-centimeter IK accuracy
-    hip_to_thigh = 0.0129353215081658        # Distance from hip to thigh joint
-    thigh_length = 0.190000001217773 #0.184        # Length of thigh segment
-    calf_length = 0.190000001217773 #0.1844         # Length of calf segment
+    hip_to_thigh = 0.027596        # Distance from hip to thigh joint
+    thigh_length = 0.165 #0.190000001217773 #0.184        # Length of thigh segment
+    calf_length = 0.165 #0.190000001217773 #0.1844         # Length of calf segment
     
     # Offset parameters for accurate IK
-    thigh_to_calf = 0.035931787557176
-    calf_to_wheel = 0.0421817504179199
+    thigh_to_calf = 0.04135 #0.035931787557176
+    calf_to_wheel = 0.024414 #0.0421817504179199
     offset = hip_to_thigh + thigh_to_calf + calf_to_wheel
     # Hip positions in the body frame (extracted from URDF joint origins)
     # CORRECTED ORDER: Left leg first (leg_ind=1), Right leg second (leg_ind=2)
     hip_local_pos = [
-        [0.0000, 0.061249999999998, 0.0610009280869146],   # Left hip (positive y) - leg_ind=1
-        [0.0000, -0.061249999999998, 0.0610009280869146]   # Right hip (negative y) - leg_ind=2
+        [0.0000, 0.061689, 0.066],   # Left hip (positive y) - leg_ind=1
+        [0.0000, -0.061689, 0.066]   # Right hip (negative y) - leg_ind=2
     ]
 
     # Base transformations
     base_rot = quat_to_rot(x[4:7])
     base_pos = base_rot' * x[1:3]
-
+    #base_pos = base_pos .+ [0, 0, 0.07248523];  # Adjust for any offsets if needed
     # Results storage: 6 joints (3 per leg) by 2 solutions
     wheel_q = zeros(6, 2)
 
@@ -206,6 +204,7 @@ joint angles in q (defined by minimum norm per joint). For Pineapple robot with 
 function nearest_ik(model::Pineapple, q, wheel_locs; obey_limits = true)
     q = copy(q)
     wheel_q = inverse_kinematics(model, q, wheel_locs)
+    # @show wheel_q
 
     # Build both options
     q1 = copy(q)
@@ -261,67 +260,3 @@ function solve_ref_IK(model::Pineapple, X, wheel_ref)
     end
     return X
 end
-
-"""
-    X, U, Λ, residuals = solve_controls(model::Quadruped, X, h)
-Given a reference trajectory, solve for controls and contact forces that make that reference consistent
-with rk4. Currently assumes all 4 feet are in contact. Does not enforce friction or normal force constraints.
-This is an underdetermined problem so we use least-squares, so the newton solve likely won't converge. residuals
-includes the final residual for each solve.
-"""
-# function solve_ref_controls(model::Pineaple, X, h; max_iters = 10, tol = 1e-10, verbose = false)
-#     N = length(X)
-#     U = [zeros(model.nu) for _ = 1:N-1]
-#     Λ = [zeros(model.nu) for _ = 1:N-1]
-#     residuals = zeros(N - 1)
-
-#     for k = 1:N - 1
-#         function residual(u)
-#             u, λ = u[1:model.nu], u[model.nu+1:end]
-
-#             x_rk4 = rk4(model, X[k], u, λ, h)
-#             x_next = X[k + 1]
-
-#             return [
-#                 x_next[1:3] - x_rk4[1:3]
-#                 quat_to_axis_angle(L_mult(x_next[4:7])'*x_rk4[4:7])
-#                 x_next[8:end] - x_rk4[8:end]
-#             ]
-#         end
-
-#         # Perform Newton to try to minimize residual
-#         u = [U[k]; Λ[k]]
-#         r = residual(u)
-#         for iter = 1:max_iters
-#             dr_du = FiniteDiff.finite_difference_jacobian(residual, u)
-#             J = (dr_du'*dr_du + 1e-6*I)
-#             Δu = -J \ (dr_du'*r)
-
-#             # Linesearch
-#             α = 1
-#             for _ = 1:10
-#                 if  norm(residual(u + α*Δu), Inf) > norm(residual(u), Inf)
-#                     α = α/2
-#                 end
-#             end
-#             u = u + α*Δu
-#             prev_r = r
-#             r = residual(u)
-
-#             if verbose
-#                 @info "k = %d\titer = %d\tr = %1.2e\tΔr = %1.2e\tα = %1.2e\tcond(dr_dv) = %1.2e\n" k iter norm(r, Inf) norm(r - prev_r, Inf) α cond(J) 
-#             end
-            
-#             residuals[k] = norm(r, Inf)
-#             if norm(r, Inf) < 1e-10
-#                 break
-#             elseif norm(r - prev_r, Inf) < norm(r, Inf)*1e-3 # Early exit criterion
-#                 break
-#             end
-#         end
-#     end
-
-#     @info "Largest residual error = %1.2e\n" norm(residuals, Inf)
-
-#     return X, U, Λ, residuals
-# end
