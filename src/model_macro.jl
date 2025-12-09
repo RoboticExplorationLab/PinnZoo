@@ -22,6 +22,7 @@ macro create_pinnzoo_model(expr)
             orders::Dict{Symbol, StateOrder}
             conversions::Dict{Tuple{Symbol, Symbol}, ConversionIndices}
             M_func_ptr::Ptr{Nothing}
+            M_jvp_ptr::Ptr{Nothing}
             C_func_ptr::Ptr{Nothing}
             forward_dynamics_ptr::Ptr{Nothing}
             forward_dynamics_deriv_ptr::Ptr{Nothing}
@@ -29,6 +30,8 @@ macro create_pinnzoo_model(expr)
             dynamics_deriv_ptr::Ptr{Nothing}
             inverse_dynamics_ptr::Ptr{Nothing}
             inverse_dynamics_deriv_ptr::Ptr{Nothing}
+            inverse_dynamics_hvp_ptr::Ptr{Nothing}
+            inverse_dynamics_hTvp_ptr::Ptr{Nothing}
             velocity_kinematics_ptr::Ptr{Nothing}
             velocity_kinematics_T_ptr::Ptr{Nothing}
             velocity_kinematics_jvp_deriv_ptr::Ptr{Nothing}
@@ -36,9 +39,13 @@ macro create_pinnzoo_model(expr)
             kinematics_bodies::Vector{Symbol}
             kinematics_ptr::Ptr{Nothing}
             kinematics_jacobian_ptr::Ptr{Nothing}
+            kinematics_hvp_ptr::Ptr{Nothing}
             kinematics_velocity_ptr::Ptr{Nothing}
             kinematics_velocity_jacobian_ptr::Ptr{Nothing}
+            kinematics_velocity_hvp_ptr::Ptr{Nothing}
             kinematics_force_jacobian_ptr::Ptr{Nothing}
+            kinematics_force_hvp_ptr::Ptr{Nothing}
+            kinematics_force_hTvp_ptr::Ptr{Nothing}
             $(new_fields...)
             function $constructor_name($(constructor_args...))
                 # Load the library
@@ -70,6 +77,7 @@ macro create_pinnzoo_model(expr)
 
                 # Dynamics
                 M_func_ptr = dlsym(lib, :M_func_wrapper)
+                M_jvp_ptr = dlsym(lib, :M_jvp_wrapper)
                 C_func_ptr = dlsym(lib, :C_func_wrapper)
                 forward_dynamics_ptr = dlsym(lib, :forward_dynamics_wrapper)
                 forward_dynamics_deriv_ptr = dlsym(lib, :forward_dynamics_deriv_wrapper)
@@ -77,6 +85,8 @@ macro create_pinnzoo_model(expr)
                 dynamics_deriv_ptr = dlsym(lib, :dynamics_deriv_wrapper)
                 inverse_dynamics_ptr = dlsym(lib, :inverse_dynamics_wrapper)
                 inverse_dynamics_deriv_ptr = dlsym(lib, :inverse_dynamics_deriv_wrapper)
+                inverse_dynamics_hvp_ptr = dlsym(lib, :inverse_dynamics_hvp_wrapper)
+                inverse_dynamics_hTvp_ptr = dlsym(lib, :inverse_dynamics_hTvp_wrapper)
                 velocity_kinematics_ptr = dlsym(lib, :velocity_kinematics_wrapper)
                 velocity_kinematics_T_ptr = dlsym(lib, :velocity_kinematics_T_wrapper)
                 velocity_kinematics_jvp_deriv_ptr = dlsym(lib, :velocity_kinematics_jvp_deriv_wrapper)
@@ -87,21 +97,26 @@ macro create_pinnzoo_model(expr)
                 nc = length(kinematics_bodies)
                 kinematics_ptr = dlsym(lib, :kinematics_wrapper)
                 kinematics_jacobian_ptr = dlsym(lib, :kinematics_jacobian_wrapper)
+                kinematics_hvp_ptr = dlsym(lib, :kinematics_hvp_wrapper)
                 kinematics_velocity_ptr = dlsym(lib, :kinematics_velocity_wrapper)
                 kinematics_velocity_jacobian_ptr = dlsym(lib, :kinematics_velocity_jacobian_wrapper)
+                kinematics_velocity_hvp_ptr = dlsym(lib, :kinematics_velocity_hvp_wrapper)
                 kinematics_force_jacobian_ptr = dlsym(lib, :kinematics_force_jacobian_wrapper)
+                kinematics_force_hvp_ptr = dlsym(lib, :kinematics_force_hvp_wrapper)
+                kinematics_force_hTvp_ptr = dlsym(lib, :kinematics_force_hTvp_wrapper)
 
                 $(constructor_internals...)
                 return new(
                     lib, urdf_path,
                     nq, nv, nx, nẋ, nu, nc, orders, conversions,
-                    M_func_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
+                    M_func_ptr, M_jvp_ptr, C_func_ptr, forward_dynamics_ptr, forward_dynamics_deriv_ptr, 
                     dynamics_ptr, dynamics_deriv_ptr, inverse_dynamics_ptr, inverse_dynamics_deriv_ptr,
+                    inverse_dynamics_hvp_ptr, inverse_dynamics_hTvp_ptr,
                     velocity_kinematics_ptr, velocity_kinematics_T_ptr,
                     velocity_kinematics_jvp_deriv_ptr, velocity_kinematics_T_jvp_deriv_ptr,
-                    kinematics_bodies, kinematics_ptr, 
-                    kinematics_jacobian_ptr, kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr,
-                    kinematics_force_jacobian_ptr,
+                    kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr, kinematics_hvp_ptr,
+                    kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr, kinematics_velocity_hvp_ptr,
+                    kinematics_force_jacobian_ptr, kinematics_force_hvp_ptr, kinematics_force_hTvp_ptr,
                     $(constructor_return...))
             end
         end

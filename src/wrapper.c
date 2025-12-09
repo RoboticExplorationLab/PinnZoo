@@ -1,4 +1,5 @@
 #include "M_func.h"
+#include "M_jvp.h"
 #include "C_func.h"
 #include "forward_dynamics.h"
 #include "forward_dynamics_deriv.h"
@@ -6,15 +7,21 @@
 #include "dynamics_deriv.h"
 #include "inverse_dynamics.h"
 #include "inverse_dynamics_deriv.h"
+#include "inverse_dynamics_hvp.h"
+#include "inverse_dynamics_hTvp.h"
 #include "velocity_kinematics.h"
 #include "velocity_kinematics_T.h"
 #include "velocity_kinematics_jvp_deriv.h"
 #include "velocity_kinematics_T_jvp_deriv.h"
 #include "kinematics.h"
 #include "kinematics_jacobian.h"
+#include "kinematics_hvp.h"
 #include "kinematics_velocity.h"
 #include "kinematics_velocity_jacobian.h"
+#include "kinematics_velocity_hvp.h"
 #include "kinematics_force_jacobian.h"
+#include "kinematics_force_hvp.h"
+#include "kinematics_force_hTvp.h"
 
 void M_func_wrapper(double* x_in, double* M_out) {
     const double* args[1] = {x_in};
@@ -22,6 +29,14 @@ void M_func_wrapper(double* x_in, double* M_out) {
     long long int iw[0];
     double w[0];
     M_func(args, res, iw, w, 0);
+}
+
+void M_jvp_wrapper(double* x_in, double* dv_dot_in, double* M_out) {
+    const double* args[2] = {x_in, dv_dot_in};
+    double* res[1] = {M_out};
+    long long int iw[0];
+    double w[0];
+    M_jvp(args, res, iw, w, 0);
 }
 
 void C_func_wrapper(double* x_in, double* C_out) {
@@ -80,6 +95,22 @@ void inverse_dynamics_deriv_wrapper(double* x_in, double* vdot_in, double* dtau_
     inverse_dynamics_deriv(args, res, iw, w, 0);
 }
 
+void inverse_dynamics_hvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dxlam_dx, double* dtau_dxlam_dv_dot) {
+    const double* args[3] = {x_in, vdot_in, mult_in};
+    double* res[2] = {dtau_dxlam_dx, dtau_dxlam_dv_dot};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics_hvp(args, res, iw, w, 0);
+}
+
+void inverse_dynamics_hTvp_wrapper(double* x_in, double* vdot_in, double* mult_in, double* dtau_dxTlam_dx, double* dtau_dv_dotTlam_dx) {
+    const double* args[3] = {x_in, vdot_in, mult_in};
+    double* res[2] = {dtau_dxTlam_dx, dtau_dv_dotTlam_dx};
+    long long int iw[0];
+    double w[0];
+    inverse_dynamics_hTvp(args, res, iw, w, 0);
+}
+
 void velocity_kinematics_wrapper(double* x_in, double* E_out) {
     const double* args[1] = {x_in};
     double* res[1] = {E_out};
@@ -128,6 +159,14 @@ void kinematics_jacobian_wrapper(double* x_in, double* J_out) {
     kinematics_jacobian(args, res, iw, w, 0);
 }
 
+void kinematics_hvp_wrapper(double* x_in, double* dx_in, double* J_dx_out) {
+    const double* args[2] = {x_in, dx_in};
+    double* res[1] = {J_dx_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_hvp(args, res, iw, w, 0);
+}
+
 void kinematics_velocity_wrapper(double* x_in, double* locs_dot_out) {
     const double* args[1] = {x_in};
     double* res[1] = {locs_dot_out};
@@ -144,6 +183,14 @@ void kinematics_velocity_jacobian_wrapper(double* x_in, double* J_dot_out) {
     kinematics_velocity_jacobian(args, res, iw, w, 0);
 }
 
+void kinematics_velocity_hvp_wrapper(double* x_in, double* mult_in, double* J_dot_dx_out) {
+    const double* args[2] = {x_in, mult_in};
+    double* res[1] = {J_dot_dx_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_velocity_hvp(args, res, iw, w, 0);
+}
+
 void kinematics_force_jacobian_wrapper(double* x_in, double* f_in, double* J_out) {
     const double* args[2] = {x_in, f_in};
     double* res[1] = {J_out};
@@ -152,6 +199,21 @@ void kinematics_force_jacobian_wrapper(double* x_in, double* f_in, double* J_out
     kinematics_force_jacobian(args, res, iw, w, 0);
 }
 
+void kinematics_force_hvp_wrapper(double* x_in, double* f_in, double* mult_in, double* J_x_out, double* J_f_out) {
+    const double* args[3] = {x_in, f_in, mult_in};
+    double* res[2] = {J_x_out, J_f_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_force_hvp(args, res, iw, w, 0);
+}
+
+void kinematics_force_hTvp_wrapper(double* x_in, double* f_in, double* mult_in, double* J_x_out, double* J_f_out) {
+    const double* args[3] = {x_in, f_in, mult_in};
+    double* res[2] = {J_x_out, J_f_out};
+    long long int iw[0];
+    double w[0];
+    kinematics_force_hTvp(args, res, iw, w, 0);
+}
 
 // void forward_dynamics(double* q_in, double* qdot_in, double* tau_in, double* qddot_out) {
 //     const double* args[3] = {q_in, qdot_in, tau_in};

@@ -64,6 +64,17 @@ function kinematics_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
 end
 
 @doc raw"""
+    kinematics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, dx::AbstractVector{Float64})
+
+Return the hessian-vector product of the kinematics function or d/dx kinematics_jacobian * dx
+"""
+function kinematics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, dx::AbstractVector{Float64})
+    J_dx = zeros(kinematics_size(model), model.nx)
+    ccall(model.kinematics_hvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, dx, J_dx)
+    return J_dx
+end
+
+@doc raw"""
     kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
 
 Returns the nv-dim jacobian-transpose vector product J(x)'*λ, where J(x) maps joint velocities into kinematics velocities
@@ -77,6 +88,7 @@ end
     kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return a list of the instantaneous linear velocities of each body in model.kinematics_bodies in the world frame.
+This is J(q)*E(q)*v
 """
 function kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
     locs_dot = zeros(kinematics_size(model))
@@ -99,6 +111,20 @@ function kinematics_velocity_jacobian(model::PinnZooModel, x::AbstractVector{Flo
 end
 
 @doc raw"""
+    kinematics_velocity_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
+
+Return the jacobian of the kinematics\_velocity function with respect to x (not in the tangent space). If $$J_q$$ is the
+derivative of the kinematics with respect to $$q$$, this jacobian $$J$$ = [$$\dot{J_q}$$ $$J_q$$] where $$\dot{J_q} = \frac{\partial}{\partial q} J_qv$$ and $$J_qv$$ is
+equal to kinematics\_velocity. This also means that $$J\dot{x}$$ expresses the constraint at the acceleration level, i.e. $$\dot{J_q}\dot{q} + J_q\dot{v} = 0$$
+
+"""
+function kinematics_velocity_hvp(model::PinnZooModel, x::AbstractVector{Float64}, mult::AbstractVector{Float64})
+    J_dot = zeros(kinematics_size(model), model.nx)
+    ccall(model.kinematics_velocity_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J_dot)
+    return J_dot
+end
+
+@doc raw"""
     kinematics_force_jacobian(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
 
 Return the jacobian (nv x nx matrix) of (J(x))'*λ with respect to x, where J(x) maps joint velocities into kinematics velocities
@@ -107,4 +133,30 @@ function kinematics_force_jacobian(model::PinnZooModel, x::AbstractVector{Float6
     J = zeros(model.nv, model.nx)
     ccall(model.kinematics_force_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, λ, J)
     return J
+end
+
+@doc raw"""
+    kinematics_force_hvp_ptr(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+
+Return the jacobian of (d/dx J(x, λ))*mult w.r.t x and λ where J(x, λ) is kinematics_force_jacobian(model, x, λ)
+"""
+function kinematics_force_hvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64}, mult::AbstractVector{Float64})
+    @assert !hasproperty(model, :kinematics_ori) || model.kinematics_ori != :AxisAngle "hvp is currently not supported for axis angles"
+    J_x, J_λ = zeros(model.nv, model.nx), zeros(model.nv, kinematics_size(model))
+    ccall(model.kinematics_force_hvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), x, λ, 
+                                                        mult, J_x, J_λ)
+    return J_x, J_λ
+end
+
+@doc raw"""
+    kinematics_force_hTvp_ptr(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64})
+
+Return the jacobian of J(x, λ)'*mult w.r.t x and λ where J(x, λ) is kinematics_force_jacobian(model, x, λ)
+"""
+function kinematics_force_hTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Float64}, mult::AbstractVector{Float64})
+    @assert !hasproperty(model, :kinematics_ori) || model.kinematics_ori != :AxisAngle "hTvp is currently not supported for axis angles"
+    J_x, J_λ = zeros(model.nx, model.nx), zeros(model.nx, kinematics_size(model))
+    ccall(model.kinematics_force_hTvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}, Ref{Cdouble}), x, λ, 
+                                                        mult, J_x, J_λ)
+    return J_x, J_λ
 end

@@ -1,76 +1,87 @@
-# Wrap derivatives from Pinocchio so they can be used with ForwardDiff
-import ForwardDiff: Dual, value, partials, Partials
 
 # forward_dynamics
 function forward_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, τ::AbstractVector{Float64}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = forward_dynamics(model, x_value, τ)
-    df_dx = forward_dynamics_deriv(model, x_value, τ)[1]*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+    terms(_x) = forward_dynamics(model, _x, τ), forward_dynamics_deriv(model, _x, τ)[1]
+    return jac_wrapper(x, terms)
 end
 function forward_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    τ_value, τ_partials = [value(τ_elem) for τ_elem in τ], hcat([partials(τ_elem) for τ_elem in τ])
-    
-    f = forward_dynamics(model, x, τ_value)
-    df_dτ = forward_dynamics_deriv(model, x, τ_value)[2]*τ_partials
-    return [Dual{T}(f[k], df_dτ[k]) for k in eachindex(f)]
+    terms(_τ) = forward_dynamics(model, x, _τ), forward_dynamics_deriv(model, x, _τ)[2]
+    return jac_wrapper(τ, terms)
 end
 function forward_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, τ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-    τ_value, τ_partials = [value(τ_elem) for τ_elem in τ], hcat([partials(τ_elem) for τ_elem in τ])
-
-    f = forward_dynamics(model, x_value, τ_value)
-    (df_dx, df_dτ) = forward_dynamics_deriv(model, x_value, τ_value).*(x_partials, τ_partials)
-    return [Dual{T}(f[k], df_dx[k] + df_dτ[k]) for k in eachindex(f)]
+    nx = length(x)
+    function terms(_z)
+        _x, _τ = _z[1:nx], _z[nx + 1:end]
+        f = forward_dynamics(model, _x, _τ)
+        f_dx, f_dτ = forward_dynamics_deriv(model, _x, _τ)
+        return f, [f_dx f_dτ]
+    end
+    return jac_wrapper([x; τ], terms)
 end
 
 # dynamics
 function dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, τ::AbstractVector{Float64}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = dynamics(model, x_value, τ)
-    df_dx = dynamics_deriv(model, x_value, τ)[1]*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+    terms(_x) = dynamics(model, _x, τ), dynamics_deriv(model, _x, τ)[1]
+    return jac_wrapper(x, terms)
 end
 function dynamics(model::PinnZooModel, x::AbstractVector{Float64}, τ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    τ_value, τ_partials = [value(τ_elem) for τ_elem in τ], hcat([partials(τ_elem) for τ_elem in τ])
-    
-    f = dynamics(model, x, τ_value)
-    df_dτ = dynamics_deriv(model, x, τ_value)[2]*τ_partials
-    return [Dual{T}(f[k], df_dτ[k]) for k in eachindex(f)]
+    terms(_τ) = dynamics(model, x, _τ), dynamics_deriv(model, x, _τ)[2]
+    return jac_wrapper(τ, terms)
 end
 function dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, τ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-    τ_value, τ_partials = [value(τ_elem) for τ_elem in τ], hcat([partials(τ_elem) for τ_elem in τ])
-
-    f = dynamics(model, x_value, τ_value)
-    (df_dx, df_dτ) = dynamics_deriv(model, x_value, τ_value).*(x_partials, τ_partials)
-    
-    return [Dual{T}(f[k], df_dx[k] + df_dτ[k]) for k in eachindex(f)]
+    nx = length(x)
+    function terms(_z)
+        _x, _τ = _z[1:nx], _z[nx + 1:end]
+        f = dynamics(model, _x, _τ)
+        f_dx, f_dτ = dynamics_deriv(model, _x, _τ)
+        return f, [f_dx f_dτ]
+    end
+    return jac_wrapper([x; τ], terms)
 end;
 
-# inverse_dynamics
+# inverse_dynamics jacobian
 function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, v̇::AbstractVector{Float64}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = inverse_dynamics(model, x_value, v̇)
-    df_dx = inverse_dynamics_deriv(model, x_value, v̇)[1]*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+    terms(_x) = inverse_dynamics(model, _x, v̇), inverse_dynamics_deriv(model, _x, v̇)[1]
+    return jac_wrapper(x, terms)
 end
 function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    v̇_value, v̇_partials = [value(v̇_elem) for v̇_elem in v̇], hcat([partials(v̇_elem) for v̇_elem in v̇])
-    
-    f = inverse_dynamics(model, x, v̇_value)
-    df_dv̇ = inverse_dynamics_deriv(model, x, v̇_value)[2]*v̇_partials
-    return [Dual{T}(f[k], df_dv̇[k]) for k in eachindex(f)]
+    terms(_v̇) = inverse_dynamics(model, x, _v̇),  inverse_dynamics_deriv(model, x, _v̇)[2]
+    return jac_wrapper(v̇, terms)
 end
 function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, v̇::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-    v̇_value, v̇_partials = [value(v̇_elem) for v̇_elem in v̇], hcat([partials(v̇_elem) for v̇_elem in v̇])
-
-    f = inverse_dynamics(model, x_value, v̇_value)
-    (df_dx, df_dv̇) = inverse_dynamics_deriv(model, x_value, v̇_value).*(x_partials, v̇_partials)
-    
-    return [Dual{T}(f[k], df_dx[k] + df_dv̇[k]) for k in eachindex(f)]
+    nx = length(x)
+    function terms(_z)
+        _x, _v̇ = _z[1:nx], _z[nx + 1:end]
+        f = inverse_dynamics(model, _x, _v̇)
+        f_dx, f_dv̇ = inverse_dynamics_deriv(model, _x, _v̇)
+        return f, [f_dx f_dv̇]
+    end
+    return jac_wrapper([x; v̇], terms)
 end;
+
+# inverse dynamics hessian of μ'*ID(x, v̇)
+function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, v̇::AbstractVector{Float64}) where {T1, T2, V2, N2, N1}
+    terms(_x) = inverse_dynamics(model, _x, v̇), inverse_dynamics_deriv(model, _x, v̇)[1], dx -> inverse_dynamics_hvp(model, _x, v̇, dx)[1]
+    return hess_wrapper(x, terms)
+end
+
+function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    terms(_v̇) = inverse_dynamics(model, x, _v̇), inverse_dynamics_deriv(model, x, _v̇)[2], dv̇ -> zeros(model.nv, model.nv)
+    return hess_wrapper(v̇, terms)
+end
+
+function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, v̇::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    function terms(_z)
+        _x, _v̇ = _z[1:model.nx], _z[model.nx + 1:end]
+        f = inverse_dynamics(model, _x, _v̇)
+        df = hcat(inverse_dynamics_deriv(model, _x, _v̇)...)
+        function ddf(dz)
+            dx, dv̇ = dz[1:model.nx], dz[model.nx + 1:end]
+            H1, H2 = inverse_dynamics_hvp(model, _x, _v̇, dx)
+            H3 = M_jvp(model, _x, dv̇)
+            return [H1 + H3 H2]
+        end
+        return f, df, ddf
+    end
+    return hess_wrapper([x; v̇], terms)
+end

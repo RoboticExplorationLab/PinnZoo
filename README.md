@@ -1,7 +1,7 @@
 # PinnZoo
 
 PinnZoo contains fast dependency-free C code for dynamics and kinematics functions for various robots (defined by URDFs) generated using Pinocchio and CasADI, along with a wrapper to generate a shared library and call the code from Julia. 
-Functions and supported models are listed in the documentation for the Julia package [here](https://rexlab.ri.cmu.edu/PinnZoo/build/index.html).
+Functions and supported models are listed in the documentation for the Julia package [here](https://rexlab.ri.cmu.edu/PinnZoo/build/index.html). Some of the Julia code is now compatible with ForwardDiff.jl!
 
 This was developed for internal RExLab use, both for speed and for making Pinocchio compatible with our in-lab conventions and other libraries like RigidBodyDynamics.jl (i.e. for configuration order) used by the RExLab that differ from Pinocchio, details can be found in the docs.
 
