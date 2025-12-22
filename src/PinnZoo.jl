@@ -14,10 +14,13 @@ module PinnZoo
 
     # Dynamics functions (from codegen)
     include(joinpath(@__DIR__, "dynamics.jl"))
-    include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
     
     # Kinematics functions (from codegen)
     include(joinpath(@__DIR__, "kinematics.jl"))
+
+    # Support for ForwardDiff.jl
+    include(joinpath(@__DIR__, "forward_diff/utils.jl"))
+    include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
     include(joinpath(@__DIR__, "forward_diff/kinematics.jl"))
 
     # Quaternion helpers
@@ -82,11 +85,13 @@ module PinnZoo
 
     # Helpers, dynamics, kinematics
     export is_floating, zero_state, init_state, randn_state
-    export M_func, C_func, dynamics, dynamics_deriv, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
+    export M_func, M_jvp, C_func, dynamics, dynamics_deriv, forward_dynamics, forward_dynamics_deriv, inverse_dynamics, inverse_dynamics_deriv
+    export inverse_dynamics_hvp, inverse_dynamics_hTvp
     export velocity_kinematics, velocity_kinematics_T, velocity_kinematics_jvp_deriv, velocity_kinematics_T_jvp_deriv
     export kinematics_size, kinematics_dim
-    export kinematics, kinematics_rotation, kinematics_jacobian, kinematics_velocity, kinematics_velocity_jacobian, kinematics_force_jacobian
-    export kinematics_jacobianTvp
+    export kinematics, kinematics_rotation, kinematics_jacobian, kinematics_hvp
+    export kinematics_velocity, kinematics_velocity_jacobian, kinematics_velocity_hvp
+    export kinematics_force_jacobian, kinematics_jacobianTvp, kinematics_force_hvp, kinematics_force_hTvp
     export error_jacobian, error_jacobian_T, apply_Δx, state_error
     export error_jacobian_jvp_deriv, error_jacobian_T_jvp_deriv
 

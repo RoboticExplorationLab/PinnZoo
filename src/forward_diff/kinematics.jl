@@ -1,59 +1,71 @@
-# Wrap derivatives from Pinocchio so they can be used with ForwardDiff
-import ForwardDiff: jacobian, Dual, value, partials
-
-# kinematics
-function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = kinematics(model, x_value)
-    df_dx = kinematics_jacobian(model, x_value)*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+# kinematics jacobian
+function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}) where {T,V,N}
+    terms(_x) = kinematics(model, _x), kinematics_jacobian(model, _x)
+    return jac_wrapper(x, terms)
 end
 
-function kinematics_rotation(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
+# kinematics hessian
+function kinematics(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    terms(_x) = kinematics(model, _x), kinematics_jacobian(model, _x), dx -> kinematics_hvp(model, _x, dx)
+    return hess_wrapper(x, terms)
+end
 
-    locs = kinematics(model, x_value)
-    f = _kinematics_rotation(model, x_value, locs)
-    df_dlocs = jacobian(_locs -> _kinematics_rotation(model, x_value, _locs), locs)
-    dlocs_dx = kinematics_jacobian(model, x_value)
-    df_dx = df_dlocs*dlocs_dx*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+# kinematics rotation jacobian
+function kinematics_rotation(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}) where {T,V,N}
+    return _kinematics_rotation(model, x, kinematics(model, x))
 end
 
 # kinematics_velocity
-function kinematics_velocity(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = kinematics_velocity(model, x_value)
-    df_dx = kinematics_velocity_jacobian(model, x_value)*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+function kinematics_velocity(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}) where {T,V,N}
+    terms(_x) = kinematics_velocity(model, _x), kinematics_velocity_jacobian(model, _x)
+    return jac_wrapper(x, terms)
 end
 
-function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, λ::AbstractVector{Float64}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-
-    f = kinematics_jacobianTvp(model, x_value, λ)
-    df_dx = kinematics_force_jacobian(model, x_value, λ)*x_partials
-    return [Dual{T}(f[k], df_dx[k]) for k in eachindex(f)]
+# kinematics force J(x)'*λ
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}, λ::AbstractVector{Float64}) where {T,V,N}
+    terms(_x) = kinematics_jacobianTvp(model, _x, λ), kinematics_force_jacobian(model, _x, λ)
+    return jac_wrapper(x, terms)
 end
 
-function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    λ_value, λ_partials = [value(λ_elem) for λ_elem in λ], hcat([partials(λ_elem) for λ_elem in λ])
-
-    f = kinematics_jacobianTvp(model, x, λ_value)
-    df_dλ = kinematics_velocity_jacobian(model, x)[:, model.nq + 1:end]'*λ_partials
-    return [Dual{T}(f[k], df_dλ[k]) for k in eachindex(f)]
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Dual{T,V,N}}) where {T,V,N}
+    terms(_λ) = kinematics_jacobianTvp(model, x, _λ), kinematics_velocity_jacobian(model, x)[:, model.nq + 1:end]'
+    return jac_wrapper(λ, terms)
 end
 
-function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T,N,V}}, λ::AbstractVector{Dual{T,N,V}}) where {T,N,V}
-    x_value, x_partials = [value(x_elem) for x_elem in x], hcat([partials(x_elem) for x_elem in x])
-    λ_value, λ_partials = [value(λ_elem) for λ_elem in λ], hcat([partials(λ_elem) for λ_elem in λ])
-
-    f = kinematics_jacobianTvp(model, x_value, λ_value)
-    df_dx = kinematics_force_jacobian(model, x_value, λ_value)*x_partials
-    df_dλ = kinematics_velocity_jacobian(model, x_value)[:, model.nq + 1:end]'*λ_partials
-    return [Dual{T}(f[k], df_dx[k] + df_dλ[k]) for k in eachindex(f)]
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T,V,N}}, λ::AbstractVector{Dual{T,V,N}}) where {T,V,N}
+    nx = length(x)
+    function terms(_z)
+        _x, _λ = _z[1:nx], _z[nx + 1:end]
+        f = kinematics_jacobianTvp(model, _x, _λ)
+        f_dx = kinematics_force_jacobian(model, _x, _λ)
+        f_dλ = kinematics_velocity_jacobian(model, _x)[:, model.nq + 1:end]'
+        return f, [f_dx f_dλ]
+    end
+    return jac_wrapper([x; λ], terms)
 end
 
-# TODO add kinematics_jTvp (jacobian-transpose-vector product) to use with kinematics_force_jacobian (i.e. d_dx J(x)'λ)
+# Kinematics force hessian μ'*J(x)'*λ
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, λ::AbstractVector{Float64}) where {T1, T2, V2, N2, N1}
+    terms(_x) = kinematics_jacobianTvp(model, _x, λ), kinematics_force_jacobian(model, _x, λ), dx -> kinematics_force_hvp(model, _x, λ, dx)[1]
+    return hess_wrapper(x, terms)
+end
+
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64}, λ::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    terms(_λ) = kinematics_jacobianTvp(model, x, _λ), kinematics_velocity_jacobian(model, x)[:, model.nq + 1:end]', dλ -> zeros(model.nv, kinematics_size(model))
+    return hess_wrapper(λ, terms)
+end
+
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}, λ::AbstractVector{Dual{T1, Dual{T2, V2, N2}, N1}}) where {T1, T2, V2, N2, N1}
+    function terms(_z)
+        _x, _λ = _z[1:model.nx], _z[model.nx + 1:end]
+        f = kinematics_jacobianTvp(model, _x, _λ)
+        df = [kinematics_force_jacobian(model, _x, _λ) kinematics_velocity_jacobian(model, _x)[:, model.nq + 1:end]']
+        function ddf(dz)
+            dx, dλ = dz[1:model.nx], dz[model.nx + 1:end]
+            H1, H2 = kinematics_force_hvp(model, _x, _λ, dx)
+            return [H1 + kinematics_force_jacobian(model, _x, dλ) H2]
+        end
+        return f, df, ddf
+    end
+    return hess_wrapper([x; λ], terms)
+end

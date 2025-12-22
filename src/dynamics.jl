@@ -9,6 +9,17 @@ function M_func(model::PinnZooModel, x::AbstractVector{Float64})
     return M
 end
 
+@doc raw""" 
+    M_jvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
+
+Return d/dx (M(x)*dv)
+"""
+function M_jvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
+    dMv̇_dx = zeros(model.nv, model.nx)
+    ccall(model.M_jvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ref{Cdouble}), x, v̇, dMv̇_dx)
+    return dMv̇_dx
+end
+
 @doc raw"""
     C_func(model::PinnZooModel, x::AbstractVector{Float64})
 
@@ -82,7 +93,7 @@ function inverse_dynamics(model::PinnZooModel, x::AbstractVector{Float64}, v̇::
 end
 
 @doc raw"""
-    inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}
+    inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64})
 
 Return a tuple of derivatives of the inverse dynamics (τ) with respect to x and v̇ 
 """
@@ -91,6 +102,30 @@ function inverse_dynamics_deriv(model::PinnZooModel, x::AbstractVector{Float64},
     ccall(model.inverse_dynamics_deriv_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, 
             Ref{Cdouble}, Ref{Cdouble}), x, v̇, dτ_dx, dτ_dv̇)
     return dτ_dx, dτ_dv̇
+end
+
+@doc raw"""
+    inverse_dynamics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+
+Return a tuple of derivatives of (dτ_dx)*lam wrt x and (dτ_dx)*lam wrt v̇. (dτ_dv̇)*lam with respect to v̇ is 0 since dτ_dv̇ = M(q)
+"""
+function inverse_dynamics_hvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+    dτ_dxλ_dx, dτ_dv̇λ_dx = zeros(model.nv, model.nx), zeros(model.nv, model.nv)
+    ccall(model.inverse_dynamics_hvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, 
+            Ref{Cdouble}, Ref{Cdouble}), x, v̇, lam, dτ_dxλ_dx, dτ_dv̇λ_dx)
+    return dτ_dxλ_dx, dτ_dv̇λ_dx
+end
+
+@doc raw"""
+    inverse_dynamics_hTvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+
+Return a tuple of derivatives of (dτ_dx)'*lam wrt x and (dτ_dv̇)'*lam wrt x. (dτ_dv̇)'*lam (τ) with respect to v̇ is 0 since dτ_dv̇ = M(q)
+"""
+function inverse_dynamics_hTvp(model::PinnZooModel, x::AbstractVector{Float64}, v̇::AbstractVector{Float64}, lam::AbstractVector{Float64})
+    dτ_dxTλ_dx, dτ_dv̇Tλ_dx = zeros(model.nx, model.nx), zeros(model.nv, model.nx)
+    ccall(model.inverse_dynamics_hTvp_ptr, Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, 
+            Ref{Cdouble}, Ref{Cdouble}), x, v̇, lam, dτ_dxTλ_dx, dτ_dv̇Tλ_dx)
+    return dτ_dxTλ_dx, dτ_dv̇Tλ_dx
 end
 
 @doc raw"""
@@ -179,10 +214,7 @@ Return the jacobian mapping Δx to x where Δx is in the tangent space (look at 
 of tangent space). This matches the derivative of apply_Δx(model, x, Δx) around Δx = 0
 """
 function error_jacobian(model::PinnZooFloatingBaseModel, x)
-    return [
-        velocity_kinematics(model, x) zeros(model.nq, length(x) - model.nq)
-        zeros(length(x) - model.nq, model.nv) I(length(x) - model.nq)
-    ]
+    return ForwardDiff.jacobian(_Δx -> apply_Δx(model, x, _Δx), zeros(length(x) - 1))
 end
 error_jacobian(model::PinnZooModel, x) = 1.0I(length(x))
 
