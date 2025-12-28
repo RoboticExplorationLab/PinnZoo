@@ -62,6 +62,7 @@ generate_conversions
 
 ```@docs
 M_func
+M_jvp
 C_func
 dynamics
 dynamics_deriv
@@ -222,3 +223,56 @@ You can use ForwardDiff.hessian on scalar functions (for example, Lagrangians in
 - [`kinematics_jacobianTvp`](@ref) - use this for J(x)'λ (mapping kinematics forces into generalized forces)  
 - [`inverse_dynamics`](@ref)  
 
+# Benchmarking
+Generated using `tests/benchmarks/jl` with the [`Go2`](@ref) model
+### Dynamics
+| Function | Median | Q1 – Q3 |
+|----------|--------|-----------|
+| [`M_func`](@ref) | 1.07 μs | (1.05–1.13) μs |
+| [`M_jvp`](@ref) | 2.75 μs | (2.65–2.93) μs |
+| [`C_func`](@ref) | 0.879 μs | (0.826–0.995) μs |
+| [`dynamics`](@ref) | 2.18 μs | (2–2.38) μs |
+| [`dynamics_deriv`](@ref) | 28.9 μs | (27.6–31.9) μs |
+| [`forward_dynamics`](@ref) | 2.34 μs | (2.13–2.47) μs |
+| [`forward_dynamics_deriv`](@ref) | 30.8 μs | (28–33.3) μs |
+| [`inverse_dynamics`](@ref) | 1.03 μs | (0.902–1.12) μs |
+| [`inverse_dynamics_deriv`](@ref) | 10.3 μs | (9.96–10.8) μs |
+| [`inverse_dynamics_hvp`](@ref) | 24.8 μs | (23–27.5) μs |
+| [`inverse_dynamics_hTvp`](@ref) | 20.1 μs | (19.3–21.6) μs |
+
+### Kinematics
+| Function | Median | Q1 – Q3 |
+|----------|--------|-----------|
+| [`kinematics`](@ref) | 0.201 μs | (0.193–0.218) μs |
+| [`kinematics_jacobian`](@ref) | 1.14 μs | (1.11–1.2) μs |
+| [`kinematics_hvp`](@ref) | 2.01 μs | (1.95–2.15) μs |
+| [`kinematics_velocity`](@ref) | 0.458 μs | (0.412–0.499) μs |
+| [`kinematics_velocity_jacobian`](@ref) | 2.68 μs | (2.53–3.04) μs |
+| [`kinematics_force_jacobian`](@ref) | 2.29 μs | (2.23–2.41) μs |
+| [`kinematics_jacobianTvp`](@ref) | 3.17 μs | (2.95–3.52) μs |
+| [`kinematics_force_hvp`](@ref) | 6.03 μs | (5.73–6.55) μs |
+| [`kinematics_force_hTvp`](@ref) | 7.94 μs | (7.29–8.62) μs |
+
+### ForwardDiff Jacobians
+Currently slow due to allocations
+| Function | w.r.t | Median | Q1 – Q3 |
+|----------|----|--------|-----------|
+| [`kinematics`](@ref) | x | 23 μs | (21.6–24.4) μs |
+| [`kinematics_velocity`](@ref) | x | 29.5 μs | (28.4–32.5) μs |
+| [`kinematics_jacobianTvp`](@ref) | x | 39.3 μs | (38.2–41.7) μs |
+| [`kinematics_jacobianTvp`](@ref) | λ | 8.55 μs | (8.31–9.24) μs |
+| [`dynamics`](@ref) | x | 0.159 ms | (0.152–0.171) ms |
+| [`dynamics`](@ref) | τ | 87 μs | (79.2–100) μs |
+| [`forward_dynamics`](@ref) | x | 0.148 ms | (0.142–0.16) ms |
+| [`forward_dynamics`](@ref) | v̇ | 71.1 μs | (68.1–75.1) μs |
+| [`inverse_dynamics`](@ref) | x | 66.5 μs | (64–71.8) μs |
+| [`inverse_dynamics`](@ref) | τ | 32.4 μs | (30.8–36.1) μs |
+
+### ForwardDiff Hessians
+| Function | w.r.t | Median | Q1 – Q3 |
+|----------|----|--------|-----------|
+| [`kinematics`](@ref) | x | 7.07 ms | (6.55–8.35) ms |
+| [`kinematics_jacobianTvp`](@ref) | x | 16.5 ms | (15.3–17.2) ms |
+| [`kinematics_jacobianTvp`](@ref) | λ | 0.272 ms | (0.259–0.291) ms |
+| [`inverse_dynamics`](@ref) | x | 52.2 ms | (50.9–53.5) ms |
+| [`inverse_dynamics`](@ref) | τ | 0.974 ms | (0.936–1.05) ms |
