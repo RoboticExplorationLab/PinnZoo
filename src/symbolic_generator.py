@@ -220,7 +220,7 @@ class SymbolicGenerator:
         self.kinematics = cs.vertcat(*kinematics)
 
         # Forward kinematics jacobian
-        self.J = cs.densify(cs.jacobian(self.kinematics, self.x)) # v block is zero
+        self.J = cs.jacobian(self.kinematics, self.x) # v block is zero
 
         # Kinematics hessian-vector product
         self.dx = cs.SX.sym('dx', self.nx)

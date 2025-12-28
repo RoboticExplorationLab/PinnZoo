@@ -45,6 +45,8 @@ macro create_pinnzoo_model(expr)
             kinematics_force_jacobian_ptr::Ptr{Nothing}
             kinematics_force_hvp_ptr::Ptr{Nothing}
             kinematics_force_hTvp_ptr::Ptr{Nothing}
+            kinematics_jacobian_colptr::Vector{Int64}
+            kinematics_jacobian_rowval::Vector{Int64}
             $(new_fields...)
             function $constructor_name($(constructor_args...))
                 # Load the library
@@ -103,6 +105,9 @@ macro create_pinnzoo_model(expr)
                 kinematics_force_hvp_ptr = dlsym(lib, :kinematics_force_hvp_wrapper)
                 kinematics_force_hTvp_ptr = dlsym(lib, :kinematics_force_hTvp_wrapper)
 
+                # Sparse support
+                kinematics_jacobian_colptr, kinematics_jacobian_rowval = read_casadi_sparsity(lib, :kinematics_jacobian_sparsity_out)
+
                 $(constructor_internals...)
                 return new(
                     lib, urdf_path,
@@ -115,9 +120,25 @@ macro create_pinnzoo_model(expr)
                     kinematics_bodies, kinematics_ptr, kinematics_jacobian_ptr, kinematics_hvp_ptr,
                     kinematics_velocity_ptr, kinematics_velocity_jacobian_ptr,
                     kinematics_force_jacobian_ptr, kinematics_force_hvp_ptr, kinematics_force_hTvp_ptr,
+                    kinematics_jacobian_colptr, kinematics_jacobian_rowval,
                     $(constructor_return...))
             end
         end
     end
 end;
 
+# Reads in a CSC sparity pattern from Casadi, which has the following format
+# [rows, cols, colptr, rowvals] where colptr[1] is always 0.
+# colptr and rowvals are indices, which are 0-indexed in C and need to be shifted for Julia
+function read_casadi_sparsity(lib, sparsity_func::Symbol; output_index = 0)
+    ptr = ccall(dlsym(lib, sparsity_func), Ptr{Clonglong}, (Cint,), output_index)
+    @assert unsafe_load(ptr, 3) == 0 "output is not sparse!"
+    cols = unsafe_load(ptr, 2)
+    nnz = unsafe_load(ptr, 3 + cols)
+
+    vals = unsafe_wrap(Vector{Int64}, ptr, 3 + cols + nnz)
+    colptr = vals[2 .+ (1:cols + 1)] .+ 1
+    rowvals = vals[2 + cols + 1 + 1:end] .+ 1
+
+    return colptr, rowvals
+end

@@ -58,9 +58,9 @@ end
 Return the jacobian of the kinematics function with respect to x (not projected into the tangent space).
 """
 function kinematics_jacobian(model::PinnZooModel, x::AbstractVector{Float64})
-    J = zeros(kinematics_size(model), model.nx)
-    ccall(model.kinematics_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J)
-    return J
+    J = SparseMatrixCSC(kinematics_size(model), model.nx, model.kinematics_jacobian_colptr, model.kinematics_jacobian_rowval, zeros(length(model.kinematics_jacobian_rowval)))
+    ccall(model.kinematics_jacobian_ptr, Cvoid, (Ptr{Cdouble}, Ref{Cdouble}), x, J.nzval)
+    return Matrix(J)
 end
 
 @doc raw"""

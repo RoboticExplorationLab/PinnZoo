@@ -2,6 +2,7 @@ module PinnZoo
     using Libdl
     using LinearAlgebra
     using ForwardDiff
+    using SparseArrays
 
     abstract type PinnZooModel end
     abstract type PinnZooFloatingBaseModel <: PinnZooModel end
