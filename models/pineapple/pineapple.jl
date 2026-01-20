@@ -1,32 +1,46 @@
 @create_pinnzoo_model struct Pineapple <: PinnZooFloatingBaseModel
     kinematics_ori::Symbol
+    version::Symbol
     μ::Float64
     # torque_limits::Vector{Float64}
     # joint_limits::Matrix{Float64}
     hwd_x_inds::Vector{Int64}
     hwd_u_inds::Vector{Int64}
-    function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion)
+    function Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion, version::Symbol=:v1)
+        
+        # version ∈ (:v0, :v1, :v2) || error("Unsupported version=$(version). Use :v0, :v1, or :v2.")
+        
         lib = let
             if kinematics_ori == :None
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof"))                
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_$(version)"))                
             elseif kinematics_ori == :Quaternion
-                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_8dof_quat"))
+                lib = dlopen(joinpath(SHARED_LIBRARY_DIR, "libpineapple_quat_$(version)"))
             else
                 throw(error("specified configuration is either not found or not supported. Did you compile?"))
             end
             lib
         end
 
-        # Limits
-        # torque_limits = 23.7*ones(12)
-        # joint_limits = [repeat([-Inf Inf], 7); repeat([-0.802851 0.802851; -1.0472 4.18879; -2.69653 -0.916298], 4)]
+        # --- Version-dependent hardware index mapping ---
+        hwd_x_inds_by_version = Dict{Symbol, Vector{Int}}(
+            :v0 => [1:7; 7 .+ (1:6); 19 .+ (1:6); 19 + 6 .+ (1:6)],  
+            :v1 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  # default
+            :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)]  
+        )
 
-        # Pineapple uses the same communication interface as the unitree robots, which have 37 states and 12 controls
-        # The Pineapple has 29 states and 8 controls
-        hwd_x_inds = [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)]
-        hwd_u_inds = [1:8;]
+        hwd_u_inds_by_version = Dict{Symbol, Vector{Int}}(
+            :v0 => collect(1:6),  
+            :v1 => collect(1:8),  # default
+            :v2 => collect(1:8)  
+        )
 
-        return new(kinematics_ori, μ, hwd_x_inds, hwd_u_inds)#, torque_limits, joint_limits)
+        hwd_x_inds = get(hwd_x_inds_by_version, version, nothing)
+        hwd_x_inds === nothing && error("Missing hwd_x_inds mapping for version=$(version).")
+
+        hwd_u_inds = get(hwd_u_inds_by_version, version, nothing)
+        hwd_u_inds === nothing && error("Missing hwd_u_inds mapping for version=$(version).")
+
+        return new(kinematics_ori, version, μ, hwd_x_inds, hwd_u_inds)#, torque_limits, joint_limits)
     end
 end
 
