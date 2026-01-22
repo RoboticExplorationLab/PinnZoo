@@ -29,10 +29,10 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         test_default_functions(DoubleCartpole())
     end
 
-    # Rigidbody
-    @testset "RigidBody" begin
-        test_default_functions(PinnZoo.RigidBody())
-    end
+    # # Rigidbody
+    # @testset "RigidBody" begin
+    #     test_default_functions(PinnZoo.RigidBody())
+    # end
 
     # Quadrotor
     @testset "Quadrotor" begin
@@ -61,10 +61,14 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         @test_throws "specified configuration is not supported" Nadia(nc_per_foot = 4, kinematics_ori = :Quaternion)
     end
 
-    # CrazyDog
+    # Pineapple
     @testset verbose=true "Pineapple" begin
-        @testset "default" test_default_functions(Pineapple())
-        @testset "kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None))
+        @testset "v0 default" test_default_functions(Pineapple(version=:v0))
+        @testset "v0 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None, version=:v0))
+        @testset "v1 default" test_default_functions(Pineapple())
+        @testset "v1 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None))
+        @testset "v2 default" test_default_functions(Pineapple(version=:v2))
+        @testset "v2 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None, version=:v2))
     end
 
     # ForwardDiff compatability

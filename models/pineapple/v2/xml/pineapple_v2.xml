@@ -53,7 +53,7 @@
   </asset>
 
   <worldbody>
-    <body name="base_link" pos="0 0 0.5" childclass="pineapple">
+    <body name="base_link" pos="0 0 0" childclass="pineapple">
       <inertial pos="-0.0018705 0.0 0.043903" quat="1 0 0 0" mass="1.673" diaginertia="0.00924389 0.01472633 0.02192228" />
       <freejoint />
       <site name="imu" pos="0 0 0" />
