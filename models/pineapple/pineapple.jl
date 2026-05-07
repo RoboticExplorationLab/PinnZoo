@@ -45,10 +45,10 @@
 end
 
 @doc raw"""
-    Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion) <: PinnZooFloatingBaseModel
+    Pineapple(; μ = 0.3, kinematics_ori::Symbol = :Quaternion, version::Symbol=:v1) <: PinnZooFloatingBaseModel
 
 Return the Pineapple wheeled biped dynamics and kinematics model
-""" 
+""" Pineapple
 
 @doc raw"""
     B_func(quad::Pineapple)
