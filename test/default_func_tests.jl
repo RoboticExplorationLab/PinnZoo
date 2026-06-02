@@ -5,6 +5,8 @@ using FiniteDiff
 using FiniteDifferences
 using LinearAlgebra
 using Random
+import ForwardDiff as FD
+using StaticArrays
 
 function test_default_functions(model::PinnZooModel)
     # Check the model is a supported type
@@ -21,6 +23,10 @@ function test_default_functions(model::PinnZooModel)
         test_default_functions(model, x)
     end
 end
+# model = Pineapple(version=:v1)
+# x = init_state(model)
+# x = [0.0, 0.0, 0.24999999998590466, 0.9999998721986809, 8.14276208556384e-8, 0.0005055714519148044, -1.0655900172952339e-7, 1.2986234043060987e-5, 0.8303450607969001, -1.4965402647260369, -2.0809621854359284e-12, 1.2986316712952231e-5, 0.8303556396534936, -1.4965604026502244, -2.0767343402642347e-12, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+
 
 function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     v̇ = randn(model.nv)
@@ -285,6 +291,41 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         @test norm(rots1 - rots2, Inf) < 1e-10
     end
 
+    # Test kinematics for points on rigidbody (only for kinematics_ori = :Quaternion for now)
+    if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
+        function kinematics(x, id, point)
+            state = rbd_state(model, x)
+            body_frame = default_frame(findbody(robot, string(model.kinematics_bodies[id])))
+            p_body = Point3D(body_frame, SVector{3}(point))
+            p_world = transform(state, p_body, root_frame(robot))
+            return p_world.v
+        end
+        # Test kinematics
+        point = randn(3)
+        locs1 = PinnZoo.kinematics(model, x, 1, point)
+        locs2 = kinematics(x, 1, point)
+        @test norm(locs1 - locs2, Inf) < 1e-10
+
+        # Test kinematics velocity
+        v1 = PinnZoo.kinematics_velocity(model, x, 1, point)
+        v2 = FD.jacobian(_x -> kinematics(_x, 1, point), x)[:, 1:model.nq]*error_jacobian(model, x[1:model.nq])*x[model.nq + 1:end]
+        v3 = PinnZoo.kinematics_velocity_analytical(model, x, 1, point)
+        @test norm(v1 - v2, Inf) < 1e-10
+        @test norm(v1 - v3, Inf) < 1e-10
+
+        # Test kinematics jacobian
+        J1 = kinematics_jacobian(model, x, 1, point)
+        J2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> PinnZoo.kinematics(model, _x, 1, point), copy(x))[1]
+        @test norm(J1 - J2, Inf) < 1e-6
+
+        # Test kinematics velocity jacobian
+        J_dot1 = kinematics_velocity_jacobian(model, x,  1, point)
+        J_dot2 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> PinnZoo.kinematics_velocity(model, _x, 1, point), copy(x))[1]
+        J_dot3 = PinnZoo.kinematics_velocity_jacobian_analytical(model, x, 1, point)
+        @test norm(J_dot1 - J_dot2) < 2e-6  
+        @test norm(J_dot1 - J_dot3) < 2e-6  
+    end
+
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
     if typeof(model) <: PinnZooFloatingBaseModel
         Δx = randn(model.nv*2)
@@ -309,4 +350,3 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         @test norm(J1 - J2, Inf) < 1e-6
     end
 end
-
