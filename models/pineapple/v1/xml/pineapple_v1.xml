@@ -1,7 +1,5 @@
-<mujoco model="pineapple_v1">
-  <compiler angle="radian" meshdir="../meshes/"/>
-  <option cone="elliptic" impratio="100"/>
-  <option gravity='0 0 -9.81' iterations='50' solver='Newton' timestep='0.002'/>
+<mujoco model="pineapple v1.1">
+  <compiler angle="radian" meshdir="../meshes"/>
 
   <default>
       <default class="pineapple">
@@ -9,11 +7,11 @@
           <joint damping="0.1" armature="0.01" frictionloss="0.2"/>
           <motor ctrlrange="-23.7 23.7"/>
           <default class="l_hip">
-              <joint axis="-1 0 0" range="-0.52358 0.17444"/>
+              <joint axis="1 0 0" range="-0.52358 0.17444"/>
               <motor ctrlrange="-23.7 23.7"/>
           </default>
           <default class="r_hip">
-              <joint axis="-1 0 0" range="-0.17444 0.52358"/>
+              <joint axis="1 0 0" range="-0.17444 0.52358"/>
               <motor ctrlrange="-23.7 23.7"/>
           </default>
           <default class="thigh">
@@ -36,78 +34,77 @@
           </default>
       </default>
   </default>
-
   <asset>
     <mesh name="base_link" file="base_link.STL"/>
-    <mesh name="base_link_collision" file="base_link_collision.STL"/>
-    <mesh name="cam" file="cam.STL"/>
-    <mesh name="L_hip" file="L_hip.STL"/>
-    <mesh name="L_thigh" file="L_thigh.STL"/>
-    <mesh name="L_thigh_collision" file="L_thigh_collision.STL"/>
-    <mesh name="L_calf" file="L_calf.STL"/>
-    <mesh name="L_calf_collision" file="L_calf_collision.STL"/>
-    <mesh name="L_wheel" file="L_wheel.STL"/>
+    <mesh name="battery" file="battery.STL"/>
     <mesh name="R_hip" file="R_hip.STL"/>
     <mesh name="R_thigh" file="R_thigh.STL"/>
-    <mesh name="R_thigh_collision" file="R_thigh_collision.STL"/>
     <mesh name="R_calf" file="R_calf.STL"/>
-    <mesh name="R_calf_collision" file="R_calf_collision.STL"/>
     <mesh name="R_wheel" file="R_wheel.STL"/>
+    <mesh name="L_hip" file="L_hip.STL"/>
+    <mesh name="L_thigh" file="L_thigh.STL"/>
+    <mesh name="L_calf" file="L_calf.STL"/>
+    <mesh name="L_wheel" file="L_wheel.STL"/>
   </asset>
 
   <worldbody>
-  <body name="base_link" pos="0 0 0" childclass="pineapple">
-      <inertial pos="0.01340244 0.00045247 0.07248523" quat="1 0 0 0" mass="3.63" diaginertia="0.01979765 0.01183585 0.00863159" />
+    <body name="base_link" pos="0 0 0" childclass="pineapple">
+      <inertial pos="0.03425855 0.00006357 0.07778567" quat="1 0 0 0" mass="2.99" diaginertia="0.01519872 0.02158004 0.02428081" />
       <freejoint />
       <site name="imu" pos="0 0 0" />
-      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="base_link"/>
-      <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="base_link_collision" class='collision'/>
-      <body name="cam" pos="0 0 0">
-        <inertial pos="0 0 0" quat="1 0 0 0" mass="0.3" diaginertia="0.00002720 0.00018085 0.00018280" />
-        <geom pos="0.136663 0 0.12554" quat="0.939693 0 0.34202 0" type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0 1 0 1" mesh="cam"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.1451 0.1451 0.1451 1" mesh="base_link"/>
+      <geom size="0.1275 0.05 0.05" pos="0.0075 0 0.05" type="box" rgba="0.1451 0.1451 0.1451 1" class='collision'/>
+      <geom size="0.1065 0.0625 0.03" pos="-0.0285 0 0.13" type="box" rgba="0.1451 0.1451 0.1451 1" class='collision'/>
+      <geom size="0.025 0.025 0.05" pos="0.078 -0.075 0.05" type="box" rgba="0.1451 0.1451 0.1451 1" class='collision'/>
+      <geom size="0.025 0.025 0.05" pos="0.078 0.075 0.05" type="box" rgba="0.1451 0.1451 0.1451 1" class='collision'/>
+      <body name="battery" pos="0 0 0">
+        <inertial pos="-0.095007 -3.4328E-06 0.093415" quat="1 0 0 0" mass="0.64" diaginertia="0.00147269 0.00136181 0.00038215" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.53725 0.53725 0.53725 1" mesh="battery"/>
       </body>
-      <body name="L_hip" pos="0 0.061689 0.066">
-        <inertial pos="0.00254635 -0.00198794 0.0005042" quat="0.50972 0.477764 0.507199 0.504654" mass="0.585" diaginertia="0.000767839 0.000505514 0.000454476"/>
+      <body name="L_hip" pos="0.047159 0.06125 0.066001">
+        <inertial pos="-0.054201 -0.0016168 0.00050585" quat="0.490647 0.497517 0.49177 0.519524" mass="0.585" diaginertia="0.0007771 0.000509386 0.000459364"/>
         <joint name="L_hip_joint" class="l_hip"/>
-        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="L_hip"/>
-        <body name="L_thigh" pos="0 0.027596 0">
-          <inertial pos="-0.00110375 0.00813971 -0.133992" quat="0.721556 0.0204552 -0.0151932 0.691887" mass="0.98" diaginertia="0.00423209 0.00379561 0.000652983"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="L_hip"/>
+        <body name="L_thigh" pos="-0.05675 0.01995 0">
+          <inertial pos="-0.0014005 0.015871 -0.13295" quat="0.72105 0.0195228 -0.0171635 0.692396" mass="0.911" diaginertia="0.00400787 0.00359172 0.000844534"/>
           <joint name="L_thigh_joint" class="thigh"/>
-          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="L_thigh"/>
-          <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="L_thigh_collision" class='collision'/>
-          <body name="L_calf" pos="0 0.04135 -0.165">
-            <inertial pos="-0.00026693 0.00971427 -0.170353" quat="0.597929 0.353944 0.643991 0.320126" mass="0.567" diaginertia="0.000340296 0.000275824 0.00024003"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.098039 0.098039 0.098039 1" mesh="L_thigh"/>
+          <geom size="0.0275 0.0095 0.06" pos="0.0003 0.0095 -0.049" type="box" rgba="0.098039 0.098039 0.098039 1"/>
+          <geom size="0.0515 0.0175" pos="0 0.0175 -0.165" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.098039 0.098039 0.098039 1"/>
+          <body name="L_calf" pos="0 0.0383 -0.165">
+            <inertial pos="-7.3933e-05 0.014526 -0.11981" quat="0.705583 0.0107012 -0.0114919 0.708454" mass="0.567" diaginertia="0.00252293 0.00246258 0.000225094"/>
             <joint name="L_calf_joint" class="calf"/>
-            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="L_calf"/>
-            <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="L_calf_collision" class='collision'/>
-            <body name="L_wheel" pos="0 0.024414 -0.165">
-              <inertial pos="0 0.00106336 0" quat="0.642722 0.294611 0.294822 0.642801" mass="0.3" diaginertia="0.0009102 0.000467826 0.000467624"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.1451 0.1451 0.1451 1" mesh="L_calf"/>
+            <geom size="0.024 0.0118 0.0465" pos="-0.0006 0.0118 -0.0465" type="box" rgba="0.1451 0.1451 0.1451 1"/>
+            <body name="L_wheel" pos="0 0.02705 -0.165">
+              <inertial pos="2.7442e-11 0.0095126 -9.3096e-11" quat="0.707107 0 0 0.707107" mass="0.35" diaginertia="0.00108926 0.00056018 0.00056018"/>
               <joint name="L_wheel_joint" pos="0 0 0" axis="0 1 0"/>
-              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.470588 0.470588 0.470588 1" mesh="L_wheel"/>
-              <geom size="0.075 0.0115" quat="0.707105 0.707108 0 0" type="cylinder" rgba="0.470588 0.470588 0.470588 1" class='collision'/>
+              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.15294 0.15294 0.15294 1" mesh="L_wheel"/>
+              <geom size="0.07 0.0115" pos="0 0.0085 0" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.15294 0.15294 0.15294 1"/>
             </body>
           </body>
         </body>
       </body>
-      <body name="R_hip" pos="0 -0.061689 0.066">
-        <inertial pos="0.00254635 0.00198794 0.0005042" quat="0.504654 0.507199 0.477764 0.50972" mass="0.585" diaginertia="0.000767839 0.000505514 0.000454476"/>
+      <body name="R_hip" pos="0.047159 -0.06125 0.066001">
+        <inertial pos="-0.054201 0.0016168 0.00050585" quat="0.504876 0.506661 0.477895 0.509913" mass="0.585" diaginertia="0.000777096 0.000509412 0.000459342"/>
         <joint name="R_hip_joint" class="r_hip"/>
-        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="R_hip"/>
-        <body name="R_thigh" pos="0 -0.027596 0">
-          <inertial pos="-0.00110375 -0.00813971 -0.133992" quat="0.69275 -0.0171104 0.0188496 0.720729" mass="0.98" diaginertia="0.00423904 0.00379814 0.000656173"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="R_hip"/>
+        <body name="R_thigh" pos="-0.05675 -0.01995 0">
+          <inertial pos="-0.0014005 -0.015871 -0.13295" quat="0.721549 0.0181713 -0.0185566 0.691876" mass="0.911" diaginertia="0.00400791 0.00359167 0.000844541"/>
           <joint name="R_thigh_joint" class="thigh"/>
-          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="R_thigh"/>
-          <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="R_thigh_collision" class='collision'/>
-          <body name="R_calf" pos="0 -0.04135 -0.165">
-            <inertial pos="-0.00026693 -0.00971427 -0.170353" quat="0.320126 0.643991 0.353944 0.597929" mass="0.567" diaginertia="0.000340296 0.000275824 0.00024003"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.098039 0.098039 0.098039 1" mesh="R_thigh"/>
+          <geom size="0.0275 0.0095 0.06" pos="0.0003 -0.0095 -0.049" type="box" rgba="0.098039 0.098039 0.098039 1"/>
+          <geom size="0.0515 0.0175" pos="0 -0.0175 -0.165" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.098039 0.098039 0.098039 1"/>
+          <body name="R_calf" pos="0 -0.0383 -0.165">
+            <inertial pos="-7.3779e-05 -0.014526 -0.11981" quat="0.704705 0.0114318 -0.0107651 0.709327" mass="0.567" diaginertia="0.00252294 0.00246258 0.000225094"/>
             <joint name="R_calf_joint" class="calf"/>
-            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.752941 0.752941 0.752941 1" mesh="R_calf"/>
-            <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="R_calf_collision" class='collision'/>
-            <body name="R_wheel" pos="0 -0.024414 -0.165">
-              <inertial pos="0 -0.00106336 0" quat="0.642722 0.294611 0.294822 0.642801" mass="0.3" diaginertia="0.0009102 0.000467826 0.000467624"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.1451 0.1451 0.1451 1" mesh="R_calf"/>
+            <geom size="0.024 0.0118 0.0465" pos="-0.0006 -0.0118 -0.0465" type="box" rgba="0.1451 0.1451 0.1451 1"/>
+            <body name="R_wheel" pos="0 -0.02705 -0.165">
+              <inertial pos="2.8013e-11 -0.0095126 -9.34e-11" quat="0.707107 0 0 0.707107" mass="0.35" diaginertia="0.00108926 0.00056018 0.00056018"/>
               <joint name="R_wheel_joint" pos="0 0 0" axis="0 1 0"/>
-              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.470588 0.470588 0.470588 1" mesh="R_wheel"/>
-              <geom size="0.075 0.0115" quat="0.707105 -0.707108 0 0" type="cylinder" rgba="0.470588 0.470588 0.470588 1" class='collision'/>
+              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.15294 0.15294 0.15294 1" mesh="R_wheel"/>
+              <geom size="0.07 0.0115" pos="0 -0.0085 0" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.15294 0.15294 0.15294 1"/>
             </body>
           </body>
         </body>
@@ -116,16 +113,15 @@
   </worldbody>
 
   <actuator>
-      <motor class="l_hip" name="L_hip" joint="L_hip_joint" />
-      <motor class="thigh" name="L_thigh" joint="L_thigh_joint" />
-      <motor class="calf" name="L_calf" joint="L_calf_joint" />
-      <motor ctrlrange="-3.69 3.69" name="L_wheel" joint="L_wheel_joint" />
+    <motor class="l_hip" name="L_hip" joint="L_hip_joint" />
+    <motor class="thigh" name="L_thigh" joint="L_thigh_joint" />
+    <motor class="calf" name="L_calf" joint="L_calf_joint" />
+    <motor ctrlrange="-3.69 3.69" name="L_wheel" joint="L_wheel_joint" />
 
-      <motor class="r_hip" name="R_hip" joint="R_hip_joint" />
-      <motor class="thigh" name="R_thigh" joint="R_thigh_joint" />
-      <motor class="calf" name="R_calf" joint="R_calf_joint" />
-      <motor ctrlrange="-3.69 3.69" name="R_wheel" joint="R_wheel_joint" />
-
+    <motor class="r_hip" name="R_hip" joint="R_hip_joint" />
+    <motor class="thigh" name="R_thigh" joint="R_thigh_joint" />
+    <motor class="calf" name="R_calf" joint="R_calf_joint" />
+    <motor ctrlrange="-3.69 3.69" name="R_wheel" joint="R_wheel_joint" />
   </actuator>
 
   <sensor>

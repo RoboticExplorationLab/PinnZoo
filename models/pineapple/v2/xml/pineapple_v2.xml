@@ -97,10 +97,10 @@
             <geom size="0.0415 0.0105" pos="0 0.0135 -0.19" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.43922 0.43922 0.43922 1"/>
             <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.62745 0.62745 0.62745 1" mesh="wheel_motor_L"/>
             <body name="L_wheel" pos="0 0.0355 -0.19">
-              <inertial pos="-1.5282e-07 0.012142 -1.1774e-07" quat="0.707107 0 0 0.707107" mass="0.405" diaginertia="0.0001581 8.002e-05 8.002e-05"/>
+              <inertial pos="-1.5282e-07 0.012142 -1.1774e-07" quat="0.707107 0 0 0.707107" mass="0.405" diaginertia="0.0022781 0.0011391 0.0011391"/>
               <joint name="L_wheel_joint" pos="0 0 0" axis="0 1 0"/>
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.48627 0.48627 0.48627 1" mesh="L_wheel"/>
-              <geom type="mesh" rgba="0.48627 0.48627 0.48627 1" mesh="L_wheel"/>
+              <geom size="0.075 0.012" pos="0 0.012 0" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.48627 0.48627 0.48627 1"/>
             </body>
           </body>
         </body>
@@ -126,10 +126,10 @@
             <geom size="0.0415 0.0105" pos="0 -0.0135 -0.19" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.43922 0.43922 0.43922 1"/>
             <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.62745 0.62745 0.62745 1" mesh="wheel_motor_R"/>
             <body name="R_wheel" pos="0 -0.0355 -0.19">
-              <inertial pos="-6.462e-08 -0.012142 -7.2937e-08" quat="0.707107 0 0 0.707107" mass="0.405" diaginertia="0.0001581 8.002e-05 8.002e-05"/>
+              <inertial pos="-6.462e-08 -0.012142 -7.2937e-08" quat="0.707107 0 0 0.707107" mass="0.405" diaginertia="0.0022781 0.0011391 0.0011391"/>
               <joint name="R_wheel_joint" pos="0 0 0" axis="0 1 0" />
               <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.48627 0.48627 0.48627 1" mesh="R_wheel"/>
-              <geom type="mesh" rgba="0.48627 0.48627 0.48627 1" mesh="R_wheel"/>
+              <geom size="0.075 0.012" pos="0 -0.012 0" quat="0.707388 0.706825 0 0" type="cylinder" rgba="0.48627 0.48627 0.48627 1"/>
             </body>
           </body>
         </body>

@@ -316,7 +316,7 @@
     <collision>
       <origin
         xyz="0 0.014 0"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.028" length="0.028"/>
       </geometry>
@@ -332,7 +332,7 @@
     <collision>
       <origin
         xyz="0 0.029 -0.19"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.0525" length="0.058"/>
       </geometry>
@@ -433,7 +433,7 @@
     <collision>
       <origin
         xyz="0 0.0135 0"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.026" length="0.021"/>
       </geometry>
@@ -449,7 +449,7 @@
         <collision>
       <origin
         xyz="0 0.0135 -0.19"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.0415" length="0.021"/>
       </geometry>
@@ -526,12 +526,12 @@
       <mass
         value="0.405" />
       <inertia
-        ixx="0.00008002"
+        ixx="0.00113906"
         ixy="0"
         ixz="0"
-        iyy="0.00015810"
+        iyy="0.00227813"
         iyz="0"
-        izz="0.00008002" />
+        izz="0.00113906" />
     </inertial>
     <visual>
       <origin
@@ -549,11 +549,10 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 0.012 0"
+        rpy="1.5707963267948966 0 0" />
       <geometry>
-        <mesh
-          filename="package://v2/meshes/L_wheel.STL" />
+        <cylinder radius="0.075" length="0.024"/>
       </geometry>
     </collision>
   </link>
@@ -664,7 +663,7 @@
     <collision>
       <origin
         xyz="0 -0.014 0"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.028" length="0.028"/>
       </geometry>
@@ -680,7 +679,7 @@
     <collision>
       <origin
         xyz="0 -0.029 -0.19"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.0525" length="0.058"/>
       </geometry>
@@ -781,7 +780,7 @@
     <collision>
       <origin
         xyz="0 -0.0135 0"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.026" length="0.021"/>
       </geometry>
@@ -797,7 +796,7 @@
         <collision>
       <origin
         xyz="0 -0.0135 -0.19"
-        rpy="1.57 0 0" />
+        rpy="1.5707963267948966 0 0" />
       <geometry>
         <cylinder radius="0.0415" length="0.021"/>
       </geometry>
@@ -874,12 +873,12 @@
       <mass
         value="0.405" />
       <inertia
-        ixx="0.00008002"
+        ixx="0.00113906"
         ixy="0"
         ixz="0"
-        iyy="0.00015810"
+        iyy="0.00227813"
         iyz="0"
-        izz="0.00008002" />
+        izz="0.00113906" />
     </inertial>
     <visual>
       <origin
@@ -897,11 +896,10 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0 -0.012 0"
+        rpy="1.5707963267948966 0 0" />
       <geometry>
-        <mesh
-          filename="package://v2/meshes/R_wheel.STL" />
+        <cylinder radius="0.075" length="0.024"/>
       </geometry>
     </collision>
   </link>
