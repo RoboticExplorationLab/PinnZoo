@@ -50,7 +50,8 @@ NOTE: only works for kinematics_ori = :Quaternion
 """
 function _kinematics(id::Int, point::AbstractVector{T1}, locs::AbstractVector{T2}) where {T1 <: Real, T2 <: Real}
     pos, rot = locs[(id - 1)*7 .+ (1:3)], quat_to_rot(locs[(id - 1)*7 .+ (4:7)])
-    return pos + rot*point
+    quat = locs[(id - 1)*7 .+ (4:7)]
+    return [pos + rot*point; quat]                 # 7-vector: [contact pos; body quat]
 end
 
 @doc raw"""
@@ -121,6 +122,18 @@ function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{Float64},
 end
 
 @doc raw"""
+    kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{<:Real}, id::Int, point::AbstractVector{<:Real}, λ::AbstractVector{<:Real})
+
+Returns the jacobian-transpose vector product J(x, id, point)'*λ, where J(x, id, point) maps joint velocities into kinematics velocities 
+of the point (body frame) on the body identified by id (model.kinematics_bodies).
+"""
+function kinematics_jacobianTvp(model::PinnZooModel, x::AbstractVector{<:Real}, id::Int, point::AbstractVector{<:Real}, λ::AbstractVector{<:Real})
+    locs = kinematics(model, x)
+    A    = FD.jacobian(_locs -> _kinematics(id, point, _locs), locs)
+    return kinematics_jacobianTvp(model, x, A' * λ)
+end
+
+@doc raw"""
     kinematics_velocity(model::PinnZooModel, x::AbstractVector{Float64})
 
 Return a list of the instantaneous linear velocities of each body in model.kinematics_bodies in the world frame.
@@ -154,7 +167,7 @@ angular velocity recovered from the body's quaternion rate via attitude\_jacobia
 NOTE: only works for kinematics_ori = :Quaternion
 """
 function kinematics_velocity_analytical(model::PinnZooModel, x::AbstractVector{<:Real}, id::Int, point::AbstractVector{<:Real})
-    locs         = kinematics(model, x)
+    locs = kinematics(model, x)
     twist_bodies = kinematics_velocity(model, x)
     q  = locs[(id - 1)*7 .+ (4:7)] # [qw, qx, qy, qz]
     vb = twist_bodies[(id - 1)*7 .+ (1:3)] # d(p_body)/dt in world frame
@@ -163,7 +176,7 @@ function kinematics_velocity_analytical(model::PinnZooModel, x::AbstractVector{<
     rot = quat_to_rot(q) 
     omega_world = rot * omega_body # World-frame angular velocity:  ω_world = R(q) · ω_body
     r = rot * point # Lever arm in world frame
-    return vb + cross(omega_world, r) # Rigid body propagation: v_p = v_origin + ω_world × r
+    return [vb + cross(omega_world, r); dq]  # Rigid body propagation: v_p = v_origin + ω_world × r
 end
 
 @doc raw"""
@@ -218,7 +231,9 @@ function kinematics_velocity_jacobian_analytical(model::PinnZooModel, x::Abstrac
     J_r = FD.jacobian(r_of, x)
     #   v_p = vb + ω_world × r
     #   d v_p / dx = J_p − [r]× · J_ω_world + [ω_world]× · J_r
-    return J_p - skew(r) * J_omega_world + skew(omega_world) * J_r
+    J_pos  = J_p - skew(r) * J_omega_world + skew(omega_world) * J_r        # 3 × nx 
+    J_quat = kinematics_velocity_jacobian(model, x)[(id - 1)*7 .+ (4:7), :] # 4 × nx
+    return [J_pos; J_quat]  
 end
 
 @doc raw"""

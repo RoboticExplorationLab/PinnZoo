@@ -27,7 +27,6 @@ end
 # x = init_state(model)
 # x = [0.0, 0.0, 0.24999999998590466, 0.9999998721986809, 8.14276208556384e-8, 0.0005055714519148044, -1.0655900172952339e-7, 1.2986234043060987e-5, 0.8303450607969001, -1.4965402647260369, -2.0809621854359284e-12, 1.2986316712952231e-5, 0.8303556396534936, -1.4965604026502244, -2.0767343402642347e-12, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
-
 function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     v̇ = randn(model.nv)
     τ = randn(model.nv)
@@ -304,13 +303,13 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         point = randn(3)
         locs1 = PinnZoo.kinematics(model, x, 1, point)
         locs2 = kinematics(x, 1, point)
-        @test norm(locs1 - locs2, Inf) < 1e-10
+        @test norm(locs1[1:3] - locs2, Inf) < 1e-10
 
         # Test kinematics velocity
         v1 = PinnZoo.kinematics_velocity(model, x, 1, point)
         v2 = FD.jacobian(_x -> kinematics(_x, 1, point), x)[:, 1:model.nq]*error_jacobian(model, x[1:model.nq])*x[model.nq + 1:end]
         v3 = PinnZoo.kinematics_velocity_analytical(model, x, 1, point)
-        @test norm(v1 - v2, Inf) < 1e-10
+        @test norm(v1[1:3] - v2, Inf) < 1e-10
         @test norm(v1 - v3, Inf) < 1e-10
 
         # Test kinematics jacobian
@@ -324,6 +323,30 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         J_dot3 = PinnZoo.kinematics_velocity_jacobian_analytical(model, x, 1, point)
         @test norm(J_dot1 - J_dot2) < 2e-6  
         @test norm(J_dot1 - J_dot3) < 2e-6  
+
+        # Quat block of the per-point functions must match the body's quat block
+        @test PinnZoo.kinematics(model, x, 1, point)[4:7] ==
+              PinnZoo.kinematics(model, x)[(1-1)*7 .+ (4:7)]
+
+        @test PinnZoo.kinematics_velocity(model, x, 1, point)[4:7] ==
+              PinnZoo.kinematics_velocity(model, x)[(1-1)*7 .+ (4:7)]
+
+        @test PinnZoo.kinematics_jacobian(model, x, 1, point)[4:7, :] ==
+              PinnZoo.kinematics_jacobian(model, x)[(1-1)*7 .+ (4:7), :]
+
+        @test PinnZoo.kinematics_velocity_jacobian(model, x, 1, point)[4:7, :] ==
+              PinnZoo.kinematics_velocity_jacobian(model, x)[(1-1)*7 .+ (4:7), :]
+
+        λ_p = randn(7) # 7 entries per point (3 force + 4 quat-force)
+        JTλ_1 = PinnZoo.kinematics_jacobianTvp(model, x, 1, point, λ_p)
+        JTλ_2 = PinnZoo.kinematics_velocity_jacobian(model, x, 1, point)[:, model.nq + 1:end]' * λ_p
+        @test norm(JTλ_1 - JTλ_2, Inf) < 1e-10
+
+        # Differentiability check: ForwardDiff matches FiniteDifferences
+        dx_truth = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1),
+            _x -> PinnZoo.kinematics_jacobianTvp(model, _x, 1, point, λ_p), copy(x))[1]
+        dx_fwd = FD.jacobian(_x -> PinnZoo.kinematics_jacobianTvp(model, _x, 1, point, λ_p), x)
+        @test norm(dx_truth - dx_fwd, Inf) < 2e-6
     end
 
     # If this is a floating base model, check apply_Δx, state_error and error_jacobains
@@ -348,5 +371,49 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         J1 = FiniteDifferences.jacobian(FiniteDifferences.central_fdm(5, 1), _x -> error_jacobian_T(model, _x)*x2, copy(x))[1]
         J2 = error_jacobian_T_jvp_deriv(model, x, x2)
         @test norm(J1 - J2, Inf) < 1e-6
+    end
+
+    # ── Pineapple-specific wheel helpers ─────────────────────────────────
+    # Guard on :Quaternion: get_wheel_contour calls kinematics_rotation,
+    # which is only supported for kinematics_ori = :Quaternion / :AxisAngle
+    if model isa Pineapple && model.kinematics_ori == :Quaternion
+        nc = length(model.kinematics_bodies)
+        normals = [[0,0,1.0]; [0,0,1.0]]
+        pos_inds = vcat([(i-1)*7 .+ (1:3) for i in 1:nc]...)
+
+        # Resolve contact points the same way wheel_* does
+        r = model.wheel_radius
+        contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
+        points = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
+
+        # wheel_kinematics: stack per-point kinematics
+        @test norm(wheel_kinematics(model, x, normals) -
+                   vcat([PinnZoo.kinematics(model, x, i, points[i]) for i in 1:nc]...), Inf) < 1e-10
+
+        # wheel_velocity: stack per-point velocity
+        @test norm(wheel_velocity(model, x, normals) -
+                   vcat([PinnZoo.kinematics_velocity(model, x, i, points[i]) for i in 1:nc]...), Inf) < 1e-10
+
+        # wheel_jacobian position block: FiniteDifferences on the wheel_kinematics POSITION rows
+        wJ_pos = wheel_jacobian(model, x, normals)[pos_inds, :]
+        wJ_truth = vcat([FiniteDifferences.jacobian(
+                              FiniteDifferences.central_fdm(5, 1),
+                              _x -> PinnZoo.kinematics(model, _x, i, points[i])[1:3],
+                              copy(x))[1] for i in 1:nc]...)
+        @test norm(wJ_pos - wJ_truth, Inf) < 1e-6
+
+        # wheel_velocity_jacobian position block: same idea
+        wJv_pos = wheel_velocity_jacobian(model, x, normals)[pos_inds, :]
+        wJv_truth = vcat([FiniteDifferences.jacobian(
+                              FiniteDifferences.central_fdm(5, 1),
+                              _x -> PinnZoo.kinematics_velocity(model, _x, i, points[i])[1:3],
+                              copy(x))[1] for i in 1:nc]...)
+        @test norm(wJv_pos - wJv_truth, Inf) < 2e-6
+
+        # wheel_jacobianTvp: sum of per-wheel kinematics_jacobianTvp on λ
+        λ_w = randn(7*nc)
+        τ_wheel = wheel_jacobianTvp(model, x, λ_w, normals)
+        τ_per_pt = sum(PinnZoo.kinematics_jacobianTvp(model, x, i, points[i], λ_w[(i-1)*7 .+ (1:7)]) for i in 1:nc)
+        @test norm(τ_wheel - τ_per_pt, Inf) < 1e-10
     end
 end

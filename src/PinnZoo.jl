@@ -18,6 +18,9 @@ module PinnZoo
     # Kinematics functions (from codegen)
     include(joinpath(@__DIR__, "kinematics.jl"))
 
+    # Generic inverse kinematics (Levenberg-Marquardt)
+    include(joinpath(@__DIR__, "inverse_kinematics.jl"))
+
     # Support for ForwardDiff.jl
     include(joinpath(@__DIR__, "forward_diff/utils.jl"))
     include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
@@ -92,6 +95,8 @@ module PinnZoo
     export kinematics, kinematics_rotation, kinematics_jacobian, kinematics_hvp
     export kinematics_velocity, kinematics_velocity_jacobian, kinematics_velocity_hvp
     export kinematics_force_jacobian, kinematics_jacobianTvp, kinematics_force_hvp, kinematics_force_hTvp
+    export get_contour, get_wheel_contour, wheel_kinematics, wheel_jacobian, wheel_velocity, wheel_velocity_jacobian
+    export wheel_jacobianTvp
     export error_jacobian, error_jacobian_T, apply_Δx, state_error
     export error_jacobian_jvp_deriv, error_jacobian_T_jvp_deriv
 
@@ -101,7 +106,7 @@ module PinnZoo
 
     # Quadruped specific functions
     export Quadruped
-    export B_func, fix_joint_limits, inverse_kinematics, nearest_ik
+    export B_func, fix_joint_limits, inverse_kinematics, nearest_ik, solve_ref_IK
 
     export Pendulum, DoublePendulum, Cartpole, DoubleCartpole, RigidBody, Quadrotor, Go1, Go2, Nadia, Pineapple
 end
