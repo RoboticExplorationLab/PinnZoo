@@ -18,9 +18,6 @@ module PinnZoo
     # Kinematics functions (from codegen)
     include(joinpath(@__DIR__, "kinematics.jl"))
 
-    # Generic inverse kinematics (Levenberg-Marquardt)
-    include(joinpath(@__DIR__, "inverse_kinematics.jl"))
-
     # Support for ForwardDiff.jl
     include(joinpath(@__DIR__, "forward_diff/utils.jl"))
     include(joinpath(@__DIR__, "forward_diff/dynamics.jl"))
