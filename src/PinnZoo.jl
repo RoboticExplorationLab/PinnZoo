@@ -42,6 +42,9 @@ module PinnZoo
     include(joinpath(MODEL_DIR, "nadia/nadia.jl"))
     include(joinpath(MODEL_DIR, "pineapple/pineapple.jl"))
 
+    # Registry for hooks to generater conversion orders for other dynamics packages
+    const GENERATE_ORDER_HOOKS = Function[]
+
     # Defaults for models
     """
         is_floating(model::PinnZooModel)

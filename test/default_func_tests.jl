@@ -58,24 +58,12 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
         end
     end
 
+    @test haskey(model.orders, :rigidBodyDynamics)
+
     # Build RigidBodyDynamics.jl model and necessary helpers for testing
     robot = parse_urdf(model.urdf_path, remove_fixed_tree_joints=false, floating=is_floating(model))
     state = MechanismState(robot)
     dyn_res = DynamicsResult(robot)
-
-    # Generate state order for rigidBodyDynamics
-    state = MechanismState(robot)
-    config_names =  [Symbol(joints(robot)[id].name) for id in state.q_index_to_joint_id]
-    vel_names = [Symbol(joints(robot)[id].name) for id in state.v_index_to_joint_id]
-    for joint in joints(robot) # Fix floating base
-        if typeof(joint.joint_type) <: QuaternionFloating
-            config_names[state.qranges[joint]] = [:q_w, :q_x, :q_y, :q_z, :x, :y, :z]
-            vel_names[state.vranges[joint]] = [:ang_v_x, :ang_v_y, :ang_v_z, :lin_v_x, :lin_v_y, :lin_v_z]
-        end
-    end    
-    torque_names = [name for name in vel_names if name in model.orders[:nominal].torque_names]
-    model.orders[:rigidBodyDynamics] = StateOrder(config_names, vel_names, torque_names)
-    generate_conversions(model.orders, model.conversions)
 
     function rbd_state(model, x)
         state = MechanismState{eltype(x)}(robot)
