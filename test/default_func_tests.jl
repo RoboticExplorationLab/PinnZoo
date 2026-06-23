@@ -377,7 +377,7 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     # Guard on :Quaternion: get_wheel_contour calls kinematics_rotation,
     # which is only supported for kinematics_ori = :Quaternion / :AxisAngle
     if model isa Pineapple && model.kinematics_ori == :Quaternion
-        nc = length(model.kinematics_bodies)
+        nc = 2
         normals = [[0,0,1.0]; [0,0,1.0]]
         pos_inds = vcat([(i-1)*7 .+ (1:3) for i in 1:nc]...)
 

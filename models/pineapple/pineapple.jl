@@ -2,6 +2,7 @@ _pineapple_default_wheel_radius(version::Symbol) =
     version === :v0 ? 0.07  :
     version === :v1 ? 0.07  :
     version === :v2 ? 0.075 :
+    version === :v3 ? 0.0925 :
     error("No default wheel_radius for version=$(version). Pass wheel_radius= kwarg explicitly.")
 
 @create_pinnzoo_model struct Pineapple <: PinnZooFloatingBaseModel
@@ -31,13 +32,15 @@ _pineapple_default_wheel_radius(version::Symbol) =
         hwd_x_inds_by_version = Dict{Symbol, Vector{Int}}(
             :v0 => [1:7; 7 .+ (1:6); 19 .+ (1:6); 19 + 6 .+ (1:6)],  
             :v1 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  # default
-            :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)]  
+            :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  
+            :v3 => [1:7; 7 .+ (1:13); 19 .+ (1:6); 19 + 6 .+ (1:13)] # TODO: confirm these hardware indices for v3  
         )
 
         hwd_u_inds_by_version = Dict{Symbol, Vector{Int}}(
             :v0 => collect(1:6),  
             :v1 => collect(1:8),  # default
-            :v2 => collect(1:8)  
+            :v2 => collect(1:8),
+            :v3 => collect(1:13)  
         )
 
         hwd_x_inds = get(hwd_x_inds_by_version, version, nothing)
@@ -56,7 +59,7 @@ end
 
 Return the Pineapple wheeled biped dynamics and kinematics model.
 
-`wheel_radius` defaults to the version's nominal value (`v0`/`v1`: 0.07, `v2`: 0.075);
+`wheel_radius` defaults to the version's nominal value (`v0`/`v1`: 0.07, `v2`: 0.075, `v3`: 0.0925)
 pass it explicitly to override.
 """ Pineapple
 
@@ -78,9 +81,9 @@ Return the contour angle σ for wheel wheel\_ind, rotating the world-frame floor
 normals[(wheel\_ind-1)*3 .+ (1:3)] into the wheel body frame via kinematics\_rotation.
 NOTE: only works for kinematics_ori = :Quaternion
 """
-function get_wheel_contour(model, x, wheel_ind, normals = [[0,0,1.0]; [0,0,1.0]])
+function get_wheel_contour(model::Pineapple, x, wheel_ind, normals = [[0,0,1.0]; [0,0,1.0]])
     rot = kinematics_rotation(model, x)
-    rot = reshape(vec(rot), 6, 3)[(wheel_ind - 1)*3 .+ (1:3), :]
+    rot = reshape(vec(rot), 3*length(model.kinematics_bodies), 3)[(wheel_ind - 1)*3 .+ (1:3), :]
     return get_contour(rot'*normals[(wheel_ind - 1)*3 .+ (1:3)])
 end
 
@@ -92,7 +95,7 @@ model.wheel_radius and floor normals.
 """
 function wheel_kinematics(model::Pineapple, x::AbstractVector{T}, normals = [[0,0,1.0]; [0,0,1.0]]) where T <: Real
     r = model.wheel_radius
-    nc = length(model.kinematics_bodies)
+    nc = 2 # TODO: assumes wheels are first two kinematics_bodies
     contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
     points   = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
     return vcat([kinematics(model, x, i, points[i]) for i in 1:nc]...)
@@ -106,7 +109,7 @@ Return the (3*nc × nx) jacobian of wheel\_kinematics with respect to x.
 
 function wheel_jacobian(model::Pineapple, x::AbstractVector{Float64}, normals = [[0,0,1.0]; [0,0,1.0]])
     r = model.wheel_radius
-    nc = length(model.kinematics_bodies)
+    nc = 2 # TODO: assumes wheels are first two kinematics_bodies
     contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
     points   = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
     return vcat([kinematics_jacobian(model, x, i, points[i]) for i in 1:nc]...)
@@ -120,7 +123,7 @@ Return the stacked (3*nc) world-frame velocities of every wheel's contact point.
 """
 function wheel_velocity(model::Pineapple, x::AbstractVector{<:Real}, normals = [[0,0,1.0]; [0,0,1.0]])
     r = model.wheel_radius
-    nc = length(model.kinematics_bodies)
+    nc = 2 # TODO: assumes wheels are first two kinematics_bodies
     contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
     points   = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
     return vcat([kinematics_velocity(model, x, i, points[i]) for i in 1:nc]...)
@@ -134,7 +137,7 @@ Return the (3*nc × nx) jacobian of wheel\_velocity with respect to x.
 """
 function wheel_velocity_jacobian(model::Pineapple, x::AbstractVector{Float64}, normals = [[0,0,1.0]; [0,0,1.0]])
     r = model.wheel_radius
-    nc = length(model.kinematics_bodies)
+    nc = 2 # TODO: assumes wheels are first two kinematics_bodies
     contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
     points   = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
     return vcat([kinematics_velocity_jacobian(model, x, i, points[i]) for i in 1:nc]...)
@@ -152,7 +155,7 @@ points first. Differentiable in both `x` and `λ`.
 """
 function wheel_jacobianTvp(model::Pineapple, x::AbstractVector{<:Real}, λ::AbstractVector{<:Real}, normals = [[0,0,1.0]; [0,0,1.0]])
     r = model.wheel_radius
-    nc = length(model.kinematics_bodies)
+    nc = 2 # TODO: assumes wheels are first two kinematics_bodies
     contours = [get_wheel_contour(model, x, i, normals) for i in 1:nc]
     points   = [[-r*sin(σ); 0; -r*cos(σ)] for σ in contours]
     return sum(kinematics_jacobianTvp(model, x, i, points[i], λ[(i-1)*7 .+ (1:7)]) for i in 1:nc)
@@ -175,6 +178,9 @@ function init_state(model::Pineapple)
     elseif model.nu == 8
         x[3] = 0.28;
         x[8:15] = [0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
+    elseif model.nu == 13
+        x[3] = 0.2752;
+        x[8:20] = [zeros(5); 0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
     else
         throw(ArgumentError("Unsupported number of DOFs"))
     end

@@ -69,6 +69,7 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         @testset "v1 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None))
         @testset "v2 default" test_default_functions(Pineapple(version=:v2))
         @testset "v2 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None, version=:v2))
+        @testset "v3 default" test_default_functions(Pineapple(version=:v3))
     end
 
     # ForwardDiff compatability
