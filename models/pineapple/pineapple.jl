@@ -179,7 +179,7 @@ function init_state(model::Pineapple)
         x[3] = 0.28;
         x[8:15] = [0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
     elseif model.nu == 13
-        x[3] = 0.2752;
+        x[3] = 0.3677;
         x[8:20] = [zeros(5); 0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
     else
         throw(ArgumentError("Unsupported number of DOFs"))
