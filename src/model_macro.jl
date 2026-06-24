@@ -75,7 +75,7 @@ macro create_pinnzoo_model(expr)
                 orders[:pinocchio] = StateOrder(pin_config_names, orders[:nominal].vel_names, orders[:nominal].torque_names)
 
                 # Add other packages if supported
-                for hook in GENERATE_ORDER_HOOKS
+                for hook in $PinnZoo.GENERATE_ORDER_HOOKS
                     hook(orders, conversions, urdf_path)
                 end
                 generate_conversions(orders, conversions)
