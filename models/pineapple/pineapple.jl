@@ -3,6 +3,7 @@ _pineapple_default_wheel_radius(version::Symbol) =
     version === :v1 ? 0.07  :
     version === :v2 ? 0.075 :
     version === :v3 ? 0.0925 :
+    version === :v3_gripper ? 0.0925 :
     error("No default wheel_radius for version=$(version). Pass wheel_radius= kwarg explicitly.")
 
 @create_pinnzoo_model struct Pineapple <: PinnZooFloatingBaseModel
@@ -33,14 +34,16 @@ _pineapple_default_wheel_radius(version::Symbol) =
             :v0 => [1:7; 7 .+ (1:6); 19 .+ (1:6); 19 + 6 .+ (1:6)],  
             :v1 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  # default
             :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  
-            :v3 => [1:7; 7 .+ (1:13); 19 .+ (1:6); 19 + 6 .+ (1:13)] # TODO: confirm these hardware indices for v3  
+            :v3 => [1:7; 7 .+ (1:13); 19 .+ (1:6); 19 + 6 .+ (1:13)], # TODO: confirm these hardware indices for v3  
+            :v3_gripper => [1:7; 7 .+ (1:15); 19 .+ (1:6); 19 + 6 .+ (1:15)] # TODO: confirm these hardware indices for v3_gripper  
         )
 
         hwd_u_inds_by_version = Dict{Symbol, Vector{Int}}(
             :v0 => collect(1:6),  
             :v1 => collect(1:8),  # default
             :v2 => collect(1:8),
-            :v3 => collect(1:13)  
+            :v3 => collect(1:13),
+            :v3_gripper => collect(1:15)  
         )
 
         hwd_x_inds = get(hwd_x_inds_by_version, version, nothing)
@@ -181,6 +184,9 @@ function init_state(model::Pineapple)
     elseif model.nu == 13
         x[3] = 0.3677;
         x[8:20] = [zeros(5); 0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
+    elseif model.nu == 15
+        x[3] = 0.3677;
+        x[8:22] = [zeros(7); 0; pi/4; -pi/2; 0; 0; pi/4; -pi/2; 0];
     else
         throw(ArgumentError("Unsupported number of DOFs"))
     end

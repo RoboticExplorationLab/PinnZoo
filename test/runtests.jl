@@ -29,10 +29,10 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         test_default_functions(DoubleCartpole())
     end
 
-    # # Rigidbody
-    # @testset "RigidBody" begin
-    #     test_default_functions(PinnZoo.RigidBody())
-    # end
+    # Rigidbody
+    @testset "RigidBody" begin
+        test_default_functions(PinnZoo.RigidBody())
+    end
 
     # Quadrotor
     @testset "Quadrotor" begin
@@ -70,6 +70,7 @@ include(joinpath(@__DIR__, "forward_diff_tests.jl"))
         @testset "v2 default" test_default_functions(Pineapple(version=:v2))
         @testset "v2 kin_ori=none" test_default_functions(Pineapple(kinematics_ori=:None, version=:v2))
         @testset "v3 default" test_default_functions(Pineapple(version=:v3))
+        @testset "v3_gripper default" test_default_functions(Pineapple(version=:v3_gripper))
     end
 
     # ForwardDiff compatability

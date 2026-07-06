@@ -241,3 +241,14 @@ include_directories(${DIR})
 file(GLOB SOURCES "${DIR}*.c") 
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Pineapple v3 with gripper Quaternion Kinematics ----- ###
+project(pineapple_quat_v3_gripper) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_quat_v3_gripper/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
