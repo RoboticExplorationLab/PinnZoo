@@ -553,68 +553,97 @@
 
 <!-- =================================================== Pinch gripper =================================================== -->
 
-  <link name="gripper_left_finger">
+  <link name="gripper_center">
     <inertial>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
-      <mass value="0.015" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.001" />
       <inertia
-        ixx="3.5E-06"
+        ixx="1.0E-08"
         ixy="0"
         ixz="0"
-        iyy="3.4E-06"
+        iyy="1.0E-08"
         iyz="0"
-        izz="8.0E-07" />
+        izz="1.0E-08" />
     </inertial>
     <visual>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.015 0.016 0.05"/>
+        <sphere radius="0.005"/>
+      </geometry>
+      <material name="gripper_center">
+        <color rgba="0.1 0.9 0.2 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="gripper_left_finger">
+    <inertial>
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
+      <mass value="0.015" />
+      <inertia
+        ixx="3.0E-06"
+        ixy="0"
+        ixz="0"
+        iyy="3.3E-05"
+        iyz="0"
+        izz="3.2E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
       <material name="gripper_left">
         <color rgba="0.9 0.2 0.2 1"/>
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.015 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
     </collision>
   </link>
 
   <link name="gripper_right_finger">
     <inertial>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
       <mass value="0.015" />
       <inertia
-        ixx="3.5E-06"
+        ixx="3.0E-06"
         ixy="0"
         ixz="0"
-        iyy="3.4E-06"
+        iyy="3.3E-05"
         iyz="0"
-        izz="8.0E-07" />
+        izz="3.2E-05" />
     </inertial>
     <visual>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.015 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
       <material name="gripper_right">
         <color rgba="0.2 0.4 0.9 1"/>
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 -0.025" rpy="0 0 0" />
+      <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.015 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
     </collision>
   </link>
 
-  <joint name="gripper_left_joint" type="prismatic">
+  <joint name="gripper_center_joint" type="fixed">
     <parent link="6dof"/>
+    <child link="gripper_center"/>
+    <origin xyz="0.075 0 -0.04" rpy="1.5708 0 0"/>
+  </joint>
+
+  <joint name="gripper_left_joint" type="prismatic">
+    <parent link="gripper_center"/>
     <child link="gripper_left_finger"/>
-    <origin xyz="0 0.008 -0.073" rpy="0 0 0"/>
+    <origin xyz="-0.025 0.008 0.0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit
       lower="0"
@@ -624,9 +653,9 @@
   </joint>
 
   <joint name="gripper_right_joint" type="prismatic">
-    <parent link="6dof"/>
+    <parent link="gripper_center"/>
     <child link="gripper_right_finger"/>
-    <origin xyz="0 -0.008 -0.073" rpy="0 0 0"/>
+    <origin xyz="-0.025 -0.008 0" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit
       lower="0"

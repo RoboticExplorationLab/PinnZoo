@@ -73,7 +73,7 @@ const char* torque_names[] = {
 const char* kinematics_bodies[] = {
     "wheel_l",
     "wheel_r",
-    "6dof",
+    "gripper_center",
     NULL
 };
 
