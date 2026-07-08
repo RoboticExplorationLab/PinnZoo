@@ -99,7 +99,7 @@ function rot_to_quat(R)
     b = 1 + R[1,1] - R[2,2] - R[3,3]
     c = 1 - R[1,1] + R[2,2] - R[3,3]
     d = 1 - R[1,1] - R[2,2] + R[3,3]
-    println([a, b, c, d])
+    
     max_abcd = max(a, b, c, d)
     if a == max_abcd
         b = R[3,2] - R[2,3]

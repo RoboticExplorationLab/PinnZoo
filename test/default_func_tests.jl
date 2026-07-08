@@ -221,10 +221,29 @@ function test_default_functions(model::PinnZooModel, x::Vector{Float64})
              for body in model.kinematics_bodies]...)  # For all bodies
     end
 
+    # Compare a PinnZoo kinematics vector against the RigidBodyDynamics ground
+    # truth, accounting for the quaternion double cover (q and -q represent the
+    # same rotation) on a per-body basis. Position entries are compared directly.
+    function kinematics_error(kin, ref)
+        if hasproperty(model, :kinematics_ori) && model.kinematics_ori == :Quaternion
+            err = 0.0
+            for i in 1:length(model.kinematics_bodies)
+                off = (i - 1)*7
+                err = max(err, norm(kin[off .+ (1:3)] - ref[off .+ (1:3)], Inf))
+                q1 = kin[off .+ (4:7)]
+                q2 = ref[off .+ (4:7)]
+                err = max(err, min(norm(q1 - q2, Inf), norm(q1 + q2, Inf))) # Double cover, don't care about sign
+            end
+            return err
+        else
+            return norm(kin - ref, Inf)
+        end
+    end
+
     # Test kinematics
     locs1 = PinnZoo.kinematics(model, x)
     locs2 = kinematics(x)
-    @test norm(locs1 - locs2, Inf) < 1e-10
+    @test kinematics_error(locs1, locs2) < 1e-10
 
     # Test kinematics jacobian
     J1 = kinematics_jacobian(model, x)

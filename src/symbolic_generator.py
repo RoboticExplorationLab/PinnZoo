@@ -203,6 +203,10 @@ class SymbolicGenerator:
         cpin.forwardKinematics(self.cmodel, self.cdata, self.q)
         cpin.updateFramePlacements(self.cmodel, self.cdata)
 
+        # Smooth, differentiable orientation for every frame, reconstructed via quaternion
+        # multiplication through the kinematic chain (indexed by frame_id)
+        frame_orientations, _ = self.build_frame_orientations()
+
         # Forward kinematics (world frame by default)
         kinematics = []
         for body in self.kinematics_bodies:
@@ -210,10 +214,12 @@ class SymbolicGenerator:
             placement = self.cdata.oMf[frame_id]
             kinematics.append(placement.translation)
             if self.kinematics_ori == KinematicsOrientation.Quaternion:
-                quat = self.rotation_matrix_to_quaternion(placement.rotation)
+                quat = frame_orientations[frame_id]
+                # quat = self.rotation_matrix_to_quaternion(placement.rotation)
                 kinematics.append(quat)
             elif self.kinematics_ori == KinematicsOrientation.AxisAngle:
-                quat = self.rotation_matrix_to_quaternion(placement.rotation)
+                quat = frame_orientations[frame_id]
+                # quat = self.rotation_matrix_to_quaternion(placement.rotation)
                 aa = self.quaternion_to_axis_angle(quat)
                 kinematics.append(aa)
 
@@ -496,4 +502,133 @@ class SymbolicGenerator:
         theta = 2 * cs.atan2(norm_qv, qs)
 
         return theta * qv / norm_qv
+
+    def axis_angle_to_quat(self, omega, cutoff=1e-8):
+        """
+        Return the (w, x, y, z) quaternion corresponding to the provided axis angle vector.
+        
+        Uses a Taylor series expansion near zero to ensure that first and second derivatives
+        are perfectly stable and do not blow up due to floating-point catastrophic cancellation.
+        Works seamlessly with both CasADi symbolics and numeric inputs.
+        """
+        # Square of the norm (avoids using cs.sqrt entirely for the conditional check)
+        q = cs.sumsqr(omega)
+        
+        # SAFE GATING TRICK:
+        # CasADi differentiates BOTH branches of an if_else. If omega = 0, the large-angle 
+        # branch would normally create a 1/sqrt(0) or 0/0 in its derivative graph.
+        # By forcing a floor of 'cutoff' on q for the large branch, we guarantee its 
+        # derivatives remain finite and well-defined everywhere.
+        theta = cs.sqrt(cs.if_else(q > cutoff, q, cutoff))
+        half = theta / 2
+        
+        # Standard branch
+        s_large = cs.cos(half)
+        v_large = omega * (cs.sin(half) / theta)
+        
+        # For small angles, use Taylor series expansion, derived from cos(x) and sin(x)/x expansions where x = sqrt(q)/2
+        s_small = 1.0 - q / 8.0 + (q**2) / 384.0 - (q**3) / 46080.0
+        v_small = omega * (0.5 - q / 48.0 + (q**2) / 3840.0 - (q**3) / 645120.0)
+        
+        # Cleanly switch between branches based on the squared magnitude        
+        return cs.vertcat(cs.if_else(q > cutoff, s_large, s_small), cs.if_else(q > cutoff, v_large, v_small))
+
+    def quat_multiply(self, q1, q2):
+        """
+        Hamilton product of two (w, x, y, z) quaternions. Composing quaternions with
+        quat_multiply(q1, q2) corresponds to composing rotation matrices as R(q1) @ R(q2).
+        Works with CasADi symbolics and numeric inputs.
+        """
+        w1, x1, y1, z1 = q1[0], q1[1], q1[2], q1[3]
+        w2, x2, y2, z2 = q2[0], q2[1], q2[2], q2[3]
+        return cs.vertcat(
+            w1*w2 - x1*x2 - y1*y2 - z1*z2,
+            w1*x2 + x1*w2 + y1*z2 - z1*y2,
+            w1*y2 - x1*z2 + y1*w2 + z1*x2,
+            w1*z2 + x1*y2 - y1*x2 + z1*w2)
+
+    def _joint_rotation_axis(self, jnt_idx):
+        """
+        Return the constant rotation axis (numpy 3-vector) of a 1-DoF joint, extracted from
+        the joint motion subspace S. The angular part (rows 3:6) is the rotation axis for
+        revolute joints and is (numerically) zero for prismatic joints, which lets the
+        orientation reconstruction treat prismatic joints as identity rotations generically.
+        """
+        joint = self.model.joints[jnt_idx]
+        jdata = joint.createData()
+        q_neutral = pin.neutral(self.model)[joint.idx_q:joint.idx_q + joint.nq]
+        joint.calc(jdata, q_neutral)
+        S = np.array(jdata.S)
+        S = S.reshape(6, -1)
+        return S[3:6, 0]
+
+    def build_frame_orientations(self, x=None, tol=1e-12):
+        """
+        Reconstruct the world orientation of every frame (indexed by frame_id) from the state
+        vector, using quaternion multiplication walked through the kinematic chain.
+
+        The static rotation matrices between neighboring joint frames (jointPlacements) and the
+        static frame placements are converted to constant quaternions once up front, guaranteeing
+        consistency with Pinocchio's frame layout. The only configuration dependent rotations are
+        the joint motions themselves, built smoothly from the joint angles (and the floating base
+        quaternion, if the model has a free-flyer root). The result is a smooth, differentiable
+        state -> orientation map that is safe to differentiate with CasADi.
+
+        Args:
+            x: optional state vector (in our w-first convention). Defaults to self.x.
+            tol: regularization tolerance for the smooth axis-angle / normalization operations.
+
+        Returns:
+            frame_orientations: dict mapping frame_id -> (w, x, y, z) quaternion (4x1)
+            joint_orientations: dict mapping joint_id -> (w, x, y, z) quaternion (4x1)
+        """
+        if x is None:
+            x = self.x
+
+        identity_quat = cs.DM([1.0, 0.0, 0.0, 0.0])
+
+        # World orientation of each joint frame, keyed by joint id. The universe joint (0) is
+        # identity, and Pinocchio guarantees parents have smaller indices than their children.
+        joint_orientations = {0: identity_quat}
+        for jnt_idx in range(1, self.model.njoints):
+            joint = self.model.joints[jnt_idx]
+            parent = self.model.parents[jnt_idx]
+
+            # Static rotation between the previous and next joint frames (computed once).
+            # Feeding a numeric rotation matrix returns a constant (cs.DM) quaternion, so the
+            # non-smooth branch selection in rotation_matrix_to_quaternion is evaluated once on
+            # a constant and never enters the symbolic (differentiated) part of the map.
+            q_place = self.rotation_matrix_to_quaternion(self.model.jointPlacements[jnt_idx].rotation)
+
+            # Configuration dependent joint motion rotation
+            if joint.nq == 7:  # Free-flyer: orientation is the base quaternion from the state
+                base_quat = x[joint.idx_q + 3:joint.idx_q + 7]
+                q_joint = base_quat / cs.sqrt(cs.sumsqr(base_quat) + tol**2)
+            elif joint.nq == 1:
+                axis = self._joint_rotation_axis(jnt_idx)
+                if np.linalg.norm(axis) < 1e-9:  # Prismatic joint: no rotation
+                    q_joint = identity_quat
+                else:
+                    axis = axis / np.linalg.norm(axis)
+                    theta = x[joint.idx_q]
+                    q_joint = self.axis_angle_to_quat(cs.DM(axis) * theta)
+            else:
+                print(f"ERROR: Encountered an unsupported joint named \"{self.model.names[jnt_idx]}\"")
+                sys.exit()
+
+            q_parent = joint_orientations[parent]
+            joint_orientations[jnt_idx] = self.quat_multiply(
+                self.quat_multiply(q_parent, q_place), q_joint)
+
+        # World orientation of each frame: parent joint orientation composed with the static
+        # frame placement rotation
+        frame_orientations = {}
+        for frame_id in range(self.model.nframes):
+            frame = self.model.frames[frame_id]
+            parent_joint = frame.parentJoint
+            q_fplace = self.rotation_matrix_to_quaternion(frame.placement.rotation)
+            frame_orientations[frame_id] = self.quat_multiply(
+                joint_orientations[parent_joint], q_fplace)
+
+        return frame_orientations, joint_orientations
             
