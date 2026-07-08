@@ -218,8 +218,7 @@ class SymbolicGenerator:
                 # quat = self.rotation_matrix_to_quaternion(placement.rotation)
                 kinematics.append(quat)
             elif self.kinematics_ori == KinematicsOrientation.AxisAngle:
-                quat = frame_orientations[frame_id]
-                # quat = self.rotation_matrix_to_quaternion(placement.rotation)
+                quat = self.rotation_matrix_to_quaternion(placement.rotation) # This will map to shortest axis-angle rotation
                 aa = self.quaternion_to_axis_angle(quat)
                 kinematics.append(aa)
 

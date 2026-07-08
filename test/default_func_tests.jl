@@ -23,9 +23,6 @@ function test_default_functions(model::PinnZooModel)
         test_default_functions(model, x)
     end
 end
-# model = Pineapple(version=:v1)
-# x = init_state(model)
-# x = [0.0, 0.0, 0.24999999998590466, 0.9999998721986809, 8.14276208556384e-8, 0.0005055714519148044, -1.0655900172952339e-7, 1.2986234043060987e-5, 0.8303450607969001, -1.4965402647260369, -2.0809621854359284e-12, 1.2986316712952231e-5, 0.8303556396534936, -1.4965604026502244, -2.0767343402642347e-12, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
 function test_default_functions(model::PinnZooModel, x::Vector{Float64})
     v̇ = randn(model.nv)
