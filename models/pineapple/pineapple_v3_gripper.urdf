@@ -591,7 +591,7 @@
     <visual>
       <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.016 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
       <material name="gripper_left">
         <color rgba="0.9 0.2 0.2 1"/>
@@ -600,7 +600,7 @@
     <collision>
       <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.016 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
     </collision>
   </link>
@@ -620,7 +620,7 @@
     <visual>
       <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.016 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
       <material name="gripper_right">
         <color rgba="0.2 0.4 0.9 1"/>
@@ -629,7 +629,7 @@
     <collision>
       <origin xyz="0.0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.016 0.016 0.05"/>
+        <box size="0.05 0.016 0.015"/>
       </geometry>
     </collision>
   </link>
@@ -643,8 +643,8 @@
   <joint name="gripper_left_joint" type="prismatic">
     <parent link="gripper_center"/>
     <child link="gripper_left_finger"/>
-    <origin xyz="-0.025 0 0.008" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
+    <origin xyz="-0.025 0 0.008" rpy="1.5708 0 0"/>
+    <axis xyz="0 1 0"/>
     <limit
       lower="0"
       upper="0.035"
@@ -655,8 +655,8 @@
   <joint name="gripper_right_joint" type="prismatic">
     <parent link="gripper_center"/>
     <child link="gripper_right_finger"/>
-    <origin xyz="-0.025 0 -0.008" rpy="0 0 0"/>
-    <axis xyz="0 0 -1"/>
+    <origin xyz="-0.025 0 -0.008" rpy="1.5708 0 0"/>
+    <axis xyz="0 -1 0"/>
     <limit
       lower="0"
       upper="0.035"
