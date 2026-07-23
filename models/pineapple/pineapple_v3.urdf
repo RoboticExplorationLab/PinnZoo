@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot name="v3" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<!-- =================================================== pineappleV3 =================================================== -->
+<!-- =================================================== v3 =================================================== -->
 
   <link name="base_link">
     <inertial>
@@ -158,16 +158,16 @@
   <link name="calf_r">
     <inertial>
       <origin
-        xyz="-9.341E-06 -0.0234359 -0.13792489" rpy="0 0 0" />
+        xyz="-7.004E-06 -0.02411355 -0.15971539" rpy="0 0 0" />
       <mass
         value="0.91" />
       <inertia
-        ixx="0.0077057"
-        ixy="-5.032E-08"
-        ixz="1.045E-06"
-        iyy="0.00789745"
-        iyz="-0.00017235"
-        izz="0.00055726" />
+        ixx="0.00709488"
+        ixy="-3.308E-08"
+        ixz="9.130E-07"
+        iyy="0.0073161"
+        iyz="-0.0001678"
+        izz="0.00050667" />
     </inertial> 
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -186,16 +186,16 @@
   <link name="calf_l">
     <inertial>
       <origin
-        xyz="-9.341E-06 0.0234359 -0.13792489" rpy="0 0 0" />
+        xyz="-7.004E-06 0.02411355 -0.15971539" rpy="0 0 0" />
       <mass
         value="0.91" />
       <inertia
-        ixx="0.0077057"
-        ixy="5.032E-08"
-        ixz="1.045E-06"
-        iyy="0.00789745"
-        iyz="0.00017235"
-        izz="0.00055726" />
+        ixx="0.00709488"
+        ixy="3.308E-08"
+        ixz="9.130E-07"
+        iyy="0.0073161"
+        iyz="0.0001678"
+        izz="0.00050667" />
     </inertial>
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -358,197 +358,4 @@
       effort="11.0"
       velocity="15.708" />
   </joint>
-
-<!-- =================================================== Ｒobot arm =================================================== -->
-  
-  <joint name="arm_joint" type="revolute">
-    <parent link="base_link"/>
-    <child link="arm_base"/>
-    <origin xyz="0.00095065 -0.00034599 0.19273537" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit
-      lower="-1.5708"
-      upper="1.5708"
-      effort="0"
-      velocity="0" />
-  </joint>
-
-  <link name="arm_base">
-    <inertial>
-      <origin
-        xyz="0.01289341 -0.00240469 0.02505713" rpy="0 0 0" />
-      <mass
-        value="0.2549039" />
-      <inertia
-        ixx="0.00040576"
-        ixy="1.895E-05"
-        ixz="-6.422E-05"
-        iyy="0.00024781"
-        iyz="1.820E-05"
-        izz="0.00043057" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://v3/meshes/arm_base.dae" scale="1 1 1" />
-      </geometry>
-    </visual>
-  </link>
-
-  <link name="upper_arm">
-    <inertial>
-      <origin
-        xyz="-0.15001643 0.03546654 1.966E-07" rpy="0 0 0" />
-      <mass
-        value="1.25745063" />
-      <inertia
-        ixx="0.00094754"
-        ixy="-5.064E-05"
-        ixz="4.228E-07"
-        iyy="0.02025073"
-        iyz="-9.390E-08"
-        izz="0.02033103" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://v3/meshes/upper_arm.dae" scale="1 1 1" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="-0.1427 0.03553 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.353 0.07 0.068"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="fore_arm">
-    <inertial>
-      <origin
-        xyz="0.14561787 -0.03548906 0.06430799" rpy="0 0 0" />
-      <mass
-        value="0.97574223" />
-      <inertia
-        ixx="0.00127617"
-        ixy="8.280E-05"
-        ixz="-0.00132342"
-        iyy="0.01186663"
-        iyz="4.761E-05"
-        izz="0.01184965" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://v3/meshes/fore_arm.dae" scale="1 1 1" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="0.1408 -0.0353 0.075" rpy="0 0 0" />
-      <geometry>
-        <box size="0.26 0.062 0.06"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="5dof">
-    <inertial>
-      <origin xyz="0.05653239 -0.03269584 0.05685774" rpy="0 0 0" />
-      <mass value="0.54504586" />
-      <inertia
-        ixx="0.00088771"
-        ixy="3.583E-06"
-        ixz="-0.00035744"
-        iyy="0.00105194"
-        iyz="1.221E-05"
-        izz="0.00109347" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://v3/meshes/5dof.dae" scale="1 1 1" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="0.079 -0.0323 0.07075" rpy="0 0 0" />
-      <geometry>
-        <box size="0.065 0.065 0.06"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <link name="6dof">
-    <inertial>
-      <origin xyz="-0.00187795 -1.398E-08 -0.03443114" rpy="0 0 0" />
-      <mass value="0.36685284" />
-      <inertia
-        ixx="0.00026279"
-        ixy="-1.526E-10"
-        ixz="-2.505E-06"
-        iyy="0.00025222"
-        iyz="1.742E-10"
-        izz="0.00023237" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://v3/meshes/6dof.dae" scale="1 1 1" />
-      </geometry>
-    </visual>
-    <collision>
-      <origin xyz="-0.002 0 -0.037" rpy="0 0 0" />
-      <geometry>
-        <box size="0.06 0.065 0.072"/>
-      </geometry>
-    </collision>
-  </link>
-
-  <joint name="arm_base_joint" type="revolute">
-    <parent link="arm_base"/>
-    <child link="upper_arm"/>
-    <origin xyz="0.0392 -0.0355 0.052" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit
-      lower="0"
-      upper="3.1416"
-      effort="0"
-      velocity="0" />
-  </joint>
-
-  <joint name="upper_arm_joint" type="revolute">
-    <parent link="upper_arm"/>
-    <child link="fore_arm"/>
-    <origin xyz="-0.3 0.07082 0" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit
-      lower="-3.1416"
-      upper="0"
-      effort="0"
-      velocity="0" />
-  </joint>
-
-  <joint name="fore_arm_joint" type="revolute">
-    <parent link="fore_arm"/>
-    <child link="5dof"/>
-    <origin xyz="0.2698 -0.00295 0.075" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit
-      lower="-1.5708"
-      upper="1.7453"
-      effort="0"
-      velocity="0" />
-  </joint>
-
-  <joint name="5dof_joint" type="revolute">
-    <parent link="5dof"/>
-    <child link="6dof"/>
-    <origin xyz="0.08 -0.0328 0.04075" rpy="0 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit
-      lower="-1.5708"
-      upper="1.5708"
-      effort="0"
-      velocity="0" />
-  </joint>
-
 </robot>

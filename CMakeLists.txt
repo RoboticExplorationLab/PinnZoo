@@ -220,6 +220,28 @@ file(GLOB SOURCES "${DIR}*.c")
 
 add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
 
+### ----- Generate dynamics for Pineapple v3 ----- ###
+project(pineapple_v3) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_v3/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Pineapple v3 arm ----- ###
+project(pineapple_v3_arm) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_v3_arm/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
 ### ----- Generate dynamics for Pineapple v2 Quaternion Kinematics ----- ###
 project(pineapple_quat_v2) # Change this for each model
 
@@ -235,6 +257,17 @@ add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
 project(pineapple_quat_v3) # Change this for each model
 
 set(DIR models/pineapple/generated_code/pineapple_quat_v3/) # Change if not the default
+
+include_directories(${DIR})
+
+file(GLOB SOURCES "${DIR}*.c") 
+
+add_library(${PROJECT_NAME} SHARED src/wrapper.c ${SOURCES})
+
+### ----- Generate dynamics for Pineapple v3 arm Quaternion Kinematics ----- ###
+project(pineapple_quat_v3_arm) # Change this for each model
+
+set(DIR models/pineapple/generated_code/pineapple_quat_v3_arm/) # Change if not the default
 
 include_directories(${DIR})
 

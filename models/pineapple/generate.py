@@ -24,6 +24,20 @@ symb_gen = SymbolicGenerator('pineapple_v2.urdf',
                              gen_dir="./generated_code/pineapple_v2")
 symb_gen.generate()
 
+symb_gen = SymbolicGenerator('pineapple_v3.urdf', 
+                             floating = True,
+                             kinematics_bodies=['wheel_l', 'wheel_r'],
+                             actuated_dofs = slice(6,14),
+                             gen_dir="./generated_code/pineapple_v3")
+symb_gen.generate()
+
+symb_gen = SymbolicGenerator('pineapple_v3_arm.urdf', 
+                             floating = True,
+                             kinematics_bodies=['wheel_l', 'wheel_r'],
+                             actuated_dofs = slice(6,14),
+                             gen_dir="./generated_code/pineapple_v3_arm")
+symb_gen.generate()
+
 # symb_gen = SymbolicGenerator('pineapple_v1.urdf', 
 #                              floating = True,
 #                              kinematics_bodies=['L_wheel', 'R_wheel'],
@@ -63,12 +77,21 @@ symb_gen = SymbolicGenerator('pineapple_v2.urdf',
                              gen_dir="./generated_code/pineapple_quat_v2")
 symb_gen.generate()
 
+
 symb_gen = SymbolicGenerator('pineapple_v3.urdf', 
+                             floating = True,
+                             kinematics_bodies=['wheel_l', 'wheel_r'],
+                             actuated_dofs = slice(6,14),
+                             kinematics_ori = KinematicsOrientation.Quaternion,
+                             gen_dir="./generated_code/pineapple_quat_v3")
+symb_gen.generate()
+
+symb_gen = SymbolicGenerator('pineapple_v3_arm.urdf', 
                              floating = True,
                              kinematics_bodies=['wheel_l', 'wheel_r', '6dof'],
                              actuated_dofs = slice(6,19),
                              kinematics_ori = KinematicsOrientation.Quaternion,
-                             gen_dir="./generated_code/pineapple_quat_v3")
+                             gen_dir="./generated_code/pineapple_quat_v3_arm")
 symb_gen.generate()
 
 symb_gen = SymbolicGenerator('pineapple_v3_gripper.urdf', 

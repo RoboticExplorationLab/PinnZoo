@@ -1,8 +1,8 @@
-<mujoco model="pineappleV3">
-  <compiler angle="radian" meshdir="meshes"/>
+<mujoco model="v3">
+  <compiler angle="radian" meshdir="meshes/"/>
 
   <default>
-    <default class="pinappleV3">
+    <default class="pineapple_v3">
         <geom friction="0.4" margin="0.001" condim="1"/>
         <joint damping="0.02" armature="0.004" frictionloss="0.1"/>
         <default class="hip">
@@ -16,12 +16,6 @@
         <default class="calf">
             <joint axis="0 1 0" range="-3.314 0.174" damping="0.091" armature="0.0161" frictionloss="0.2"/>
             <motor ctrlrange="-40.0 40.0"/>
-        </default>
-        <default class="arm_4310">
-            <motor ctrlrange="-7.0 7.0"/>
-        </default>
-        <default class="arm_4340">
-            <motor ctrlrange="-27.0 27.0"/>
         </default>
         <default class="visual">
             <geom type="mesh" contype="0" conaffinity="0" group="2"/>
@@ -65,17 +59,6 @@
     <mesh file="base_link_11.obj"/>
     <mesh file="base_link_12.obj"/>
     <mesh file="base_link_13.obj"/>
-    <mesh file="fore_arm_0.obj"/>
-    <mesh file="fore_arm_1.obj"/>
-    <mesh file="fore_arm_2.obj"/>
-    <mesh file="5dof_0.obj"/>
-    <mesh file="5dof_1.obj"/>
-    <mesh file="6dof_0.obj"/>
-    <mesh file="6dof_1.obj"/>
-    <mesh file="arm_base_0.obj"/>
-    <mesh file="upper_arm_0.obj"/>
-    <mesh file="upper_arm_1.obj"/>
-    <mesh file="upper_arm_2.obj"/>
     <mesh file="hip_thigh_conn_0.obj"/>
     <mesh file="thigh_l_0.obj"/>
     <mesh file="thigh_l_1.obj"/>
@@ -92,7 +75,7 @@
   </asset>
 
   <worldbody>
-    <body name="base_link" pos="0 0 0.5" childclass="pinappleV3">
+    <body name="base_link" pos="0 0 0.5" childclass="pineapple_v3">
       <freejoint/>
       <site name="imu" pos="0 0 0" />
       <inertial pos="0.00743277 -0.00031002 0.0824108" mass="4.6" fullinertia="0.03542461 0.04154315 0.04752478 -5.543E-05 0.00267146 2.215E-05" />
@@ -166,41 +149,6 @@
           </body>
         </body>
       </body>
-      <body name="arm_base" pos="0.00095065 -0.00034599 0.192735">
-        <inertial pos="0.0128934 -0.00240469 0.0250571" quat="0.268128 0.332439 -0.559819 0.710066" mass="0.254904" diaginertia="0.000483589 0.000358933 0.000241618"/>
-        <geom mesh="arm_base_0" material="Opaque(63,63,63)" class="visual"/>
-        <joint name="arm_joint" pos="0 0 0" axis="0 0 1" range="-1.5708 1.5708"/>
-        <body name="upper_arm" pos="0.0392 -0.0355 0.052">
-          <inertial pos="-0.150016 0.0354665 1.966e-07" quat="-0.0013465 0.707114 0.000508502 0.707098" mass="1.25745" diaginertia="0.020331 0.0202509 0.000947407"/>
-          <geom mesh="upper_arm_0" material="Opaque(38,83,134)" class="visual"/>
-          <geom mesh="upper_arm_1" material="Opaque(245,245,246)" class="visual"/>
-          <geom mesh="upper_arm_2" material="Opaque(63,63,63)" class="visual"/>
-          <joint name="arm_base_joint" pos="0 0 0" axis="0 1 0" range="0 3.1416"/>
-          <geom size="0.1765 0.035 0.034" pos="-0.1427 0.03553 0" type="box" class='collision'/>
-          <body name="fore_arm" pos="-0.3 0.07082 0">
-            <inertial pos="0.145618 -0.0354891 0.064308" quat="0.0908869 0.658182 0.0749458 0.743586" mass="0.975742" diaginertia="0.0120217 0.0118584 0.00111232"/>
-            <geom mesh="fore_arm_0" material="Opaque(63,63,63)" class="visual"/>
-            <geom mesh="fore_arm_1" material="Opaque(38,83,134)" class="visual"/>
-            <geom mesh="fore_arm_2" material="Opaque(245,245,246)" class="visual"/>
-            <joint name="upper_arm_joint" pos="0 0 0" axis="0 1 0" range="-3.1416 0"/>
-            <geom size="0.13 0.031 0.03" pos="0.1408 -0.0353 0.075" type="box" class='collision'/>
-            <body name="5dof" pos="0.2698 -0.00295 0.075">
-              <inertial pos="0.0565324 -0.0326958 0.0568577" quat="0.0161993 0.446378 -0.0050724 0.894684" mass="0.545046" diaginertia="0.00136273 0.00105199 0.000618399"/>
-              <geom mesh="5dof_0" material="Opaque(245,245,246)" class="visual"/>
-              <geom mesh="5dof_1" material="Opaque(63,63,63)" class="visual"/>
-              <joint name="fore_arm_joint" pos="0 0 0" axis="0 1 0" range="-1.5708 1.7453"/>
-              <geom size="0.0325 0.0325 0.03" pos="0.079 -0.0323 0.07075" type="box" class='collision'/>
-              <body name="6dof" pos="0.08 -0.0328 0.04075">
-                <inertial pos="-0.00187795 -1.398e-08 -0.0344311" quat="0.999167 3.7003e-06 0.0407959 -7.87422e-06" mass="0.366853" diaginertia="0.000262995 0.00025222 0.000232165"/>
-                <geom mesh="6dof_0" material="Opaque(38,83,143)" class="visual"/>
-                <geom mesh="6dof_1" material="Opaque(245,245,246)" class="visual"/>
-                <joint name="5dof_joint" pos="0 0 0" axis="0 0 1" range="-1.5708 1.5708"/>
-                <geom size="0.03 0.0325 0.036" pos="-0.002 0 -0.037" type="box" class='collision'/>
-              </body>
-            </body>
-          </body>
-        </body>
-      </body>
     </body>
   </worldbody>
 
@@ -214,13 +162,6 @@
       <motor class="thigh" name="R_thigh" joint="thigh_r_joint" />
       <motor class="calf" name="R_calf" joint="calf_r_joint" />
       <motor class="wheel" name="R_wheel" joint="wheel_r_joint" />
-
-      <motor class="arm_4340" name="1_dof" joint="arm_joint" />
-      <motor class="arm_4340" name="2_dof" joint="arm_base_joint" />
-      <motor class="arm_4340" name="3_dof" joint="upper_arm_joint" />
-      <motor class="arm_4310" name="4_dof" joint="fore_arm_joint" />
-      <motor class="arm_4310" name="5_dof" joint="5dof_joint" />
-
   </actuator>
 
 </mujoco>
