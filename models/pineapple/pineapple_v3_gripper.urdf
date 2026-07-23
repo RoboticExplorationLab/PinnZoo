@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot name="v3_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="ß_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <!-- =================================================== pineappleV3 =================================================== -->
 
@@ -20,7 +20,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/base_link.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/base_link.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -72,7 +72,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/hip_thigh_conn.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/hip_thigh_conn.dae" scale="1 1 1" />
         </geometry>
     </visual>
   </link>
@@ -94,7 +94,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/hip_thigh_conn.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/hip_thigh_conn.dae" scale="1 1 1" />
         </geometry>
     </visual>
   </link>
@@ -116,7 +116,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/thigh_r.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/thigh_r.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -144,7 +144,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/thigh_l.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/thigh_l.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -172,7 +172,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/calf_r.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/calf_r.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -200,7 +200,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/calf_l.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/calf_l.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -228,7 +228,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/wheel_r.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/wheel_r.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -256,7 +256,7 @@
     <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://v3/meshes/wheel_l.dae" scale="1 1 1" />
+          <mesh filename="package://v3_arm/meshes/wheel_l.dae" scale="1 1 1" />
         </geometry>
     </visual>
     <collision>
@@ -390,7 +390,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://v3/meshes/arm_base.dae" scale="1 1 1" />
+        <mesh filename="package://v3_arm/meshes/arm_base.dae" scale="1 1 1" />
       </geometry>
     </visual>
   </link>
@@ -412,7 +412,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://v3/meshes/upper_arm.dae" scale="1 1 1" />
+        <mesh filename="package://v3_arm/meshes/upper_arm.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -440,7 +440,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://v3/meshes/fore_arm.dae" scale="1 1 1" />
+        <mesh filename="package://v3_arm/meshes/fore_arm.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -466,7 +466,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://v3/meshes/5dof.dae" scale="1 1 1" />
+        <mesh filename="package://v3_arm/meshes/5dof.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -492,7 +492,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://v3/meshes/6dof.dae" scale="1 1 1" />
+        <mesh filename="package://v3_arm/meshes/6dof.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>

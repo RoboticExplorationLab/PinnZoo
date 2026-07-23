@@ -37,7 +37,7 @@ _pineapple_default_wheel_radius(version::Symbol) =
             :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)],  
             :v3 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)], 
             :v2 => [1:7; 7 .+ (1:8); 19 .+ (1:6); 19 + 6 .+ (1:8)], 
-            :v3_arm => [1:7; 7 .+ (1:13); 19 .+ (1:6); 19 + 6 .+ (1:13)] # TODO: confirm these hardware indices for v3 
+            :v3_arm => [1:7; 7 .+ (1:13); 19 .+ (1:6); 19 + 6 .+ (1:13)], # TODO: confirm these hardware indices for v3 
             :v3_gripper => [1:7; 7 .+ (1:15); 19 .+ (1:6); 19 + 6 .+ (1:15)] # TODO: confirm these hardware indices for v3_gripper   
         )
 
@@ -46,7 +46,7 @@ _pineapple_default_wheel_radius(version::Symbol) =
             :v1 => collect(1:8),  # default
             :v2 => collect(1:8),
             :v3 => collect(1:8),
-            :v3_gripper => collect(1:15)  
+            :v3_gripper => collect(1:15),  
             :v3_arm => collect(1:13)  
         )
 
