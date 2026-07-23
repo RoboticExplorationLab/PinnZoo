@@ -1,0 +1,43 @@
+name: Julia Tests
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-julia:
+    name: Julia bindings test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y libeigen3-dev nlohmann-json3-dev
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+
+      - name: Build
+        run: |
+          cd build
+          cmake --build . -j$(nproc)
+          
+      - name: Cache Julia dependencies
+        uses: julia-actions/cache@v2
+
+      - name: Instantiate Julia package environment
+        uses: julia-actions/julia-buildpkg@v1
+
+      - name: Run Julia tests
+        uses: julia-actions/julia-runtest@v1
